@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  {% load static %}
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="{% static 'dist/styles.css' %}">
+  <title>
+    {% block title %}
+    Poke API
+    {% endblock %}
+  </title>
+</head>
+
+<body>
+  <main>
+
+    {% if user.is_authenticated %}
+      <div id="sidebar">
+          {% block sidebar %}
+          <ul>
+              <li class="underline decoration-sky-500"><a href="/">Home</a></li>
+              <li class="underline decoration-1"> <a href="{% url 'pokedex:poke-home' %}">Poke Home</a></li>
+          </ul>
+          {% endblock %}
+      </div>
+    {% endif %}
+
+    <div id="content">
+        {% block content %}{% endblock %}
+    </div>
+
+  </main>
+</body>
+
+</html>
