@@ -8,7 +8,7 @@ from django.shortcuts import render
 from .models import Pokemon
 
 
-class PokemonSearchView(TemplateView, LoginRequiredMixin):
+class PokemonSearchView(LoginRequiredMixin, TemplateView):
     template_name = "pokemons/pokemon_search.html"
     form_class = PokemonSearchForm
 
@@ -20,7 +20,7 @@ class PokemonSearchView(TemplateView, LoginRequiredMixin):
         return context
 
 
-class PokemonAPIView(APIView, LoginRequiredMixin):
+class PokemonAPIView(LoginRequiredMixin, APIView):
     """
     API endpoint that takes a Pokemon name and returns data from PokeAPI.
     """
