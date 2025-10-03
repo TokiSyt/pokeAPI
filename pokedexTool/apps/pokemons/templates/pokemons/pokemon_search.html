@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
+  <h1 class="text-4xl font-extrabold text-gray-800 mb-6">Poke Search</h1>
+
+  <!-- Search box -->
+  <div class="bg-white shadow-lg rounded-2xl p-6 w-full max-w-sm text-center">
+    <p class="text-gray-600 mb-4">Welcome back to your Pokedex!</p>
+
+    <form action="{% url 'pokemons:poke-api' pokemon_name='placeholder' %}" 
+          method="get" 
+          onsubmit="event.preventDefault(); window.location.href=this.action.replace('placeholder', this.elements['pokemon_name'].value);">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <br>
+      <button type="submit" class="w-full bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">
+        Search
+      </button>
+    </form>
+  </div>
+
+  <br><br>
+
+  <div class="bg-white shadow-lg rounded-2xl p-4 w-full max-w-sm text-left">
+    <p class="text-gray-600 mb-4 text-center">Found pokémon list</p>
+
+    <div class="max-h-64 overflow-y-auto pr-2">
+      {% for pokemon in pokemons %}
+        <span class="text-gray-500 font-mono">
+          #{{ pokemon.pokemon_id  }}
+        </span>
+        <div class="flex items-center gap-3 mb-3 border-b pb-2">
+          <img src="{{ pokemon.sprite_front_default }}" 
+               alt="{{ pokemon.name }}" 
+               class="w-12 h-12 object-contain">
+          <a href="{% url 'pokemons:poke-api' pokemon_name=pokemon.name %}" class="font-semibold text-gray-800 hover:text-red-500">
+            {{ pokemon.name|capfirst }}
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="mt-6">
+      <a href="{% url 'pokedex:poke-home' %}" 
+          class="inline-block bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition">
+          ← Pokedex Home
+      </a>
+  </div>
+
+</div>
+{% endblock content %}

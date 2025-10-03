@@ -6,6 +6,11 @@ class CustomUserCreationForm(UserCreationForm):
         model = CustomUser
         fields = ("username",)
         
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        for fieldname in self.fields:
+            self.fields[fieldname].help_text = ""
         
 class CustomUserChangeForm(UserChangeForm):
 

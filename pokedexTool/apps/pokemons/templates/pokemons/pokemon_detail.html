@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% load type_color_filter %}
+
+{% block title %}Pokédex | {{ pokemon.name|capfirst }}{% endblock title %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
+  {% if pokemon %}
+    <div class="bg-white shadow-lg rounded-2xl p-6 w-full max-w-md text-center">
+      <!-- Header -->
+      <h2 class="text-2xl font-bold text-gray-800 mb-4 capitalize">{{ pokemon.name }}</h2>
+      <div class="flex justify-center items-center gap-6">
+        <div class="text-center">
+          <p>Default:</p>
+          <img src="{{ pokemon.sprite_front_default }}" alt="{{ pokemon.name }}" class="mx-auto">
+        </div>
+
+        {% if pokemon.sprite_front_shiny %}
+        <div class="text-center">
+          <p>Shiny:</p>
+          <img src="{{ pokemon.sprite_front_shiny }}" alt="{{ pokemon.name }}" class="mx-auto">
+        </div>
+        {% endif %}
+      </div>
+
+      <p class="text-gray-600"><strong>ID:</strong> #{{ pokemon.pokemon_id }}</p>
+      <p class="text-gray-600"><strong>Height:</strong> {{ pokemon.height }}</p>
+      <p class="text-gray-600"><strong>Weight:</strong> {{ pokemon.weight }}</p>
+      <p class="text-gray-600"><strong>Base XP:</strong> {{ pokemon.base_experience }}</p>
+      
+      <div class="mt-4">
+        <p class="text-gray-800 font-semibold">Types:</p>
+        <ul class="flex justify-center gap-2 mt-2">
+          {% for relation in type_relations %}
+            <li class="bg-gray-200 px-3 py-1 rounded-lg capitalize"  style="background-color: {{ relation.type.name|type_color }};">
+              {{ relation.type.name }}
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <div class="mt-4">
+        <p class="text-gray-800 font-semibold">Abilities:</p>
+        <ul class="flex flex-wrap justify-center gap-2 mt-2">
+          {% for rel in pokemon.ability_relations.all %}
+            <li class="bg-blue-200 px-3 py-1 rounded-lg capitalize">
+              {{ rel.ability.name }}{% if rel.is_hidden %} (Hidden){% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <div class="mt-6 text-left">
+        <p class="text-gray-800 font-semibold text-center mb-2">Base Stats:</p>
+        <ul>
+          {% for stat in pokemon.stats.all %}
+            <li class="flex justify-between mb-1">
+              <span class="capitalize">{{ stat.stat_name }}</span>
+              <span class="font-mono">{{ stat.base_stat }}</span>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+
+  {% else %}
+    <div class="text-red-500 font-semibold">{{error}}</div>
+  {% endif %}
+
+    <div class="mt-6">
+        <a href="{% url 'pokemons:poke-search' %}" 
+           class="inline-block bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition">
+            ← Go Back
+        </a>
+    </div>
+</div>
+{% endblock content %}

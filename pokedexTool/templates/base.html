@@ -1,36 +1,37 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
   {% load static %}
   <meta charset="UTF-8">
-  <link rel="stylesheet" href="{% static 'dist/styles.css' %}">
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!--<link href="{% static 'dist/styles.css' %}" rel="stylesheet">
+   -->
   <title>
-    {% block title %}
-    Poke API
-    {% endblock %}
+    {% block title %}Poke API{% endblock %}
   </title>
 </head>
 
-<body>
-  <main>
+<body class="bg-gray-100 min-h-screen flex">
 
-    {% if user.is_authenticated %}
-      <div id="sidebar">
-          {% block sidebar %}
-          <ul>
-              <li class="underline decoration-sky-500"><a href="/">Home</a></li>
-              <li class="underline decoration-1"> <a href="{% url 'pokedex:poke-home' %}">Poke Home</a></li>
-          </ul>
-          {% endblock %}
-      </div>
-    {% endif %}
+  {% if user.is_authenticated %}
+    <aside class="w-34 bg-white shadow-lg rounded-r-2xl p-6 flex-shrink-0">
+      {% block sidebar %}
+      <nav class="space-y-4">
+        <a href="/" class="block text-gray-800 font-semibold hover:text-blue-500 transition">Home</a>
+        <a href="{% url 'pokedex:poke-home' %}" class="block text-gray-800 font-semibold hover:text-blue-500 transition">Pokedex</a>
+        <a href="{% url 'logout' %}" class="block text-red-500 font-semibold hover:text-red-700 transition">Log Out</a>
+      </nav>
+      {% endblock %}
+    </aside>
+  {% endif %}
 
+  <main class="flex-1 p-8">
     <div id="content">
-        {% block content %}{% endblock %}
+      {% block content %}{% endblock %}
     </div>
-
   </main>
-</body>
 
+</body>
 </html>
