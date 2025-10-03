@@ -8,7 +8,7 @@ from django.shortcuts import render
 from .models import Pokemon
 
 
-class PokemonSearchView(TemplateView):
+class PokemonSearchView(TemplateView, LoginRequiredMixin):
     template_name = "pokemons/pokemon_search.html"
     form_class = PokemonSearchForm
 
