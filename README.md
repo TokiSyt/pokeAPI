@@ -1,84 +1,18 @@
-Pokedex Tool
+# Pokédex Tool
 
-A Django-based web application that integrates with the PokeAPI to allow users to search, view, and manage Pokémon data.
-Users can maintain their own Pokédex, search for Pokémon by name or ID, and view details including types, abilities, and stats.
+A Django-based web application that integrates with the PokéAPI
+ to let users search, view, and manage Pokémon data.
 
+# Features:
 
-Installation
-Prerequisites
+Maintain your own personal Pokédex
 
-Python 3.10+
+Search Pokémon by name or ID
 
-Virtualenv or Conda
-
-Git
-
-Steps
-
-Clone the repository:
-
-git clone https://github.com/your-username/pokedex-tool.git
-cd pokedex-tool
+View details such as types, abilities, and stats
 
 
-Create and activate a virtual environment:
-
-python -m venv venv
-source venv/bin/activate   # Linux/macOS
-venv\Scripts\activate      # Windows
-
-
-Install dependencies:
-
-pip install -r requirements.txt
-
-
-Apply migrations:
-
-python manage.py migrate
-
-
-Create a superuser:
-
-python manage.py createsuperuser
-
-
-Run the development server:
-
-python manage.py runserver
-
-Usage
-
-Log in with your account.
-
-Search for a Pokémon by name or ID.
-
-If not in the database, it will be fetched from PokeAPI and stored.
-
-Pokémon details and stats are displayed, and the Pokémon becomes visible in your personal Pokédex.
-
-Development Notes
-
-Pokémon data is stored in the database and associated with the users who have searched for them.
-
-To pre-populate the database with all Pokémon, a management command is available (disabled by default to avoid hitting PokeAPI rate limits).
-
-Roadmap
-
-Add pagination and filters to the Pokédex view.
-
-Improve error handling and logging.
-
-Add tests with pytest and DRF test cases.
-
-Support caching or async tasks (Celery/Redis) for bulk imports.
-
-Extend support for moves and evolution chains.
-
-License
-
-This project is for educational purposes. You may use, modify, and distribute it under the MIT License.Installation
-Prerequisites
+# Installation Prerequisites
 
 Python 3.10+
 
@@ -86,69 +20,63 @@ Virtualenv or Conda
 
 Git
 
-Steps
+Clone the repository
 
-Clone the repository:
-
-git clone https://github.com/your-username/pokedex-tool.git
+git clone https://github.com/your-username/pokedex-tool.git <br>
 cd pokedex-tool
 
+Create and activate a virtual environment
 
-Create and activate a virtual environment:
+Linux/macOS:
+python -m venv venv <br>
+source venv/bin/activate
 
-python -m venv venv
-source venv/bin/activate   # Linux/macOS
-venv\Scripts\activate      # Windows
+Windows:
+python -m venv venv <br>
+venv\Scripts\activate
 
-
-Install dependencies:
+# 
 
 pip install -r requirements.txt
 
-
-Apply migrations:
-
 python manage.py migrate
-
-
-Create a superuser:
 
 python manage.py createsuperuser
 
 
-Run a local development server:
+Run the development server
 
 python manage.py runserver
 
-Usage
+# Usage
 
-Log in with your account.
+Log in with your account
 
-Search for a Pokémon by name or ID.
+Search for a Pokémon by name or ID
 
-If not in the database, it will be fetched from PokeAPI and stored.
+If not found in the database, it will be fetched from PokéAPI and stored
 
-Pokémon details and stats are displayed, and the Pokémon becomes visible in your personal Pokédex.
+View detailed stats, abilities, and add Pokémon to your personal Pokédex
 
-Development Notes
+# Development Notes
 
-Pokémon data is stored in the database and associated with the users who have searched for them.
+Pokémon data is stored in the general database and their visualization is tied to the users who searched it
 
-To pre-populate the database with all Pokémon, a management command is available (disabled by default to avoid hitting PokeAPI rate limits).
+A multi-thread management command exists to pre-populate the database with all Pokémon for the list in pokedexTool\apps\pokemons\services\pokemon_import.py
 
-Roadmap
+Disabled by default (to avoid hitting API rate limits). Use at your own risk.
 
-Add pagination and filters to the Pokédex view.
+# Roadmap
 
-Improve error handling and logging.
+ Add pagination and filters to the Pokédex view
 
-Add tests with pytest and DRF test cases.
+ Improve error handling and logging
 
-Support caching or async tasks (Celery/Redis) for bulk imports.
+ Add tests with pytest and DRF test cases
 
-Extend support for moves, evolution chains and areas.
+ Extend support for moves, evolution chains, and areas
 
+# License
 
-License
-
-This project is for educational purposes. You may use, modify, and distribute it under the MIT License.
+This project is for educational purposes.
+You may use, modify, and distribute it under the MIT License.
