@@ -15,7 +15,9 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
+from django.conf.urls.static import static
 from django.contrib import admin
+from django.conf import settings
 from django.urls import include
 from django.urls import path
 from .views import HomeView
@@ -26,6 +28,7 @@ urlpatterns = [
     path("accounts/", include("django.contrib.auth.urls")),
     path("accounts/", include("apps.accounts.urls")),
     path("pokedex/", include("apps.pokedex.urls")),
+    path("pokemons/", include("apps.pokemons.urls")),
 ]
 
 """
@@ -38,3 +41,6 @@ accounts/password_reset/done/ [name='password_reset_done']
 accounts/reset/<uidb64>/<token>/ [name='password_reset_confirm']
 accounts/reset/done/ [name='password_reset_complete']
 """
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

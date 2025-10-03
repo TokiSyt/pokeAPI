@@ -38,8 +38,10 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "rest_framework",
     "apps.accounts",
     "apps.pokedex",
+    "apps.pokemons",
 ]
 
 MIDDLEWARE = [
@@ -57,13 +59,14 @@ ROOT_URLCONF = "pokedexProject.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [ BASE_DIR / "templates"],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "apps.pokedex.core.context_processors.pokemon_type_colors",
             ],
         },
     },
@@ -120,7 +123,7 @@ STATIC_URL = "/static/"
 MEDIA_URL = "/media/"
 
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
-MEDIA_ROOT = BASE_DIR / "mediafiles"
+MEDIA_ROOT = BASE_DIR / "media"
 
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
