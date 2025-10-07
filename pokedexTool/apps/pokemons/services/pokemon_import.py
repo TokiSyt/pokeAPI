@@ -7,6 +7,7 @@ from apps.pokemons.models import (
     PokemonAbilityRelation,
     PokemonStat,
 )
+from django.db import transaction
 
 '''
 BULK CREATE FOR THE POKEDEX LIST
@@ -45,6 +46,7 @@ with ThreadPoolExecutor(max_workers=10) as executor:
 Pokemon.objects.bulk_create(pokemons, ignore_conflicts=True)
 '''
 
+@transaction.atomic
 def import_pokemon_from_api(pokemon_name: str, user) -> Pokemon | None:
     """
     Fetch a Pokemon from the PokeAPI and save it to the DB.
@@ -56,7 +58,7 @@ def import_pokemon_from_api(pokemon_name: str, user) -> Pokemon | None:
         return None
 
     data = response.json()
-    print(F"API CALL MADE FOR POKEMON {pokemon_name}")
+    print(f"API CALL MADE FOR POKEMON {pokemon_name}")
 
     pokemon, _ = Pokemon.objects.update_or_create(
         pokemon_id=data["id"],
@@ -70,7 +72,7 @@ def import_pokemon_from_api(pokemon_name: str, user) -> Pokemon | None:
         },
     )
     pokemon.allowed_users.add(user)
-    
+
     for type_data in data["types"]:
         type_obj, _ = PokemonType.objects.get_or_create(name=type_data["type"]["name"])
         PokemonTypeRelation.objects.update_or_create(

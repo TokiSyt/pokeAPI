@@ -1,6 +1,7 @@
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from .services.pokemon_import import import_pokemon_from_api
 from django.contrib.auth.mixins import LoginRequiredMixin
+from rest_framework.permissions import IsAuthenticated
 from django.views.generic import TemplateView
 from rest_framework.views import APIView
 from .forms import PokemonSearchForm
@@ -20,11 +21,12 @@ class PokemonSearchView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class PokemonAPIView(LoginRequiredMixin, APIView):
+class PokemonAPIView(APIView):
     """
     API endpoint that takes a Pokemon name and returns data from PokeAPI.
     """
 
+    permission_classes = [IsAuthenticated]
     renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
     template_name = "pokemons/pokemon_detail.html"
 
@@ -36,7 +38,11 @@ class PokemonAPIView(LoginRequiredMixin, APIView):
         try:
             pokemon = Pokemon.objects.get(name=pokemon_name)
 
-            if not pokemon.stats.exists():
+            # only name, id and image were fetched
+            if (
+                not pokemon.stats.exists()
+                or not pokemon.allowed_users.filter(id=request.user.id).exists()
+            ):
                 pokemon_needs_update = True
 
         except Pokemon.DoesNotExist:

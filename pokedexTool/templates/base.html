@@ -13,14 +13,14 @@
   </title>
 </head>
 
-<body class="bg-gray-100 min-h-screen flex">
+<body class="bg-gray-100 h-screen flex overflow-hidden">
 
   {% if user.is_authenticated %}
     <aside class="w-34 bg-white shadow-lg rounded-r-2xl p-6 flex-shrink-0">
       {% block sidebar %}
       <nav class="space-y-4">
-        <a href="/" class="block text-gray-800 font-semibold hover:text-blue-500 transition">Home</a>
-        <a href="{% url 'pokedex:poke-home' %}" class="block text-gray-800 font-semibold hover:text-blue-500 transition">Pokedex</a>
+        <a href="/" class="block text-gray-800 font-semibold hover:text-red-500 transition">Home</a>
+        <a href="{% url 'pokedex:poke-home' %}" class="block text-gray-800 font-semibold hover:text-red-500 transition">Pokedex</a>
       </nav>
       {% endblock %}
     </aside>
