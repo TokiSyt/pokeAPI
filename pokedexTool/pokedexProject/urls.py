@@ -27,6 +27,7 @@ urlpatterns = [
     path("", HomeView.as_view(), name="home"),
     path("accounts/", include("django.contrib.auth.urls")),
     path("accounts/", include("apps.accounts.urls")),
+    path("api/", include("apps.api.urls")),
     path("pokedex/", include("apps.pokedex.urls")),
     path("pokemons/", include("apps.pokemons.urls")),
 ]

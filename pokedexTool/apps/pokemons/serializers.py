@@ -3,9 +3,11 @@ from .models import Pokemon, PokemonType, PokemonAbility, PokemonStat
 
 
 class PokemonSerializer(serializers.ModelSerializer):
+    type_relations = serializers.StringRelatedField(many=True)
+    
     class Meta:
         model = Pokemon
-        fields = ["pokemon_id", "name", "sprite_front_default"]
+        fields = ["pokemon_id", "name", "type_relations"]
 
 
 class PokemonDetailSerializer(serializers.ModelSerializer):

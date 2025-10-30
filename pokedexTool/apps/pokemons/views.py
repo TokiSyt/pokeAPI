@@ -44,6 +44,7 @@ class PokemonAPIView(APIView):
                 or not pokemon.allowed_users.filter(id=request.user.id).exists()
             ):
                 pokemon_needs_update = True
+            print(f"{pokemon} fetched from database")
 
         except Pokemon.DoesNotExist:
             pass

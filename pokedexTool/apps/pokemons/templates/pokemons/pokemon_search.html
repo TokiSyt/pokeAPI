@@ -8,7 +8,7 @@
   <div class="bg-white shadow-lg rounded-2xl p-6 w-full max-w-sm text-center">
     <p class="text-gray-600 mb-4">Welcome back to your Pokedex!</p>
 
-    <form action="{% url 'pokemons:poke-api' pokemon_name='placeholder' %}" 
+    <form action="{% url 'pokemons:poke-detail' pokemon_name='placeholder' %}" 
           method="get" 
           onsubmit="event.preventDefault(); window.location.href=this.action.replace('placeholder', this.elements['pokemon_name'].value);">
       {% csrf_token %}
@@ -34,7 +34,7 @@
           <img src="{{ pokemon.sprite_front_default }}" 
                alt="{{ pokemon.name }}" 
                class="w-12 h-12 object-contain">
-          <a href="{% url 'pokemons:poke-api' pokemon_name=pokemon.name %}" class="font-semibold text-gray-800 hover:text-red-500">
+          <a href="{% url 'pokemons:poke-detail' pokemon_name=pokemon.name %}" class="font-semibold text-gray-800 hover:text-red-500">
             {{ pokemon.name|capfirst }}
           </a>
         </div>
