@@ -21,13 +21,11 @@ class PokemonSearchView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class PokemonAPIView(APIView):
+class PokemonAPIView(LoginRequiredMixin, TemplateView):
     """
     API endpoint that takes a Pokemon name and returns data from PokeAPI.
     """
 
-    permission_classes = [IsAuthenticated]
-    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
     template_name = "pokemons/pokemon_detail.html"
 
     def get(self, request, pokemon_name):
