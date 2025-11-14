@@ -22,7 +22,7 @@ Git
 
 Clone the repository
 
-git clone https://github.com/your-username/pokedex-tool.git <br>
+git clone https://github.com/TokiSyt/pokeAPI.git <br>
 cd pokedex-tool
 
 Create and activate a virtual environment
