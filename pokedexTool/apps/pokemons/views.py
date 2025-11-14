@@ -1,15 +1,14 @@
-from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from .services.pokemon_import import import_pokemon_from_api
 from django.contrib.auth.mixins import LoginRequiredMixin
-from rest_framework.permissions import IsAuthenticated
 from django.views.generic import TemplateView
-from rest_framework.views import APIView
 from .forms import PokemonSearchForm
 from django.shortcuts import render
-from .models import Pokemon
+from .models import Pokemon, PokemonTypeRelation, PokemonAbilityRelation
 
 
+# POKEMONS
 class PokemonSearchView(LoginRequiredMixin, TemplateView):
+    
     template_name = "pokemons/pokemon_search.html"
     form_class = PokemonSearchForm
 
@@ -21,24 +20,25 @@ class PokemonSearchView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class PokemonAPIView(LoginRequiredMixin, TemplateView):
-    """
-    API endpoint that takes a Pokemon name and returns data from PokeAPI.
-    """
+class PokemonDetailView(LoginRequiredMixin, TemplateView):
 
     template_name = "pokemons/pokemon_detail.html"
 
     def get(self, request, pokemon_name):
 
         pokemon = None
+        type_relations = None
+        moves_relations = None
         pokemon_needs_update = False
 
         try:
             pokemon = Pokemon.objects.get(name=pokemon_name)
-
-            # only name, id and image were fetched
+            type_relations = PokemonTypeRelation.objects.filter(pokemon=pokemon).select_related('type')
+            moves_relations = PokemonAbilityRelation.objects.filter(pokemon=pokemon).select_related('ability')
+            
+            # any information missing from the model and it's relations
             if (
-                not pokemon.stats.exists()
+                (not pokemon.stats.exists() or not type_relations or not moves_relations)
                 or not pokemon.allowed_users.filter(id=request.user.id).exists()
             ):
                 pokemon_needs_update = True
@@ -59,14 +59,15 @@ class PokemonAPIView(LoginRequiredMixin, TemplateView):
                 context,
                 status=404,
             )
+            
 
         else:
+
+        
             context = {
                 "pokemon": pokemon,
-                "type_relations": pokemon.type_relations.select_related("type").all(),
-                "abilities_relations": pokemon.ability_relations.select_related(
-                    "ability"
-                ).all(),
+                "type_relations": type_relations,
+                "ability_relations": moves_relations,
                 "stats": pokemon.stats.all(),
             }
 

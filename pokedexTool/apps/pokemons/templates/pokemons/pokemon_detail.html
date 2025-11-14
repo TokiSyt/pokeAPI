@@ -31,9 +31,9 @@
       <div class="mt-4">
         <p class="text-gray-800 font-semibold">Types:</p>
         <ul class="flex justify-center gap-2 mt-2">
-          {% for relation in type_relations %}
+          {% for relation in type_relations.all %}
             <li class="bg-gray-200 px-3 py-1 rounded-lg capitalize"  style="background-color: {{ relation.type.name|type_color }};">
-              {{ relation.type.name }}
+              <a href="{% url 'poke_types:types-detail' relation.type.name %}">{{ relation.type.name }}</a>
             </li>
           {% endfor %}
         </ul>
@@ -43,7 +43,7 @@
         <p class="text-gray-800 font-semibold">Abilities:</p>
         <ul class="flex flex-wrap justify-center gap-2 mt-2">
           {% for rel in pokemon.ability_relations.all %}
-            <li class="bg-blue-200 px-3 py-1 rounded-lg capitalize">
+            <li class="bg-blue-200 px-3 py-1 rounded-lg capitalize" style="background-color: {{ rel.ability.type.name |type_color }};">
               {{ rel.ability.name }}{% if rel.is_hidden %} (Hidden){% endif %}
             </li>
           {% endfor %}
