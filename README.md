@@ -28,7 +28,7 @@ cd pokedex-tool
 Create and activate a virtual environment
 
 Linux/macOS:
-python -m venv venv <br>
+python3 -m venv venv <br>
 source venv/bin/activate
 
 Windows:
