@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load type_color_filter %}
+
+{% block title %}Type search{% endblock title %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
+  <h1 class="text-4xl font-extrabold text-gray-800 mb-6">Type Search</h1>
+
+  <!-- Search box -->
+  <div class="bg-white shadow-lg rounded-2xl p-6 w-full max-w-sm text-center">
+    <p class="text-gray-600 mb-4">Welcome back to your Pokedex!</p>
+
+    <form action="{% url 'poke_types:types-detail' poke_type_name_or_id='placeholder' %}" 
+          method="get" 
+          onsubmit="event.preventDefault(); window.location.href=this.action.replace('placeholder', this.elements['poke_type_name_or_id'].value);">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <br>
+      <button type="submit" class="w-full bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">
+        Search
+      </button>
+    </form>
+  </div>
+
+  <br><br>
+
+  <div class="bg-white shadow-lg rounded-2xl p-4 w-full max-w-sm text-left">
+    <p class="text-gray-600 mb-4 text-center">Found types list</p>
+
+    <div class="max-h-64 overflow-y-auto pr-2">
+      {% for type in types %}
+        <span class="text-gray-500 font-mono">
+          #{{ type.type_id  }}
+        </span>
+
+        <div class="flex items-center justify-between gap-3 mb-3 border-b pb-2">
+          <a href="{% url 'poke_types:types-detail' poke_type_name_or_id=type.name %}" class="font-semibold text-gray-800 hover:text-red-500">
+            {{ type.name|capfirst }}
+          </a>
+
+          <span class="text-white px-2 py-1 rounded"
+                            style="background-color: {{ type.name|type_color }};">
+          </span>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="mt-6">
+      <a href="{% url 'pokedex:poke-home' %}" 
+          class="inline-block bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition">
+          ← Pokedex Home
+      </a>
+  </div>
+
+</div>
+{% endblock content %}
