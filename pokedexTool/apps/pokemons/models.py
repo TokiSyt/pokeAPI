@@ -1,10 +1,16 @@
 from django.conf import settings
 from django.db import models
+from apps.poke_types.models import PokemonType
+from apps.moves.models import PokemonAbility
 
 # Create your models here.
 
 
 class Pokemon(models.Model):
+    
+    """
+    Represents a Pokémon.
+    """
 
     pokemon_id = models.IntegerField(unique=True)
     name = models.CharField(max_length=100)
@@ -30,14 +36,7 @@ class Pokemon(models.Model):
         ordering = ["pokemon_id"]
 
     def __str__(self):
-        return self.name
-
-
-class PokemonType(models.Model):
-    name = models.CharField(max_length=50, unique=True)
-
-    def __str__(self):
-        return self.name
+        return f"{self.name}_({self.pokemon_id})"
 
 
 class PokemonTypeRelation(models.Model):
@@ -50,13 +49,6 @@ class PokemonTypeRelation(models.Model):
     class Meta:
         unique_together = ["pokemon", "type", "slot"]
         ordering = ["slot"]
-
-
-class PokemonAbility(models.Model):
-    name = models.CharField(max_length=100, unique=True)
-
-    def __str__(self):
-        return self.name
 
 
 class PokemonAbilityRelation(models.Model):
