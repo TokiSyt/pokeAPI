@@ -30,6 +30,11 @@ urlpatterns = [
     path("api/", include("apps.api.urls")),
     path("pokedex/", include("apps.pokedex.urls")),
     path("pokemons/", include("apps.pokemons.urls")),
+    path("berries/", include("apps.berries.urls")),
+    path("items/", include("apps.items.urls")),
+    path("locations/", include("apps.locations.urls")),
+    path("moves/", include("apps.moves.urls")),
+    path("types/", include("apps.poke_types.urls")),
 ]
 
 """

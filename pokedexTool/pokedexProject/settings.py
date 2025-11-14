@@ -44,6 +44,12 @@ INSTALLED_APPS = [
     "apps.accounts",
     "apps.pokedex",
     "apps.pokemons",
+    "apps.berries",
+    "apps.items",
+    "apps.locations",
+    "apps.moves",
+    "apps.poke_types",
+    "apps.generations",
 ]
 
 MIDDLEWARE = [
