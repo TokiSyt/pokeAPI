@@ -6,3 +6,10 @@ register = template.Library()
 @register.filter
 def type_color(type_name):
     return POKEMON_TYPE_COLORS.get(type_name.lower(), "#A8A77A")
+
+@register.filter
+def split(value, delimiter=","):
+    """Splits a string by the given delimiter and trims whitespace."""
+    if not value:
+        return []
+    return [v.strip() for v in value.split(delimiter) if v.strip()]
