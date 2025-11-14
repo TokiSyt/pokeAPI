@@ -1,9 +1,9 @@
-from .views import MovesSearchView
+from .views import MovesSearchView, MoveDetailView
 from django.urls import path
 
-app_name = "types"
+app_name = "poke_moves"
 
 urlpatterns = [
     path("", MovesSearchView.as_view(), name="moves-search"),
-    path("<str:pokemon_type>", MovesSearchView.as_view(), name="moves-detail"),
+    path("<str:poke_move_name_or_id>", MoveDetailView.as_view(), name="move-detail"),
 ]

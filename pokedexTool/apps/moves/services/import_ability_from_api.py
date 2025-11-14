@@ -1,45 +1,58 @@
 from apps.moves.models import PokemonAbility
+from apps.poke_types.models import PokemonType
+import requests
 
+def create_or_update_ability(poke_move_name_or_id, user=None):
+    """
+    Fetch a Pokémon move from the PokeAPI and save it to the DB.
+    Returns the PokemonAbility instance if successful, else None.
+    """
+    url = f"https://pokeapi.co/api/v2/move/{poke_move_name_or_id}"
+    response = requests.get(url)
+    if response.status_code != 200:
+        print(f"Failed to fetch move {poke_move_name_or_id}: {response.status_code}")
+        return None
+    
+    data = response.json()
+    print(f"API CALL MADE FOR MOVE {poke_move_name_or_id}")
 
-def get_name(data, key):
-    return (data.get(key) or {}).get("name", "")
+    move_name = data.get("name")
+    move_type = data.get("type", {}).get("name", "")
+        
+    damage_class = data.get("damage_class", {}).get("name", "")
+    generation = data.get("generation", {}).get("name", "")
+    category = data.get("meta", {}).get("category", {}).get("name", "") if data.get("meta") else ""
 
-def create_or_update_ability(data):
-    name = data["name"]
+    ailment = data.get("meta", {}).get("ailment", {}).get("name", "") if data.get("meta") else ""
+    ailment_chance = data.get("meta", {}).get("ailment_chance", 0) if data.get("meta") else 0
 
-    damage_class = get_name(data, "damage_class")
-    move_type = get_name(data, "type")
-    generation = get_name(data, "generation")
-    meta = data.get("meta") or {}
-    category = get_name(meta, "category")
-    ailment = get_name(meta, "ailment")
-    ailment_chance = meta.get("ailment_chance")
-
-    short_effect = ""
+    effect_entries = data.get("effect_entries", [])
     effect = ""
-    for e in data.get("effect_entries", []):
-        if e.get("language", {}).get("name") == "en":
-            effect = e.get("effect", "")
-            short_effect = e.get("short_effect", "")
+    short_effect = ""
+    for entry in effect_entries:
+        if entry.get("language", {}).get("name") == "en":
+            effect = entry.get("effect", "")
+            short_effect = entry.get("short_effect", "")
             break
 
-    flavor_texts = [
-        f["flavor_text"]
-        for f in data.get("flavor_text_entries", [])
-        if f.get("language", {}).get("name") == "en"
-    ]
-    flavor_text = flavor_texts[-1] if flavor_texts else ""
+    flavor_text_entries = data.get("flavor_text_entries", [])
+    flavor_text = ""
+    for entry in flavor_text_entries:
+        if entry.get("language", {}).get("name") == "en":
+            flavor_text = entry.get("flavor_text", "")
+            break
 
     ability, _ = PokemonAbility.objects.update_or_create(
-        name=name,
+        name=move_name,
         defaults={
             "accuracy": data.get("accuracy"),
             "power": data.get("power"),
+            "move_id": data.get("id"),
             "pp": data.get("pp"),
             "priority": data.get("priority"),
             "effect_chance": data.get("effect_chance"),
-            "damage_class": damage_class,
             "type": move_type,
+            "damage_class": damage_class,
             "generation": generation,
             "category": category,
             "ailment": ailment,
@@ -50,4 +63,9 @@ def create_or_update_ability(data):
         },
     )
 
+    if user:
+        ability.allowed_users.add(user)
+    
     return ability
+
+create_or_update_ability(94)

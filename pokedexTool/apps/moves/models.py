@@ -1,8 +1,14 @@
 from django.db import models
+from django.conf import settings
 
 class PokemonAbility(models.Model):
+    
+    allowed_users = models.ManyToManyField(
+        settings.AUTH_USER_MODEL, related_name="pokemon_moves"
+    )
 
     name = models.CharField(max_length=100, unique=True)
+    move_id = models.IntegerField(unique=True, null=True)
     accuracy = models.IntegerField(null=True, blank=True)
     power = models.IntegerField(null=True, blank=True)
     pp = models.IntegerField(null=True, blank=True)
@@ -22,4 +28,4 @@ class PokemonAbility(models.Model):
     flavor_text = models.TextField(blank=True)
 
     def __str__(self):
-        return self.name
+        return f"{self.name}_{self.move_id}"
