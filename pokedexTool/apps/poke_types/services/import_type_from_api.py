@@ -1,8 +1,5 @@
 from apps.moves.services.import_ability_from_api import create_or_update_ability
 from apps.poke_types.models import PokemonType, TypeDamageRelation
-from concurrent.futures import ThreadPoolExecutor
-from apps.generations.models import Generation
-from apps.moves.models import PokemonAbility
 from asgiref.sync import async_to_sync
 from django.db import transaction
 import requests
