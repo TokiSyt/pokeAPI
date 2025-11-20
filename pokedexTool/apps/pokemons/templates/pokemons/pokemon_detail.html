@@ -4,74 +4,135 @@
 {% block title %}Pokédex | {{ pokemon.name|capfirst }}{% endblock title %}
 
 {% block content %}
-<div class="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
-  {% if pokemon %}
-    <div class="bg-white shadow-lg rounded-2xl p-6 w-full max-w-md text-center">
-      <!-- Header -->
-      <h2 class="text-2xl font-bold text-gray-800 mb-4 capitalize">{{ pokemon.name }}</h2>
-      <div class="flex justify-center items-center gap-6">
-        <div class="text-center">
-          <p>Default:</p>
-          <img src="{{ pokemon.sprite_front_default }}" alt="{{ pokemon.name }}" class="mx-auto">
-        </div>
+<div class="min-h-screen bg-gray-100 flex justify-center items-start py-8 px-4">
 
+  {% if pokemon %}
+  <div class="bg-white shadow-xl rounded-3xl p-6 w-full max-w-xl h-[90vh] overflow-y-auto">
+
+    <!-- Header / Sprites -->
+    <div class="text-center mb-6">
+      <h2 class="text-3xl font-bold text-gray-900 capitalize">{{ pokemon.name }}</h2>
+      <div class="flex justify-center items-center gap-6 mt-4">
+        <div class="text-center">
+          <p class="text-gray-500 text-sm">Default</p>
+          <img src="{{ pokemon.sprite_front_default }}" alt="{{ pokemon.name }}" class="mx-auto w-24 h-24">
+        </div>
         {% if pokemon.sprite_front_shiny %}
         <div class="text-center">
-          <p>Shiny:</p>
-          <img src="{{ pokemon.sprite_front_shiny }}" alt="{{ pokemon.name }}" class="mx-auto">
+          <p class="text-gray-500 text-sm">Shiny</p>
+          <img src="{{ pokemon.sprite_front_shiny }}" alt="{{ pokemon.name }}" class="mx-auto w-24 h-24">
         </div>
         {% endif %}
       </div>
+    </div>
 
-      <p class="text-gray-600"><strong>ID:</strong> #{{ pokemon.pokemon_id }}</p>
-      <p class="text-gray-600"><strong>Height:</strong> {{ pokemon.height }}</p>
-      <p class="text-gray-600"><strong>Weight:</strong> {{ pokemon.weight }}</p>
-      <p class="text-gray-600"><strong>Base XP:</strong> {{ pokemon.base_experience }}</p>
-      
-      <div class="mt-4">
-        <p class="text-gray-800 font-semibold">Types:</p>
-        <ul class="flex justify-center gap-2 mt-2">
-          {% for relation in type_relations.all %}
-            <li class="bg-gray-200 px-3 py-1 rounded-lg capitalize"  style="background-color: {{ relation.type.name|type_color }};">
-              <a href="{% url 'poke_types:types-detail' relation.type.name %}">{{ relation.type.name }}</a>
-            </li>
-          {% endfor %}
-        </ul>
+    <!-- Basic Info -->
+    <div class="grid grid-cols-2 gap-4 text-gray-700 mb-6">
+      <div class="p-2 bg-gray-50 rounded-xl shadow-inner text-center">
+        <p class="text-gray-500 text-sm">ID</p>
+        <p class="font-semibold">#{{ pokemon.pokemon_id }}</p>
       </div>
-
-      <div class="mt-4">
-        <p class="text-gray-800 font-semibold">Abilities:</p>
-        <ul class="flex flex-wrap justify-center gap-2 mt-2">
-          {% for rel in pokemon.ability_relations.all %}
-            <li class="bg-blue-200 px-3 py-1 rounded-lg capitalize" style="background-color: {{ rel.ability.type.name |type_color }};">
-              {{ rel.ability.name }}{% if rel.is_hidden %} (Hidden){% endif %}
-            </li>
-          {% endfor %}
-        </ul>
+      <div class="p-2 bg-gray-50 rounded-xl shadow-inner text-center">
+        <p class="text-gray-500 text-sm">Height</p>
+        <p class="font-semibold">{{ pokemon.height }}</p>
       </div>
-
-      <div class="mt-6 text-left">
-        <p class="text-gray-800 font-semibold text-center mb-2">Base Stats:</p>
-        <ul>
-          {% for stat in pokemon.stats.all %}
-            <li class="flex justify-between mb-1">
-              <span class="capitalize">{{ stat.stat_name }}</span>
-              <span class="font-mono">{{ stat.base_stat }}</span>
-            </li>
-          {% endfor %}
-        </ul>
+      <div class="p-2 bg-gray-50 rounded-xl shadow-inner text-center">
+        <p class="text-gray-500 text-sm">Weight</p>
+        <p class="font-semibold">{{ pokemon.weight }}</p>
+      </div>
+      <div class="p-2 bg-gray-50 rounded-xl shadow-inner text-center">
+        <p class="text-gray-500 text-sm">Base XP</p>
+        <p class="font-semibold">{{ pokemon.base_experience }}</p>
       </div>
     </div>
+
+    <!-- Base Stats -->
+    <div class="mb-6 p-4 bg-gray-50 rounded-2xl shadow-inner">
+      <h3 class="text-xl font-semibold text-gray-800 mb-3 text-center">Base Stats</h3>
+      <ul>
+        {% for stat in pokemon.stats.all %}
+        <li class="flex justify-between mb-1 p-2 bg-white rounded-lg shadow-sm">
+          <span class="capitalize">{{ stat.stat_name }}</span>
+          <span class="font-mono font-semibold">{{ stat.base_stat }}</span>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <!-- Types -->
+    <div class="mb-6 p-4 bg-gray-50 rounded-2xl shadow-inner text-center">
+      <h3 class="text-xl font-semibold text-gray-800 mb-3">Types</h3>
+      <ul class="flex justify-center gap-2 flex-wrap">
+        {% for relation in type_relations.all %}
+        <li class="px-3 py-1 rounded-full font-medium text-white"
+            style="background-color: {{ relation.type.name|type_color }};">
+          <a href="{% url 'poke_types:types-detail' relation.type.name %}" class="capitalize">{{ relation.type.name }}</a>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <!-- Abilities -->
+    <div class="mb-6 p-4 bg-gray-50 rounded-2xl shadow-inner text-center">
+      <h3 class="text-xl font-semibold text-gray-800 mb-3">Abilities</h3>
+      <ul class="flex justify-center gap-2 flex-wrap">
+        {% for relation in ability_relations.all %}
+        <li class="px-3 py-1 rounded-full font-medium text-white"
+            style="background-color: {{ relation.ability.name|type_color|default:'#888' }};">
+          {{ relation.ability.name|capfirst }}
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <!-- Associated Moves -->
+    {% if pokemon.moves_list %}
+    <div class="mb-6 p-4 bg-gray-50 rounded-2xl shadow-inner">
+      <h3 class="text-xl font-semibold text-gray-800 mb-3 text-center">Associated Moves</h3>
+      <ul class="flex flex-wrap justify-center gap-2 max-h-48 overflow-y-auto">
+        {% for move in pokemon.moves_list %}
+        <li class="flex items-center gap-2 px-2 py-1 rounded-lg bg-white shadow-sm">
+          <span class="w-3 h-3 rounded-full"
+                style="background-color: {{ type.name|type_color|default:'#ccc' }};">
+          </span>
+          <span class="capitalize text-gray-800 font-medium">
+            <a href="{% url 'poke_moves:move-detail' move %}">{{ move }}</a>
+          </span>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% else %}
+    <div class="mb-6 p-4 bg-gray-50 rounded-2xl shadow-inner">
+      <h3 class="text-xl font-semibold text-gray-800 mb-3 text-center">Associated Moves</h3>
+      <ul class="flex flex-wrap justify-center gap-2 max-h-48 overflow-y-auto">
+        {% for move in pokemon.moves %}
+        <li class="flex items-center gap-2 px-2 py-1 rounded-lg bg-white shadow-sm">
+          <span class="w-3 h-3 rounded-full"
+                style="background-color: {{ type.name|type_color|default:'#ccc' }};">
+          </span>
+          <span class="capitalize text-gray-800 font-medium">
+            <a href="{% url 'poke_moves:move-detail' move %}">{{ move }}</a>
+          </span>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    <!-- Back Button -->
+    <div class="text-center mb-4">
+      <a href="{% url 'pokemons:poke-search' %}"
+         class="inline-block bg-gray-500 text-white px-5 py-2 rounded-full hover:bg-gray-600 transition font-semibold">
+         ← Back to Search
+      </a>
+    </div>
+
+  </div>
 
   {% else %}
-    <div class="text-red-500 font-semibold">{{error}}</div>
+  <div class="text-red-500 font-semibold text-center">{{ error }}</div>
   {% endif %}
 
-    <div class="mt-6">
-        <a href="{% url 'pokemons:poke-search' %}" 
-           class="inline-block bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition">
-            ← Go Back
-        </a>
-    </div>
 </div>
 {% endblock content %}

@@ -5,101 +5,118 @@
 
 {% block content %}
 
-<div class="min-h-screen bg-gray-100 flex flex-col items-center justify-center py-10">
-  
+<div class="min-h-screen bg-gray-100 flex flex-col items-center justify-start py-12 px-4">
+
   {% if move %}
-    <div class="bg-white shadow-lg rounded-2xl p-6 w-full max-w-2xl text-center">
-
-      <!-- Header -->
-      <h2 class="text-3xl font-bold text-gray-800 mb-4 capitalize">
-        {{ move.name }}
-      </h2>
-
-      <div class="mx-auto w-32 h-2 rounded-full mb-6"
+  <div class="bg-white shadow-xl rounded-3xl p-8 w-full max-w-3xl">
+    
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <h2 class="text-4xl font-bold text-gray-900 capitalize">{{ move.name }}</h2>
+      <div class="mx-auto w-40 h-2 rounded-full mt-2"
            style="background-color: {{ move.type|type_color }};">
       </div>
-
-      <!-- BASIC MOVE INFO -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-gray-700 mb-6">
-
-        <p><strong>ID:</strong> {{ move.move_id }}</p>
-        <p><strong>Generation:</strong> {{ move.generation|default:"Unknown" }}</p>
-        <p><strong>Damage Class:</strong> {{ move.damage_class|capfirst }}</p>
-
-        <p><strong>Type:</strong> 
-          <span class="px-2 py-1 rounded text-white"
-                style="background-color: {{ move.type|type_color }};">
-            {{ move.type|capfirst }}
-          </span>
-        </p>
-
-        <p><strong>Category:</strong> {{ move.category|capfirst|default:"N/A" }}</p>
-        <p><strong>Ailment:</strong> {{ move.ailment|capfirst|default:"None" }}</p>
-
-      </div>
-
-      <!-- MOVE STATS -->
-      <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 text-gray-700 mb-6">
-        <p><strong>Power:</strong> {{ move.power|default:"—" }}</p>
-        <p><strong>Accuracy:</strong> {{ move.accuracy|default:"—" }}</p>
-        <p><strong>PP:</strong> {{ move.pp|default:"—" }}</p>
-        <p><strong>Priority:</strong> {{ move.priority }}</p>
-      </div>
-
-      <hr>
-
-      <!-- EFFECT TEXT -->
-      {% if move.effect or move.short_effect %}
-        <div class="mt-6 text-left">
-          <h3 class="text-xl font-semibold text-gray-800 mb-3 text-center">Move Effects</h3>
-
-          {% if move.short_effect %}
-            <p class="text-gray-700 mb-4">
-              <strong>Short Effect:</strong> {{ move.short_effect }}
-            </p>
-          {% endif %}
-
-          {% if move.effect %}
-            <p class="text-gray-700 whitespace-pre-line">
-              <strong>Full Effect:</strong> {{ move.effect }}
-            </p>
-          {% endif %}
-        </div>
-      {% endif %}
-
-      <hr class="my-6">
-
-      <!-- AILMENT CHANCE -->
-      <div class="text-gray-700 mb-6">
-        <p><strong>Ailment Chance:</strong> 
-          {{ move.ailment_chance|default:"0" }}%
-        </p>
-      </div>
-
-      <hr>
-
-      <!-- FLAVOR TEXT -->
-      {% if move.flavor_text %}
-        <div class="mt-6">
-          <h3 class="text-xl font-semibold text-gray-800 mb-3">Flavor Text</h3>
-          <p class="italic text-gray-600">{{ move.flavor_text }}</p>
-        </div>
-      {% else %}
-        <p class="text-gray-400 mt-6">No flavor text available.</p>
-      {% endif %}
-
     </div>
 
+    <!-- Basic Info Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 text-gray-700 mb-8">
+      <div class="p-4 bg-gray-50 rounded-xl shadow-inner">
+        <p class="text-gray-500 text-sm">ID</p>
+        <p class="font-semibold">{{ move.move_id }}</p>
+      </div>
+      <div class="p-4 bg-gray-50 rounded-xl shadow-inner">
+        <p class="text-gray-500 text-sm">Generation</p>
+        <p class="font-semibold">{{ move.generation|default:"Unknown" }}</p>
+      </div>
+      <div class="p-4 bg-gray-50 rounded-xl shadow-inner">
+        <p class="text-gray-500 text-sm">Damage Class</p>
+        <p class="font-semibold capitalize">{{ move.damage_class }}</p>
+      </div>
+      <div class="p-4 bg-gray-50 rounded-xl shadow-inner">
+        <p class="text-gray-500 text-sm">Type</p>
+        <span class="px-3 py-0 rounded-lg text-white font-medium"
+              style="background-color: {{ move.type|type_color }};">
+          <a href="{% url 'poke_types:types-detail' move.type %}">{{ move.type|capfirst }}</a>
+        </span>
+      </div>
+      <div class="p-4 bg-gray-50 rounded-xl shadow-inner">
+        <p class="text-gray-500 text-sm">Category</p>
+        <p class="font-semibold capitalize">{{ move.category|default:"N/A" }}</p>
+      </div>
+      <div class="p-4 bg-gray-50 rounded-xl shadow-inner">
+        <p class="text-gray-500 text-sm">Ailment</p>
+        <p class="font-semibold capitalize">{{ move.ailment|default:"None" }}</p>
+      </div>
+    </div>
+
+    <!-- Move Stats -->
+    <div class="grid grid-cols-1 sm:grid-cols-4 gap-6 text-gray-700 mb-8">
+      <div class="p-4 bg-blue-50 rounded-xl text-center shadow-inner">
+        <p class="text-gray-500 text-sm">Power</p>
+        <p class="font-semibold">{{ move.power|default:"—" }}</p>
+      </div>
+      <div class="p-4 bg-green-50 rounded-xl text-center shadow-inner">
+        <p class="text-gray-500 text-sm">Accuracy</p>
+        <p class="font-semibold">{{ move.accuracy|default:"—" }}</p>
+      </div>
+      <div class="p-4 bg-yellow-50 rounded-xl text-center shadow-inner">
+        <p class="text-gray-500 text-sm">PP</p>
+        <p class="font-semibold">{{ move.pp|default:"—" }}</p>
+      </div>
+      <div class="p-4 bg-purple-50 rounded-xl text-center shadow-inner">
+        <p class="text-gray-500 text-sm">Priority</p>
+        <p class="font-semibold">{{ move.priority }}</p>
+      </div>
+    </div>
+
+    <!-- Effects -->
+    {% if move.effect or move.short_effect %}
+    <div class="mb-8 p-6 bg-gray-50 rounded-2xl shadow-inner">
+      <h3 class="text-2xl font-semibold text-gray-800 mb-4 text-center">Move Effects</h3>
+
+      {% if move.short_effect %}
+        <p class="text-gray-700 mb-3">
+          <strong>Short Effect:</strong> {{ move.short_effect }}
+        </p>
+      {% endif %}
+
+      {% if move.effect %}
+        <p class="text-gray-700 whitespace-pre-line">
+          <strong>Full Effect:</strong> {{ move.effect }}
+        </p>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Ailment Chance -->
+    <div class="mb-8 p-4 bg-red-50 rounded-2xl shadow-inner text-center">
+      <p class="text-gray-700 font-medium">Ailment Chance: <span class="font-bold">{{ move.ailment_chance|default:"0" }}%</span></p>
+    </div>
+
+    <!-- Flavor Text -->
+    <div class="mb-8 p-6 bg-gray-50 rounded-2xl shadow-inner">
+      <h3 class="text-2xl font-semibold text-gray-800 mb-4 text-center">Flavor Text</h3>
+      {% if move.flavor_text %}
+        <p class="italic text-gray-600 text-center">{{ move.flavor_text }}</p>
+      {% else %}
+        <p class="text-gray-400 text-center">No flavor text available.</p>
+      {% endif %}
+    </div>
+
+    <!-- Back Button -->
+    <div class="text-center">
+      <a href="{% url 'poke_moves:moves-search' %}"
+         class="inline-block bg-gray-500 text-white px-6 py-3 rounded-full hover:bg-gray-600 transition font-semibold">
+         ← Back to Moves
+      </a>
+    </div>
+
+  </div>
+
   {% else %}
-    <div class="text-red-500 font-semibold">{{ error }}</div>
+  <div class="text-red-500 font-semibold text-center">{{ error }}</div>
   {% endif %}
 
-  <div class="mt-6">
-    <a href="{% url 'poke_moves:moves-search' %}"
-       class="inline-block bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition">
-       ← Go Back
-    </a>
-  </div>
 </div>
 
 {% endblock content %}

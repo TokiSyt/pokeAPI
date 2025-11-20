@@ -27,7 +27,6 @@ class TypeDetailView(LoginRequiredMixin, TemplateView):
     def get(self, request, poke_type_name_or_id):
 
         type_obj = None
-        type_relation = None
         type_needs_update = False
 
         try:
@@ -36,16 +35,8 @@ class TypeDetailView(LoginRequiredMixin, TemplateView):
 
             else:
                 type_obj = PokemonType.objects.get(Q(name=poke_type_name_or_id))
-
-            type_relation = TypeDamageRelation.objects.get(type=type_obj)
-
-            print(f"{type_obj} | {type_relation}")
-
-            if not type_obj.moves.exists():
-                type_needs_update = True
             
-            if not type_needs_update:    
-                print(f"type {type_obj.name} fetched from database")
+            print(f"type {type_obj.name} fetched from database")
 
         except PokemonType.DoesNotExist:
             pass
@@ -62,8 +53,10 @@ class TypeDetailView(LoginRequiredMixin, TemplateView):
                 context,
                 status=404,
             )
-
+            
         else:
+            type_relation = TypeDamageRelation.objects.get(type=type_obj)
+            
             context = {
                 "type": type_obj,
                 "type_relation": type_relation,

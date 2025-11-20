@@ -1,5 +1,5 @@
 from django.db import models
-from apps.moves.models import PokemonAbility
+import ast
 
 
 class PokemonType(models.Model):
@@ -19,13 +19,18 @@ class PokemonType(models.Model):
         help_text="The class of damage inflicted by this type (physical, special, etc.).",
     )
 
-    moves = models.ManyToManyField(
-        PokemonAbility, related_name="move_types", blank=True
-    )
+    moves = models.CharField(null=True)
 
     def __str__(self):
         return f"{self.name}_({self.type_id})"
-    
+
+    @property
+    def moves_list(self):
+        try:
+            return ast.literal_eval(self.moves)
+        except:
+            return []
+
     class Meta:
         ordering = ["type_id"]
 

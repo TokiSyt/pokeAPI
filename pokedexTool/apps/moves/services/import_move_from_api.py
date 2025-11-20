@@ -1,8 +1,9 @@
-from apps.moves.models import PokemonAbility
+from apps.moves.models import PokemonMove
 from apps.poke_types.models import PokemonType
 import requests
 
-def create_or_update_ability(poke_move_name_or_id, user=None):
+
+def create_or_update_move(poke_move_name_or_id, user=None):
     """
     Fetch a Pokémon move from the PokeAPI and save it to the DB.
     Returns the PokemonAbility instance if successful, else None.
@@ -12,19 +13,29 @@ def create_or_update_ability(poke_move_name_or_id, user=None):
     if response.status_code != 200:
         print(f"Failed to fetch move {poke_move_name_or_id}: {response.status_code}")
         return None
-    
+
     data = response.json()
     print(f"API CALL MADE FOR MOVE {poke_move_name_or_id}")
 
     move_name = data.get("name")
     move_type = data.get("type", {}).get("name", "")
-        
+
     damage_class = data.get("damage_class", {}).get("name", "")
     generation = data.get("generation", {}).get("name", "")
-    category = data.get("meta", {}).get("category", {}).get("name", "") if data.get("meta") else ""
+    category = (
+        data.get("meta", {}).get("category", {}).get("name", "")
+        if data.get("meta")
+        else ""
+    )
 
-    ailment = data.get("meta", {}).get("ailment", {}).get("name", "") if data.get("meta") else ""
-    ailment_chance = data.get("meta", {}).get("ailment_chance", 0) if data.get("meta") else 0
+    ailment = (
+        data.get("meta", {}).get("ailment", {}).get("name", "")
+        if data.get("meta")
+        else ""
+    )
+    ailment_chance = (
+        data.get("meta", {}).get("ailment_chance", 0) if data.get("meta") else 0
+    )
 
     effect_entries = data.get("effect_entries", [])
     effect = ""
@@ -42,7 +53,7 @@ def create_or_update_ability(poke_move_name_or_id, user=None):
             flavor_text = entry.get("flavor_text", "")
             break
 
-    ability, _ = PokemonAbility.objects.update_or_create(
+    ability, _ = PokemonMove.objects.update_or_create(
         name=move_name,
         defaults={
             "accuracy": data.get("accuracy"),
@@ -65,7 +76,5 @@ def create_or_update_ability(poke_move_name_or_id, user=None):
 
     if user:
         ability.allowed_users.add(user)
-    
-    return ability
 
-create_or_update_ability(94)
+    return ability

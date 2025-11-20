@@ -1,13 +1,12 @@
 from django.conf import settings
 from django.db import models
 from apps.poke_types.models import PokemonType
-from apps.moves.models import PokemonAbility
-
-# Create your models here.
+from apps.moves.models import PokemonMove
+from apps.abilities.models import PokemonAbility
+import ast
 
 
 class Pokemon(models.Model):
-    
     """
     Represents a Pokémon.
     """
@@ -29,11 +28,20 @@ class Pokemon(models.Model):
         upload_to="pokemon_sprites/", null=True, blank=True
     )
 
+    moves = models.CharField(null=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ["pokemon_id"]
+
+    @property
+    def moves_list(self):
+        try:
+            return ast.literal_eval(self.moves)
+        except:
+            return []
 
     def __str__(self):
         return f"{self.name}_({self.pokemon_id})"
@@ -51,13 +59,26 @@ class PokemonTypeRelation(models.Model):
         ordering = ["slot"]
 
 
+class PokemonMoveRelation(models.Model):
+    pokemon = models.ForeignKey(
+        Pokemon, on_delete=models.CASCADE, related_name="move_relations"
+    )
+    move = models.ForeignKey(PokemonMove, on_delete=models.CASCADE)
+    is_hidden = models.BooleanField(default=False)
+    slot = models.IntegerField()
+
+    class Meta:
+        unique_together = ["pokemon", "move", "slot"]
+        ordering = ["slot", "is_hidden"]
+
+
 class PokemonAbilityRelation(models.Model):
     pokemon = models.ForeignKey(
         Pokemon, on_delete=models.CASCADE, related_name="ability_relations"
     )
     ability = models.ForeignKey(PokemonAbility, on_delete=models.CASCADE)
-    is_hidden = models.BooleanField(default=False)
     slot = models.IntegerField()
+    is_hidden = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ["pokemon", "ability", "slot"]

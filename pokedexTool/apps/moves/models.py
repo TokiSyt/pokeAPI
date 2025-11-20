@@ -1,7 +1,7 @@
 from django.db import models
 from django.conf import settings
 
-class PokemonAbility(models.Model):
+class PokemonMove(models.Model):
     
     allowed_users = models.ManyToManyField(
         settings.AUTH_USER_MODEL, related_name="pokemon_moves"
@@ -26,6 +26,9 @@ class PokemonAbility(models.Model):
     short_effect = models.TextField(blank=True)
     effect = models.TextField(blank=True)
     flavor_text = models.TextField(blank=True)
+    
+    class Meta:
+        ordering = ["move_id"]
 
     def __str__(self):
         return f"{self.name}_{self.move_id}"

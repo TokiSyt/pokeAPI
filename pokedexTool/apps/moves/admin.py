@@ -1,6 +1,6 @@
 from django.contrib import admin
-from .models import PokemonAbility
+from .models import PokemonMove
 
 # Register your models here.
 
-admin.site.register(PokemonAbility)
+admin.site.register(PokemonMove)

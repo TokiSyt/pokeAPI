@@ -8,7 +8,7 @@ from .models import Pokemon, PokemonTypeRelation, PokemonAbilityRelation
 
 # POKEMONS
 class PokemonSearchView(LoginRequiredMixin, TemplateView):
-    
+
     template_name = "pokemons/pokemon_search.html"
     form_class = PokemonSearchForm
 
@@ -27,25 +27,29 @@ class PokemonDetailView(LoginRequiredMixin, TemplateView):
     def get(self, request, pokemon_name):
 
         pokemon = None
-        type_relations = None
-        moves_relations = None
         pokemon_needs_update = False
 
         try:
             pokemon = Pokemon.objects.get(name=pokemon_name)
-            type_relations = PokemonTypeRelation.objects.filter(pokemon=pokemon).select_related('type')
-            moves_relations = PokemonAbilityRelation.objects.filter(pokemon=pokemon).select_related('ability')
-            
+
             # any information missing from the model and it's relations
+
+            missing_pokemon_information = (
+                not pokemon.stats.exists()
+                or not pokemon.type_relations.exists()
+                or not pokemon.ability_relations.exists()
+            )
+
             if (
-                (not pokemon.stats.exists() or not type_relations or not moves_relations)
+                missing_pokemon_information
                 or not pokemon.allowed_users.filter(id=request.user.id).exists()
             ):
                 pokemon_needs_update = True
+
             print(f"{pokemon} fetched from database")
 
         except Pokemon.DoesNotExist:
-            pass
+            pokemon_needs_update = True
 
         if pokemon_needs_update or pokemon is None:
             pokemon = import_pokemon_from_api(pokemon_name, request.user)
@@ -59,16 +63,21 @@ class PokemonDetailView(LoginRequiredMixin, TemplateView):
                 context,
                 status=404,
             )
-            
 
-        else:
+        type_relations = PokemonTypeRelation.objects.filter(
+            pokemon=pokemon
+        ).select_related("type")
 
-        
-            context = {
-                "pokemon": pokemon,
-                "type_relations": type_relations,
-                "ability_relations": moves_relations,
-                "stats": pokemon.stats.all(),
-            }
+        ability_relations = PokemonAbilityRelation.objects.filter(
+            pokemon=pokemon
+        ).select_related("ability")
 
-            return render(request, self.template_name, context)
+        print(type_relations)
+        context = {
+            "pokemon": pokemon,
+            "type_relations": type_relations,
+            "ability_relations": ability_relations,
+            "stats": pokemon.stats.all(),
+        }
+
+        return render(request, self.template_name, context)

@@ -1,50 +1,21 @@
-import requests
 from apps.pokemons.models import (
     Pokemon,
     PokemonType,
     PokemonTypeRelation,
-    PokemonAbility,
     PokemonAbilityRelation,
     PokemonStat,
 )
+
+from apps.poke_types.services.import_type_from_api import import_pokemon_type_from_api
+from apps.abilities.services.import_ability_from_api import (
+    import_pokemon_ability_from_api,
+)
+from apps.abilities.models import PokemonAbility
+from django.shortcuts import get_object_or_404
 from django.db import transaction
+from django.db.models import Q
+import requests
 
-'''
-BULK CREATE FOR THE POKEDEX LIST
-DISABLING THIS FUNCTION TO LIMIT API CALLS FOR THE POKE API SERVICE - USE AT YOUR OWN RISK
-
-If you wish to use this, go to pokedexTool\apps\pokemons\management\commands\import_pokemon_list.py
-uncomment the file, this function and type python manage.py import_pokemon_list at the root level
-
-def pokemon_list_import_from_api(pokemon_index) -> Pokemon | None:
-    """
-    Fetch all pokemons basic information from the PokeAPI and save it to the DB.
-    Returns the basic pokemons instances if successful, else None.
-    """
-
-    response = requests.get(f"https://pokeapi.co/api/v2/pokemon/{pokemon_index}")
-
-    if response.status_code != 200:
-
-        print(f"Failed to fetch Pokémon {pokemon_index}")
-        return None
-
-    data = response.json()
-    print(f"API CALL MADE FOR POKEMON {data['name']}")
-
-    return Pokemon(
-            pokemon_id=data["id"],
-            name=data["name"],
-            sprite_front_default=data["sprites"]["front_default"],
-        )
-
-
-with ThreadPoolExecutor(max_workers=10) as executor:
-    pokemons = list(executor.map(pokemon_list_import_from_api, range(1, 1025)))
-    pokemons = [poke for poke in pokemons if poke is not None]
-
-Pokemon.objects.bulk_create(pokemons, ignore_conflicts=True)
-'''
 
 @transaction.atomic
 def import_pokemon_from_api(pokemon_name: str, user) -> Pokemon | None:
@@ -60,6 +31,9 @@ def import_pokemon_from_api(pokemon_name: str, user) -> Pokemon | None:
     data = response.json()
     print(f"API CALL MADE FOR POKEMON {pokemon_name}")
 
+    if "moves" in data:
+        move_names = [move["move"]["name"] for move in data.get("moves", [])]
+
     pokemon, _ = Pokemon.objects.update_or_create(
         pokemon_id=data["id"],
         defaults={
@@ -67,22 +41,37 @@ def import_pokemon_from_api(pokemon_name: str, user) -> Pokemon | None:
             "height": data["height"],
             "weight": data["weight"],
             "base_experience": data.get("base_experience"),
+            "moves": move_names,
             "sprite_front_default": data["sprites"]["front_default"],
             "sprite_front_shiny": data["sprites"].get("front_shiny"),
         },
     )
+
     pokemon.allowed_users.add(user)
 
     for type_data in data["types"]:
-        type_obj, _ = PokemonType.objects.get_or_create(name=type_data["type"]["name"])
+        type_name = type_data["type"]["name"]
+        type_obj_qs = PokemonType.objects.filter(name=type_name)
+
+        if not type_obj_qs.exists():
+            type_obj = import_pokemon_type_from_api(type_name)
+        else:
+            type_obj = PokemonType.objects.get(name=type_name)
+
         PokemonTypeRelation.objects.update_or_create(
             pokemon=pokemon, type=type_obj, slot=type_data["slot"]
         )
 
     for ability_data in data["abilities"]:
-        ability_obj, _ = PokemonAbility.objects.get_or_create(
-            name=ability_data["ability"]["name"]
-        )
+
+        ability_name = ability_data["ability"]["name"]
+        ability_obj_qs = PokemonAbility.objects.filter(name=ability_name)
+
+        if not ability_obj_qs.exists():
+            ability_obj = import_pokemon_ability_from_api(ability_name)
+        else:
+            ability_obj = PokemonAbility.objects.get(name=ability_name)
+
         PokemonAbilityRelation.objects.update_or_create(
             pokemon=pokemon,
             ability=ability_obj,

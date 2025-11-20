@@ -1,6 +1,5 @@
 from rest_framework import serializers
-from .models import Pokemon, PokemonType, PokemonAbility, PokemonStat
-
+from .models import Pokemon
 
 class PokemonSerializer(serializers.ModelSerializer):
     type_relations = serializers.StringRelatedField(many=True)
