@@ -1,7 +1,7 @@
 from .views import MovesSearchView
 from django.urls import path
 
-app_name = "types"
+app_name = "items"
 
 urlpatterns = [
     path("", MovesSearchView.as_view(), name="items-search"),
