@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% load type_color_filter %}
+
+{% block title %}Pokédex | {{ ability.name|capfirst }}{% endblock %}
+
+{% block content %}
+
+<div class="min-h-screen bg-gray-100 flex justify-center items-start py-8 px-4">
+
+  {% if ability %}
+  <div class="bg-white shadow-xl rounded-3xl p-6 w-full max-w-2xl ">
+
+    {% if ability.names %}
+        <!-- Header -->
+        <div class="text-center mb-6">
+        <h2 class="text-3xl font-bold text-gray-900 capitalize">{{ ability.name }}</h2>
+        <div class="mx-auto w-32 h-2 rounded-full mt-2 bg-gray-300"></div>
+        <p class="text-gray-500 text-sm mt-2">Ability ID: {{ ability.ability_id }}</p>
+        </div>
+
+        <!-- Basic Info -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700 mb-6">
+
+        <div class="p-2 bg-gray-50 rounded-xl shadow-inner text-center">
+            <p class="text-gray-500 text-sm">Generation</p>
+            <p class="font-semibold">{{ ability.generation|default:"Unknown" }}</p>
+        </div>
+
+        <div class="p-2 bg-gray-50 rounded-xl shadow-inner text-center">
+            <p class="text-gray-500 text-sm">Main Series</p>
+            <p class="font-semibold">{{ ability.is_main_series|yesno:"Yes,No" }}</p>
+        </div>
+
+        </div>
+
+        <!-- Localized Names -->
+        <div class="mb-6 p-4 bg-gray-50 rounded-2xl shadow-inner">
+        <h3 class="text-xl font-semibold text-gray-800 mb-3 text-center">Names</h3>
+
+        {% if ability.names_list %}
+            <ul class="space-y-2">
+            {% for name in ability.names_list %}
+            <li class="px-3 py-2 bg-white rounded-xl shadow-sm border border-gray-100">
+                <span class="text-gray-800 font-medium">{{ name.name }}</span>
+            </li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <ul class="space-y-2">
+            {% for name in ability.names %}
+            <li class="px-3 py-2 bg-white rounded-xl shadow-sm border border-gray-100">
+                <span class="text-gray-800 font-medium">{{ name.name }}</span>
+            </li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+        </div>
+
+        <!-- Effect Entries -->
+        <div class="mb-6 p-4 bg-gray-50 rounded-2xl shadow-inner">
+            <h3 class="text-xl font-semibold text-gray-800 mb-3 text-center">Effects</h3>
+
+            {% if ability.effects_list %}
+                <ul class="space-y-3">
+                {% for effect in ability.effects_list %}
+                <li class="p-3 bg-white rounded-xl shadow-sm border border-gray-100">
+                    <p class="text-gray-800">{{ effect.effect }}</p>
+                </li>
+                {% endfor %}
+                </ul>
+            {% else %}
+                <ul class="space-y-3">
+                {% for effect in ability.effect_entries %}
+                <li class="p-3 bg-white rounded-xl shadow-sm border border-gray-100">
+                    <p class="text-gray-800">{{ effect.effect }}</p>
+                </li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <!-- Flavor Text -->
+        <div class="mb-6 p-4 bg-gray-50 rounded-2xl shadow-inner">
+            <h3 class="text-xl font-semibold text-gray-800 mb-3 text-center">Flavor Text</h3>
+
+            {% if ability.flavor_text_list %}
+                <ul class="space-y-3 max-h-64 overflow-y-auto">
+                {% for ft in ability.flavor_text_list %}
+                <li class="p-3 bg-white rounded-xl shadow-sm border border-gray-100">
+                    <p class="text-gray-800">{{ ft.flavor_text }}</p>
+                </li>
+                {% endfor %}
+                </ul>
+            {% else %}
+                <ul class="space-y-3 max-h-64 overflow-y-auto">
+                <li class="p-3 bg-white rounded-xl shadow-sm border border-gray-100">
+                    <p class="text-gray-800">{{ ability.flavor_text_entries.1.flavor_text }}</p>
+                </li>
+                </ul>
+            {% endif %}
+        </div>
+
+        <!-- Pokémon List -->
+        <div class="mb-6 p-4 bg-gray-50 rounded-2xl shadow-inner">
+            <h3 class="text-xl font-semibold text-gray-800 mb-3 text-center">Pokémon With This Ability</h3>
+
+            {% if ability.pokemons_list %}
+            <ul class="flex flex-wrap justify-center gap-2 max-h-56 overflow-y-auto">
+                {% for poke in ability.pokemons_list %}
+                <li class="px-2 py-1 bg-white rounded-lg shadow-sm border border-gray-100">
+                <a href="{% url 'pokemons:poke-detail' poke %}" class="capitalize text-gray-800 font-medium hover:underline">
+                    {{ poke }}
+                </a>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+                <ul class="flex flex-wrap justify-center gap-2 max-h-56 overflow-y-auto">
+                {% for poke in ability.pokemons %}
+                <li class="px-2 py-1 bg-white rounded-lg shadow-sm border border-gray-100">
+                <a href="{% url 'pokemons:poke-detail' poke %}" class="capitalize text-gray-800 font-medium hover:underline">
+                    {{ poke }}
+                </a>
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+
+        <!-- Back Button -->
+        <div class="text-center mb-4">
+            <a href="{% url 'abilities:ability-search' %}"
+                class="inline-block bg-gray-500 text-white px-5 py-2 rounded-full hover:bg-gray-600 transition font-semibold">
+                ← Back to Abilities
+            </a>
+        </div>
+    {% else %}
+        <div class="flex justify-center items-center mt-8">
+            <div class="bg-white p-6 rounded-2xl shadow-md w-full max-w-md text-center">
+                <p class="text-gray-700 font-medium mb-4">
+                Data not showing? Try refreshing the page.
+                </p>
+                <button 
+                onclick="location.reload()"
+                class="inline-block text-white font-semibold px-6 py-2 rounded-full shadow transition-transform transform hover:scale-105 hover:shadow-lg"
+                style="background-color: #6b7280;"> <!-- matches gray-500 style -->
+                Refresh
+                </button>
+            </div>
+            </div>
+    {% endif %}
+
+  </div>
+
+  {% else %}
+  <p class="text-center text-gray-500 mt-10">Ability not found.</p>
+  {% endif %}
+
+</div>
+
+{% endblock %}

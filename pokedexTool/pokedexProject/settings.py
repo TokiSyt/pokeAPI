@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     "apps.moves",
     "apps.poke_types",
     "apps.generations",
+    "apps.abilities",
 ]
 
 MIDDLEWARE = [

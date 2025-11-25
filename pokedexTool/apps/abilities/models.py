@@ -43,14 +43,16 @@ class PokemonAbility(models.Model):
     @property
     def flavor_text_list(self):
         try:
-            return ast.literal_eval(self.flavor_text_entries) if self.flavor_text_entries else []
+            # showing to user the first one only | they are all similar
+            data = ast.literal_eval(self.flavor_text_entries) if self.flavor_text_entries else []
+            return data[1:2]
         except:
             return []
 
     @property
     def pokemons_list(self):
         try:
-            return ast.literal_eval(self.pokemon) if self.pokemon else []
+            return ast.literal_eval(self.pokemons) if self.pokemons else []
         except:
             return []
 

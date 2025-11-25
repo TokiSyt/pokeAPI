@@ -3,7 +3,7 @@ from django.db import transaction
 import requests
 
 @transaction.atomic
-def import_pokemon_ability_from_api(ability_name_or_id: str) -> PokemonAbility | None:
+def import_pokemon_ability_from_api(ability_name_or_id: str, user=None) -> PokemonAbility | None:
     """
     Fetch a Pokémon ability from the PokeAPI and save it to the database.
     Returns the PokemonAbility instance if successful, else None.
@@ -27,6 +27,15 @@ def import_pokemon_ability_from_api(ability_name_or_id: str) -> PokemonAbility |
     flavor_text_list = [entry for entry in data.get("flavor_text_entries", []) if entry.get("language", {}).get("name") == "en"]
     pokemon_list = [p["pokemon"]["name"] for p in data.get("pokemon", [])]
 
+    seen = set()
+    unique_flavor_text = []
+    
+    for entry in flavor_text_list:
+        text = entry["flavor_text"].replace("\n", " ").strip()
+        if text not in seen:
+            seen.add(text)
+            unique_flavor_text.append(entry)
+
     ability_obj, _ = PokemonAbility.objects.update_or_create(
         ability_id=data["id"],
         defaults={
@@ -35,9 +44,12 @@ def import_pokemon_ability_from_api(ability_name_or_id: str) -> PokemonAbility |
             "is_main_series": is_main_series,
             "names": names_list,
             "effect_entries": effect_entries_list,
-            "flavor_text_entries": flavor_text_list,
+            "flavor_text_entries": unique_flavor_text,
             "pokemons": pokemon_list,
         },
     )
+    
+    if user:
+        ability_obj.allowed_users.add(user)
 
     return ability_obj
