@@ -63,7 +63,6 @@ class MoveDetailView(LoginRequiredMixin, TemplateView):
             )
 
         else:
-            move_obj.allowed_users
             context = {
                 "move": move_obj,
             }

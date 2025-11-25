@@ -79,7 +79,7 @@
         {% for relation in ability_relations.all %}
         <li class="px-3 py-1 rounded-full font-medium text-white"
             style="background-color: {{ relation.ability.name|type_color|default:'#888' }};">
-          {{ relation.ability.name|capfirst }}
+          <a href="{% url 'abilities:ability-detail' relation.ability.name %}">{{ relation.ability.name|capfirst }}</a>
         </li>
         {% endfor %}
       </ul>
@@ -124,7 +124,7 @@
     <div class="text-center mb-4">
       <a href="{% url 'pokemons:poke-search' %}"
          class="inline-block bg-gray-500 text-white px-5 py-2 rounded-full hover:bg-gray-600 transition font-semibold">
-         ← Back to Search
+         ← Back to Pokémons
       </a>
     </div>
 
