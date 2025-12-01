@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% load type_color_filter %}
+
+{% block title %}Location search{% endblock title %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-100 flex flex-col items-center justify-center px-4">
+
+  <h1 class="text-4xl font-extrabold text-gray-800 mb-10">Location Search</h1>
+
+  <!-- TWO-COLUMN CONTAINER -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-4xl">
+
+    <!-- LEFT COLUMN: LOCATION SEARCH + RESULTS -->
+    <div class="flex flex-col items-center">
+
+      <!-- Location Search Box -->
+      <div class="bg-white shadow-lg rounded-2xl p-6 w-full text-center">
+      <h2 class="text-2xl font-bold text-gray-800 mb-3">Search by Location</h2>
+      <p>Location name or id:</p>
+
+        <form action="{% url 'locations:locations-detail' location_name_or_id='placeholder' %}" 
+              method="get" 
+              onsubmit="event.preventDefault(); window.location.href=this.action.replace('placeholder', this.elements['location_name_or_id'].value);">
+          {% csrf_token %}
+          {{ form.as_p }}
+
+          <button type="submit" class="w-full bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition mt-4">
+            Search
+          </button>
+        </form>
+      </div>
+
+      <!-- Location Results -->
+      <div class="bg-white shadow-lg rounded-2xl p-4 w-full text-left mt-4">
+        <p class="text-gray-600 mb-3 text-center">Found locations list</p>
+
+        <div class="max-h-64 overflow-y-auto pr-2">
+          {% if locations %}
+            {% for location in locations %}
+              <span class="text-gray-500 font-mono">#{{ location.location_id }}</span>
+              <div class="flex items-center justify-between gap-3 mb-3 border-b pb-2">
+                <a href="{% url 'locations:locations-detail' location_name_or_id=location.internal_location_name %}" 
+                   class="font-semibold text-gray-800 hover:text-red-500">
+                  {{ location.location_name|capfirst }}
+                </a>
+              </div>
+            {% endfor %}
+          {% else %}
+            <p class="text-gray-500 text-center">No results yet.</p>
+          {% endif %}
+        </div>
+      </div>
+
+    </div>
+
+
+    <!-- RIGHT COLUMN: AREA SEARCH + RESULTS -->
+    <div class="flex flex-col items-center">
+
+      <!-- Area Search Box -->
+      <div class="bg-white shadow-lg rounded-2xl p-6 w-full text-center">
+        <h2 class="text-2xl font-bold text-gray-800 mb-3">Search by Location Area</h2>
+        <p>Area name or id:</p>
+
+        <form action="{% url 'locations:locations-area-detail' location_area_name_or_id='placeholder' %}" 
+              method="get" 
+              onsubmit="event.preventDefault(); window.location.href=this.action.replace('placeholder', this.elements['location_name_or_id'].value);">
+          {% csrf_token %}
+          {{ form.as_p }}
+
+          <button type="submit" class="w-full bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition mt-4">
+            Search
+          </button>
+        </form>
+
+      </div>
+
+      <!-- Area Search Results -->
+      <div class="bg-white shadow-lg rounded-2xl p-4 w-full text-left mt-4">
+        <p class="text-gray-600 mb-3 text-center">Found areas list</p>
+
+        <div class="max-h-64 overflow-y-auto pr-2">
+          {% if areas %}
+            {% for area in areas %}
+              <span class="text-gray-500 font-mono">#{{ area.area_id }}</span>
+              <div class="flex items-center justify-between gap-3 mb-3 border-b pb-2">
+                <a href="{% url 'locations:locations-area-detail' location_area_name_or_id=area.internal_area_name %}" 
+                   class="font-semibold text-gray-800 hover:text-red-500">
+                  {{ area.area_name|capfirst }}
+                </a>
+              </div>
+            {% endfor %}
+          {% else %}
+            <p class="text-gray-500 text-center">No results yet.</p>
+          {% endif %}
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Back button -->
+  <div class="mt-10">
+    <a href="{% url 'pokedex:poke-home' %}" 
+       class="inline-block bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition">
+       ← Pokedex Home
+    </a>
+  </div>
+
+</div>
+{% endblock content %}

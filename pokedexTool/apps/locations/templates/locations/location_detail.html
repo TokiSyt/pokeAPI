@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}Locations | {{ location.location_name }}{% endblock title %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-100 flex justify-center items-start py-8 px-4">
+
+  {% if location %}
+  <div class="bg-white shadow-xl rounded-3xl p-6 w-full max-w-xl overflow-y-auto border border-gray-200">
+
+    <!-- Header -->
+    <div class="text-center mb-6">
+      <h2 class="text-3xl font-bold text-gray-900 capitalize">
+        {{ location.location_name }}
+      </h2>
+      <p class="text-gray-500 mt-1 text-sm">
+        Location ID: #{{ location.location_id }}
+      </p>
+      <div class="mx-auto w-24 h-1 bg-blue-300 mt-3 rounded-full"></div>
+    </div>
+
+    <!-- Region -->
+    <div class="grid grid-cols-1 gap-4 text-gray-700 mb-6">
+      <div class="p-3 bg-gradient-to-br from-blue-50 to-gray-50 rounded-xl shadow-inner text-center border border-blue-100">
+        <p class="text-gray-600 text-sm">Region</p>
+        <p class="font-semibold capitalize text-blue-900">
+          {{ location.region_name|default:"Unknown" }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Areas -->
+    <div class="mb-6 p-4 bg-gradient-to-br from-green-50 to-gray-50 rounded-2xl shadow-inner border border-green-100">
+      <h3 class="text-xl font-semibold text-gray-800 mb-3 text-center">Areas</h3>
+
+      {% if location.areas_list %}
+      <ul class="flex flex-wrap justify-center gap-2">
+        {% for area in location.areas_list %}
+        <li class="px-3 py-1 bg-white rounded-lg shadow-sm border border-green-100 capitalize font-medium hover:bg-red-50 transition">
+          <a href="{% url 'locations:locations-area-detail' area %}"
+             class="text-gray-900 hover:text-red-500 font-semibold transition">
+            {{ area }}
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <ul class="flex flex-wrap justify-center gap-2">
+        {% for area in location.areas %}
+        <a href="{% url 'locations:locations-area-detail' area %}"
+             class="text-gray-900 hover:text-red-500 font-semibold transition">
+            {{ area }}
+          </a>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </div>
+
+    <!-- Game Indices -->
+    <div class="mb-6 p-4 bg-gradient-to-br from-yellow-50 to-gray-50 rounded-2xl shadow-inner border border-yellow-100">
+      <h3 class="text-xl font-semibold text-gray-800 mb-3 text-center">Game Indices</h3>
+
+      {% if location.game_indices_list %}
+      <ul class="space-y-2">
+        {% for entry in location.game_indices_list %}
+        <li class="p-2 bg-white rounded-lg shadow-sm border border-yellow-100 flex justify-between">
+          <span class="font-medium text-gray-700">
+            Index:
+            <a href="#"
+               class="font-semibold text-gray-900 hover:text-red-500 transition">
+              {{ entry.0 }}
+            </a>
+          </span>
+          <span class="capitalize text-gray-600">
+            Generation: {{ entry.1 }}
+          </span>
+        </li>
+        {% endfor %}
+      </ul>
+
+      {% else %}
+      <div class="p-4 bg-gradient-to-br from-yellow-50 to-gray-50 rounded-2xl shadow-inner border border-yellow-100 text-center">
+        <p class="text-gray-600 mb-3 font-medium">No game indices showing?</p>
+
+        <button onclick="location.reload()"
+                class="px-4 py-2 rounded-full bg-gray-500 text-white font-semibold hover:bg-gray-600 transition shadow">
+          Load again!
+        </button>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Back Button -->
+    <div class="text-center mb-4">
+      <a href="{% url 'locations:locations-search' %}"
+         class="inline-block bg-gray-500 text-white px-5 py-2 rounded-full hover:bg-gray-600 transition font-semibold">
+         ← Back to Locations
+      </a>
+    </div>
+
+  </div>
+
+  {% else %}
+  <div class="text-red-500 font-semibold text-center">{{ error }}</div>
+  {% endif %}
+
+</div>
+{% endblock content %}
