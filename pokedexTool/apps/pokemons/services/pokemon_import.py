@@ -11,9 +11,7 @@ from apps.abilities.services.import_ability_from_api import (
     import_pokemon_ability_from_api,
 )
 from apps.abilities.models import PokemonAbility
-from django.shortcuts import get_object_or_404
 from django.db import transaction
-from django.db.models import Q
 import requests
 
 
