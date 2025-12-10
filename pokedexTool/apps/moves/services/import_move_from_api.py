@@ -6,7 +6,6 @@ import requests
 def create_or_update_move(poke_move_name_or_id, user=None):
     """
     Fetch a Pokémon move from the PokeAPI and save it to the DB.
-    Returns the PokemonAbility instance if successful, else None.
     """
     url = f"https://pokeapi.co/api/v2/move/{poke_move_name_or_id}"
     response = requests.get(url)

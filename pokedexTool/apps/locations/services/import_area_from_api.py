@@ -6,7 +6,6 @@ import requests
 def import_area_from_api(location_area_name_or_id, user=None):
     """
     Fetch a Pokémon area from the PokeAPI and save it to the DB.
-    Returns the PokemonAbility instance if successful, else None.
     """
     url = f"https://pokeapi.co/api/v2/location-area/{location_area_name_or_id}"
     response = requests.get(url)
