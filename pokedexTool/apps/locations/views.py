@@ -2,7 +2,7 @@ from .services.import_location_from_api import import_location_from_api
 from .services.import_area_from_api import import_area_from_api
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
-from .forms import LocationAndAreaSearchForm
+from .forms import LocationSearchForm, AreaSearchForm
 from django.shortcuts import render
 from django.db.models import Q
 from .models import Location, Area
@@ -10,11 +10,12 @@ from .models import Location, Area
 
 class LocationSearchView(LoginRequiredMixin, TemplateView):
     template_name = "locations/location_search.html"
-    form_class = LocationAndAreaSearchForm
+    form_class = LocationSearchForm
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["form"] = self.form_class()
+        context["form_a"] = self.form_class()
+        context["form_b"] = AreaSearchForm
         locations = Location.objects.filter(allowed_users=self.request.user)
         areas = Area.objects.filter(allowed_users=self.request.user)
         context["locations"] = locations

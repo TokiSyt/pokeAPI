@@ -23,7 +23,7 @@
               method="get" 
               onsubmit="event.preventDefault(); window.location.href=this.action.replace('placeholder', this.elements['location_name_or_id'].value);">
           {% csrf_token %}
-          {{ form.as_p }}
+          {{ form_a.as_p }}
 
           <button type="submit" class="w-full bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition mt-4">
             Search
@@ -67,7 +67,7 @@
               method="get" 
               onsubmit="event.preventDefault(); window.location.href=this.action.replace('placeholder', this.elements['location_name_or_id'].value);">
           {% csrf_token %}
-          {{ form.as_p }}
+          {{ form_b.as_p }}
 
           <button type="submit" class="w-full bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition mt-4">
             Search
