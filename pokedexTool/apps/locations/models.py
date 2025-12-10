@@ -41,6 +41,9 @@ class Location(models.Model):
                 ]
         except:
             return []
+        
+    def __str__(self):
+        return f"{self.internal_location_name}_{self.location_id}"
 
 
 class Area(models.Model):
