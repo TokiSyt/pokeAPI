@@ -5,7 +5,7 @@ register = template.Library()
 
 @register.filter
 def type_color(type_name):
-    return POKEMON_TYPE_COLORS.get(type_name.lower(), "#A8A77A")
+    return POKEMON_TYPE_COLORS.get(type_name.lower(), "#c9be5fff")
 
 @register.filter
 def split(value, delimiter=","):

@@ -17,4 +17,6 @@ POKEMON_TYPE_COLORS = {
     "dark": "#705746",
     "steel": "#B7B7CE",
     "fairy": "#D685AD",
+    "shadow": "#641B3F",
+    "stellar": "#4F20D1",
 }
