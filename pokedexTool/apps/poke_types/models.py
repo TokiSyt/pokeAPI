@@ -27,7 +27,10 @@ class PokemonType(models.Model):
     @property
     def moves_list(self):
         try:
-            return ast.literal_eval(self.moves)
+            moves_list = ast.literal_eval(self.moves)
+            if not moves_list:
+                return [" "]
+            return moves_list
         except:
             return []
 
