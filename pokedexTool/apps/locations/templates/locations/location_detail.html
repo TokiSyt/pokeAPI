@@ -65,14 +65,14 @@
         {% for entry in location.game_indices_list %}
         <li class="p-2 bg-white rounded-lg shadow-sm border border-yellow-100 flex justify-between">
           <span class="font-medium text-gray-700">
-            Index:
-            <a href="#"
+            Generation:
+            <a href="{% url 'generations:gen-detail' entry.0 %}"
                class="font-semibold text-gray-900 hover:text-red-500 transition">
               {{ entry.0 }}
             </a>
           </span>
           <span class="capitalize text-gray-600">
-            Generation: {{ entry.1 }}
+            Game index: {{ entry.1 }}
           </span>
         </li>
         {% endfor %}

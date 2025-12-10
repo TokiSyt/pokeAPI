@@ -7,7 +7,7 @@
 <div class="min-h-screen bg-gray-100 flex justify-center items-start py-8 px-4">
 
   {% if type %}
-    <div class="bg-white shadow-xl rounded-3xl p-6 w-full max-w-2xl h-[90vh]">
+    <div class="bg-white shadow-xl rounded-3xl p-6 w-full max-w-2xl">
 
       <!-- Header -->
       <div class="text-center mb-6">
@@ -23,7 +23,7 @@
         </div>
         <div class="p-2 bg-gray-50 rounded-xl shadow-inner text-center">
           <p class="text-gray-500 text-sm">Generation</p>
-          <p class="font-semibold">{{ type.generation|default:"Unknown" }}</p>
+          <p class="font-semibold"><a href="{% url 'generations:gen-detail' type.generation %}" class="text-gray-900 hover:text-red-500 font-semibold transition">{{ type.generation|default:"Unknown" }}</a></p>
         </div>
         <div class="p-2 bg-gray-50 rounded-xl shadow-inner text-center">
           <p class="text-gray-500 text-sm">Damage Class</p>

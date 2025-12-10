@@ -36,6 +36,7 @@ urlpatterns = [
     path("moves/", include("apps.moves.urls")),
     path("types/", include("apps.poke_types.urls")),
     path("abilities/", include("apps.abilities.urls")),
+    path("generations/", include("apps.generations.urls")),
 ]
 
 """

@@ -23,7 +23,7 @@
 
         <div class="p-2 bg-gray-50 rounded-xl shadow-inner text-center">
             <p class="text-gray-500 text-sm">Generation</p>
-            <p class="font-semibold">{{ ability.generation|default:"Unknown" }}</p>
+            <p class="font-semibold"><a href="{% url 'generations:gen-detail' ability.generation %}" class="text-gray-900 hover:text-red-500 font-semibold transition">{{ ability.generation|default:"Unknown" }}</a></p>
         </div>
 
         <div class="p-2 bg-gray-50 rounded-xl shadow-inner text-center">

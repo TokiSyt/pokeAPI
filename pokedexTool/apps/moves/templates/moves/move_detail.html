@@ -26,7 +26,7 @@
       </div>
       <div class="p-4 bg-gray-50 rounded-xl shadow-inner">
         <p class="text-gray-500 text-sm">Generation</p>
-        <p class="font-semibold">{{ move.generation|default:"Unknown" }}</p>
+        <p class="font-semibold"><a href="{% url 'generations:gen-detail' move.generation %}" class="text-gray-900 hover:text-red-500 font-semibold transition">{{ move.generation|default:"Unknown" }}</a></p>
       </div>
       <div class="p-4 bg-gray-50 rounded-xl shadow-inner">
         <p class="text-gray-500 text-sm">Damage Class</p>
