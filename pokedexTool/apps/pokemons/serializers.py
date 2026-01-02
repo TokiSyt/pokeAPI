@@ -71,6 +71,6 @@ class PokemonDetailSerializer(serializers.ModelSerializer):
             move.replace("'", "").replace("[", "").replace("]", "").strip()
             for move in obj.moves.split(",")
         ]
-        moves_dict["moves"] = moves
+        moves_dict = moves
 
         return moves_dict
