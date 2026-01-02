@@ -59,19 +59,6 @@ class PokemonTypeRelation(models.Model):
         ordering = ["slot"]
 
 
-class PokemonMoveRelation(models.Model):
-    pokemon = models.ForeignKey(
-        Pokemon, on_delete=models.CASCADE, related_name="move_relations"
-    )
-    move = models.ForeignKey(PokemonMove, on_delete=models.CASCADE)
-    is_hidden = models.BooleanField(default=False)
-    slot = models.IntegerField()
-
-    class Meta:
-        unique_together = ["pokemon", "move", "slot"]
-        ordering = ["slot", "is_hidden"]
-
-
 class PokemonAbilityRelation(models.Model):
     pokemon = models.ForeignKey(
         Pokemon, on_delete=models.CASCADE, related_name="ability_relations"

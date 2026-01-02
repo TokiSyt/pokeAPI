@@ -24,13 +24,13 @@ class PokemonDetailView(LoginRequiredMixin, TemplateView):
 
     template_name = "pokemons/pokemon_detail.html"
 
-    def get(self, request, pokemon_name):
+    def get(self, request, pokemon_name_or_id):
 
         pokemon = None
         pokemon_needs_update = False
 
         try:
-            pokemon = Pokemon.objects.get(name=pokemon_name)
+            pokemon = Pokemon.objects.get(name=pokemon_name_or_id)
 
             # any information missing from the model and it's relations
 
@@ -52,10 +52,10 @@ class PokemonDetailView(LoginRequiredMixin, TemplateView):
             pokemon_needs_update = True
 
         if pokemon_needs_update or pokemon is None:
-            pokemon = import_pokemon_from_api(pokemon_name, request.user)
+            pokemon = import_pokemon_from_api(pokemon_name_or_id, request.user)
 
         if not pokemon:
-            context = {"error": f'Could not fetch Pokemon "{pokemon_name}"'}
+            context = {"error": f'Could not fetch Pokemon "{pokemon_name_or_id}"'}
 
             return render(
                 request,
@@ -71,6 +71,9 @@ class PokemonDetailView(LoginRequiredMixin, TemplateView):
         ability_relations = PokemonAbilityRelation.objects.filter(
             pokemon=pokemon
         ).select_related("ability")
+
+        if len(pokemon.moves) < 3:
+            pokemon.moves = []
 
         print(type_relations)
         context = {
