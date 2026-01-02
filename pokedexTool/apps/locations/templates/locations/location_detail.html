@@ -6,7 +6,7 @@
 <div class="min-h-screen bg-gray-100 flex justify-center items-start py-8 px-4">
 
   {% if location %}
-  <div class="bg-white shadow-xl rounded-3xl p-6 w-full max-w-xl overflow-y-auto border border-gray-200">
+  <div class="bg-white shadow-xl rounded-3xl p-6 w-full max-w-xl overflow-y-auto">
 
     <!-- Header -->
     <div class="text-center mb-6">
@@ -21,7 +21,7 @@
 
     <!-- Region -->
     <div class="grid grid-cols-1 gap-4 text-gray-700 mb-6">
-      <div class="p-3 bg-gradient-to-br from-blue-50 to-gray-50 rounded-xl shadow-inner text-center border border-blue-100">
+      <div class="p-3 bg-gray-50 rounded-xl shadow-inner text-center">
         <p class="text-gray-600 text-sm">Region</p>
         <p class="font-semibold capitalize text-blue-900">
           {{ location.region_name|default:"Unknown" }}
@@ -30,13 +30,13 @@
     </div>
 
     <!-- Areas -->
-    <div class="mb-6 p-4 bg-gradient-to-br from-green-50 to-gray-50 rounded-2xl shadow-inner border border-green-100">
+    <div class="mb-6 p-4 bg-gray-50 rounded-2xl shadow-inner">
       <h3 class="text-xl font-semibold text-gray-800 mb-3 text-center">Areas</h3>
 
       {% if location.areas_list %}
       <ul class="flex flex-wrap justify-center gap-2">
         {% for area in location.areas_list %}
-        <li class="px-3 py-1 bg-white rounded-lg shadow-sm border border-green-100 capitalize font-medium hover:bg-red-50 transition">
+        <li class="px-3 py-1 bg-white rounded-lg shadow-sm capitalize font-medium hover:bg-red-50 transition">
           <a href="{% url 'locations:locations-area-detail' area %}"
              class="text-gray-900 hover:text-red-500 font-semibold transition">
             {{ area }}
@@ -57,13 +57,13 @@
     </div>
 
     <!-- Game Indices -->
-    <div class="mb-6 p-4 bg-gradient-to-br from-yellow-50 to-gray-50 rounded-2xl shadow-inner border border-yellow-100">
+    <div class="mb-6 p-4 bg-gray-50 rounded-2xl shadow-inner">
       <h3 class="text-xl font-semibold text-gray-800 mb-3 text-center">Game Indices</h3>
 
       {% if location.game_indices_list %}
       <ul class="space-y-2">
         {% for entry in location.game_indices_list %}
-        <li class="p-2 bg-white rounded-lg shadow-sm border border-yellow-100 flex justify-between">
+        <li class="p-2 bg-white rounded-lg shadow-sm flex justify-between">
           <span class="font-medium text-gray-700">
             Generation:
             <a href="{% url 'generations:gen-detail' entry.0 %}"
@@ -79,7 +79,7 @@
       </ul>
 
       {% else %}
-      <div class="p-4 bg-gradient-to-br from-yellow-50 to-gray-50 rounded-2xl shadow-inner border border-yellow-100 text-center">
+      <div class="p-4 bg-gray-50 rounded-2xl shadow-inner text-center">
         <p class="text-gray-600 mb-3 font-medium">No game indices showing?</p>
 
         <button onclick="location.reload()"
