@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-100 flex flex-col items-center py-10">
+  <h1 class="text-4xl font-extrabold text-gray-800 mb-8">Poke API Menu</h1>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full max-w-6xl">
+
+    <a href="{% url 'api:api-poke-list' %}" class="bg-white shadow-lg rounded-2xl p-6 text-center hover:bg-gray-50 transition">
+      <p class="text-gray-800 font-semibold text-lg">Pokémons API List</p>
+    </a>
+
+    <a href="{% url 'api:api-move-list' %}" class="bg-white shadow-lg rounded-2xl p-6 text-center hover:bg-gray-50 transition">
+      <p class="text-gray-800 font-semibold text-lg">Moves API List</p>
+    </a>
+
+    <a href="{% url 'api:api-ability-list' %}" class="bg-white shadow-lg rounded-2xl p-6 text-center hover:bg-gray-50 transition">
+      <p class="text-gray-800 font-semibold text-lg">Abilities API List</p>
+    </a>
+
+    <a href="{% url 'poke_types:types-search' %}" class="bg-white shadow-lg rounded-2xl p-6 text-center hover:bg-gray-50 transition">
+      <p class="text-gray-800 font-semibold text-lg">Types API List</p>
+    </a>
+
+    <a href="{% url 'locations:locations-search' %}" class="bg-white shadow-lg rounded-2xl p-6 text-center hover:bg-gray-50 transition">
+      <p class="text-gray-800 font-semibold text-lg">Locations API List</p>
+    </a>
+
+    {% comment %} <a href="#" class="bg-white shadow-lg rounded-2xl p-6 text-center hover:bg-gray-50 transition">
+      <p class="text-gray-800 font-semibold text-lg">Items API List(WIP)</p>
+    </a>
+
+    <a href="#" class="bg-white shadow-lg rounded-2xl p-6 text-center hover:bg-gray-50 transition">
+      <p class="text-gray-800 font-semibold text-lg">Berries API List(WIP)</p>
+    </a> {% endcomment %}
+
+    <a href="{% url 'generations:gen-search' %}" class="bg-white shadow-lg rounded-2xl p-6 text-center hover:bg-gray-50 transition">
+      <p class="text-gray-800 font-semibold text-lg">Generations API List</p>
+    </a>
+
+    <hr><hr><hr>
+    <br>
+    <p class="text-gray-800 mb-8" style="text-align: center">API List will only show objects that the local server has registered on the database.<br><br>All users can see/retrieve the information as long as the local database has it registered. <br><br> To register the objects, you can search in the Pokedex tab what items you want to add to the database or mass-import the objects to populate it.</p>
+
+  </div>
+
+</div>
+{% endblock content %}
