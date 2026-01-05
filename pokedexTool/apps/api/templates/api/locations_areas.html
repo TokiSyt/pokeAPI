@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-100 flex flex-col items-center py-10">
+  <h1 class="text-4xl font-extrabold text-gray-800 mb-8">Poke API Menu</h1>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full max-w-6xl">
+
+    <a href="{% url 'api:api-menu' %}" class="bg-white shadow-lg rounded-2xl p-6 text-center hover:bg-gray-50 transition">
+      <p class="text-gray-800 font-semibold text-lg">Back to APIs Lists</p>
+    </a>
+
+    <a href="{% url 'api:api-locations-list' %}" class="bg-white shadow-lg rounded-2xl p-6 text-center hover:bg-gray-50 transition">
+      <p class="text-gray-800 font-semibold text-lg">Locations API List</p>
+    </a>
+
+    <a href="{% url 'api:api-areas-list' %}" class="bg-white shadow-lg rounded-2xl p-6 text-center hover:bg-gray-50 transition">
+      <p class="text-gray-800 font-semibold text-lg">Areas API List</p>
+    </a>
+  </div>
+
+</div>
+{% endblock content %}
