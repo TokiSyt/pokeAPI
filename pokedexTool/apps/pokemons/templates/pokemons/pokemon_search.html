@@ -47,18 +47,18 @@
     </div>
 
     <!-- Results panel -->
-    <div class="lg:col-span-2 xl:col-span-3 flex flex-col min-h-0">
-      <div class="card flex flex-col flex-1 min-h-0">
+    <div class="lg:col-span-2 xl:col-span-3">
+      <div class="card">
 
         <!-- Header -->
-        <div class="p-4 border-b border-surface-200 shrink-0">
+        <div class="p-4 border-b border-surface-200">
           <h2 class="text-lg font-semibold text-surface-900">Your Pokémon Collection</h2>
           <p class="text-sm text-surface-500">{{ pokemons|length }} Pokémon in your local database</p>
         </div>
 
         <!-- Scrollable collection -->
         {% if pokemons %}
-        <div class="flex-1 overflow-y-auto">
+        <div class="overflow-y-auto max-h-100 lg:max-h-[calc(100vh-18rem)]"> 
           <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
             {% for pokemon in pokemons %}
             <a href="{% url 'pokemons:poke-detail' pokemon_name_or_id=pokemon.name %}"
