@@ -1,10 +1,11 @@
-from .services.import_generation_from_api import import_generation_from_api
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import TemplateView
-from .forms import GenerationSearchForm
-from django.shortcuts import render
 from django.db.models import Q
+from django.shortcuts import render
+from django.views.generic import TemplateView
+
+from .forms import GenerationSearchForm
 from .models import Generation
+from .services.import_generation_from_api import import_generation_from_api
 
 
 class GenSearchView(LoginRequiredMixin, TemplateView):
@@ -20,11 +21,9 @@ class GenSearchView(LoginRequiredMixin, TemplateView):
 
 
 class GenDetailView(LoginRequiredMixin, TemplateView):
-
     template_name = "generations/gen_detail.html"
 
     def get(self, request, generation_name_or_id):
-
         generation_obj = None
         generation_needs_update = False
 
@@ -37,7 +36,9 @@ class GenDetailView(LoginRequiredMixin, TemplateView):
                     Q(internal_name=generation_name_or_id)
                 )
 
-            if not generation_obj.allowed_users.filter(id=self.request.user.id).exists():
+            if not generation_obj.allowed_users.filter(
+                id=self.request.user.id
+            ).exists():
                 generation_needs_update = True
 
             print(f"{generation_obj.name} |")

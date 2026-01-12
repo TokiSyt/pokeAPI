@@ -1,5 +1,6 @@
-from .views import MovesSearchView, MoveDetailView
 from django.urls import path
+
+from .views import MoveDetailView, MovesSearchView
 
 app_name = "poke_moves"
 

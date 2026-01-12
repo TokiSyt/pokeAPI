@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from rest_framework.reverse import reverse
+
 from .models import Generation
 
 
@@ -23,7 +24,6 @@ class GenerationSerializer(serializers.ModelSerializer):
 
 
 class GenerationDetailSerializer(serializers.ModelSerializer):
-
     moves = serializers.SerializerMethodField()
     abilities = serializers.SerializerMethodField()
     types = serializers.SerializerMethodField()

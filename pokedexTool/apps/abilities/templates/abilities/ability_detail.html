@@ -1,161 +1,174 @@
 {% extends "base.html" %}
-{% load type_color_filter %}
 
 {% block title %}Pokédex | {{ ability.name|capfirst }}{% endblock %}
 
 {% block content %}
-
-<div class="min-h-screen bg-gray-100 flex justify-center items-start py-8 px-4">
-
+<div class="w-full">
   {% if ability %}
-  <div class="bg-white shadow-xl rounded-3xl p-6 w-full max-w-2xl ">
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center gap-4">
+      <a href="{% url 'abilities:ability-search' %}" class="w-10 h-10 rounded-xl bg-surface-100 hover:bg-surface-200 flex items-center justify-center transition-colors">
+        <svg class="w-5 h-5 text-surface-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+        </svg>
+      </a>
+      <div>
+        <p class="text-sm font-mono text-surface-400">#{{ ability.ability_id }}</p>
+        <h1 class="text-3xl font-bold text-surface-900 capitalize">{{ ability.name|cut:"-" }}</h1>
+      </div>
+    </div>
+  </div>
 
-    {% if ability.names %}
-        <!-- Header -->
-        <div class="text-center mb-6">
-        <h2 class="text-3xl font-bold text-gray-900 capitalize">{{ ability.name }}</h2>
-        <div class="mx-auto w-32 h-2 rounded-full mt-2 bg-gray-300"></div>
-        <p class="text-gray-500 text-sm mt-2">Ability ID: {{ ability.ability_id }}</p>
+  <div class="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <!-- Left column - Icon & Basic Info -->
+    <div class="lg:col-span-1 space-y-6">
+      <!-- Icon -->
+      <div class="card p-6">
+        <div class="flex justify-center mb-4">
+          <div class="w-24 h-24 rounded-2xl bg-purple-100 flex items-center justify-center">
+            <svg class="w-12 h-12 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+            </svg>
+          </div>
         </div>
-
-        <!-- Basic Info -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700 mb-6">
-
-        <div class="p-2 bg-gray-50 rounded-xl shadow-inner text-center">
-            <p class="text-gray-500 text-sm">Generation</p>
-            <p class="font-semibold"><a href="{% url 'generations:gen-detail' ability.generation %}" class="text-gray-900 hover:text-red-500 font-semibold transition">{{ ability.generation|default:"Unknown" }}</a></p>
+        <div class="flex justify-center">
+          <span class="px-4 py-1.5 rounded-full text-sm font-semibold text-white bg-purple-500">
+            Ability
+          </span>
         </div>
+      </div>
 
-        <div class="p-2 bg-gray-50 rounded-xl shadow-inner text-center">
-            <p class="text-gray-500 text-sm">Main Series</p>
-            <p class="font-semibold">{{ ability.is_main_series|yesno:"Yes,No" }}</p>
-        </div>
-
-        </div>
-
-        <!-- Localized Names -->
-        <div class="mb-6 p-4 bg-gray-50 rounded-2xl shadow-inner">
-        <h3 class="text-xl font-semibold text-gray-800 mb-3 text-center">Names</h3>
-
-        {% if ability.names_list %}
-            <ul class="space-y-2">
-            {% for name in ability.names_list %}
-            <li class="px-3 py-2 bg-white rounded-xl shadow-sm border border-gray-100">
-                <span class="text-gray-800 font-medium">{{ name.name }}</span>
-            </li>
-            {% endfor %}
-            </ul>
-        {% else %}
-            <ul class="space-y-2">
-            {% for name in ability.names %}
-            <li class="px-3 py-2 bg-white rounded-xl shadow-sm border border-gray-100">
-                <span class="text-gray-800 font-medium">{{ name.name }}</span>
-            </li>
-            {% endfor %}
-            </ul>
-        {% endif %}
-        </div>
-
-        <!-- Effect Entries -->
-        <div class="mb-6 p-4 bg-gray-50 rounded-2xl shadow-inner">
-            <h3 class="text-xl font-semibold text-gray-800 mb-3 text-center">Effects</h3>
-
-            {% if ability.effects_list %}
-                <ul class="space-y-3">
-                {% for effect in ability.effects_list %}
-                <li class="p-3 bg-white rounded-xl shadow-sm border border-gray-100">
-                    <p class="text-gray-800">{{ effect.effect }}</p>
-                </li>
-                {% endfor %}
-                </ul>
-            {% else %}
-                <ul class="space-y-3">
-                {% for effect in ability.effect_entries %}
-                <li class="p-3 bg-white rounded-xl shadow-sm border border-gray-100">
-                    <p class="text-gray-800">{{ effect.effect }}</p>
-                </li>
-                {% endfor %}
-                </ul>
-            {% endif %}
-        </div>
-
-        <!-- Flavor Text -->
-        <div class="mb-6 p-4 bg-gray-50 rounded-2xl shadow-inner">
-            <h3 class="text-xl font-semibold text-gray-800 mb-3 text-center">Flavor Text</h3>
-
-            {% if ability.flavor_text_list %}
-                <ul class="space-y-3 max-h-64 overflow-y-auto">
-                {% for ft in ability.flavor_text_list %}
-                <li class="p-3 bg-white rounded-xl shadow-sm border border-gray-100">
-                    <p class="text-gray-800">{{ ft.flavor_text }}</p>
-                </li>
-                {% endfor %}
-                </ul>
-            {% else %}
-                <ul class="space-y-3 max-h-64 overflow-y-auto">
-                <li class="p-3 bg-white rounded-xl shadow-sm border border-gray-100">
-                    <p class="text-gray-800">{{ ability.flavor_text_entries.1.flavor_text }}</p>
-                </li>
-                </ul>
-            {% endif %}
-        </div>
-
-        <!-- Pokémon List -->
-        <div class="mb-6 p-4 bg-gray-50 rounded-2xl shadow-inner">
-            <h3 class="text-xl font-semibold text-gray-800 mb-3 text-center">Pokémon With This Ability</h3>
-
-            {% if ability.pokemons_list %}
-            <ul class="flex flex-wrap justify-center gap-2 max-h-56 overflow-y-auto">
-                {% for poke in ability.pokemons_list %}
-                <li class="px-2 py-1 bg-white rounded-lg shadow-sm border border-gray-100">
-                <a href="{% url 'pokemons:poke-detail' poke %}" class="capitalize text-gray-800 font-medium hover:underline">
-                    {{ poke }}
-                </a>
-                </li>
-                {% endfor %}
-            </ul>
-            {% else %}
-                <ul class="flex flex-wrap justify-center gap-2 max-h-56 overflow-y-auto">
-                {% for poke in ability.pokemons %}
-                <li class="px-2 py-1 bg-white rounded-lg shadow-sm border border-gray-100">
-                <a href="{% url 'pokemons:poke-detail' poke %}" class="capitalize text-gray-800 font-medium hover:underline">
-                    {{ poke }}
-                </a>
-                </li>
-                {% endfor %}
-            </ul>
-            {% endif %}
-        </div>
-
-        <!-- Back Button -->
-        <div class="text-center mb-4">
-            <a href="{% url 'abilities:ability-search' %}"
-                class="inline-block bg-gray-500 text-white px-5 py-2 rounded-full hover:bg-gray-600 transition font-semibold">
-                ← Back to Abilities
+      <!-- Basic Info -->
+      <div class="card p-6">
+        <h2 class="text-sm font-semibold text-surface-400 uppercase tracking-wider mb-4">Basic Info</h2>
+        <div class="space-y-3">
+          <div class="p-3 rounded-xl bg-surface-50">
+            <p class="text-xs text-surface-500 mb-1">Generation</p>
+            <a href="{% url 'generations:gen-detail' ability.generation %}" class="font-medium text-surface-900 hover:text-primary-500 transition-colors">
+              {{ ability.generation|default:"Unknown" }}
             </a>
+          </div>
+          <div class="p-3 rounded-xl bg-surface-50">
+            <p class="text-xs text-surface-500 mb-1">Main Series</p>
+            <p class="font-medium text-surface-900">{{ ability.is_main_series|yesno:"Yes,No" }}</p>
+          </div>
         </div>
-    {% else %}
-        <div class="flex justify-center items-center mt-8">
-            <div class="bg-white p-6 rounded-2xl shadow-md w-full max-w-md text-center">
-                <p class="text-gray-700 font-medium mb-4">
-                Data not showing? Try refreshing the page.
-                </p>
-                <button 
-                onclick="location.reload()"
-                class="inline-block text-white font-semibold px-6 py-2 rounded-full shadow transition-transform transform hover:scale-105 hover:shadow-lg"
-                style="background-color: #6b7280;"> <!-- matches gray-500 style -->
-                Refresh
-                </button>
-            </div>
-            </div>
-    {% endif %}
+      </div>
 
+      <!-- Names -->
+      {% if ability.names_list or ability.names %}
+      <div class="card p-6">
+        <h2 class="text-sm font-semibold text-surface-400 uppercase tracking-wider mb-4">Names</h2>
+        <div class="space-y-2 max-h-48 overflow-y-auto">
+          {% if ability.names_list %}
+            {% for name in ability.names_list %}
+            <div class="p-2 rounded-lg bg-surface-50">
+              <span class="font-medium text-surface-900">{{ name.name }}</span>
+            </div>
+            {% endfor %}
+          {% else %}
+            {% for name in ability.names %}
+            <div class="p-2 rounded-lg bg-surface-50">
+              <span class="font-medium text-surface-900">{{ name.name }}</span>
+            </div>
+            {% endfor %}
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Right column - Effects & Pokemon -->
+    <div class="lg:col-span-2 xl:col-span-3 space-y-6">
+      <!-- Effects -->
+      <div class="card p-6">
+        <h2 class="text-sm font-semibold text-surface-400 uppercase tracking-wider mb-4">Effects</h2>
+        {% if ability.effects_list or ability.effect_entries %}
+        <div class="space-y-3">
+          {% if ability.effects_list %}
+            {% for effect in ability.effects_list %}
+            <div class="p-4 rounded-xl bg-surface-50">
+              <p class="text-surface-700">{{ effect.effect }}</p>
+            </div>
+            {% endfor %}
+          {% else %}
+            {% for effect in ability.effect_entries %}
+            <div class="p-4 rounded-xl bg-surface-50">
+              <p class="text-surface-700">{{ effect.effect }}</p>
+            </div>
+            {% endfor %}
+          {% endif %}
+        </div>
+        {% else %}
+        <p class="text-surface-500 text-center py-8">No effect data available.</p>
+        {% endif %}
+      </div>
+
+      <!-- Flavor Text -->
+      <div class="card p-6">
+        <h2 class="text-sm font-semibold text-surface-400 uppercase tracking-wider mb-4">Flavor Text</h2>
+        {% if ability.flavor_text_list or ability.flavor_text_entries %}
+        <div class="space-y-3 max-h-64 overflow-y-auto">
+          {% if ability.flavor_text_list %}
+            {% for ft in ability.flavor_text_list %}
+            <div class="p-4 rounded-xl bg-surface-50">
+              <p class="text-surface-600 italic">{{ ft.flavor_text }}</p>
+            </div>
+            {% endfor %}
+          {% else %}
+            <div class="p-4 rounded-xl bg-surface-50">
+              <p class="text-surface-600 italic">{{ ability.flavor_text_entries.1.flavor_text }}</p>
+            </div>
+          {% endif %}
+        </div>
+        {% else %}
+        <p class="text-surface-500 text-center py-8">No flavor text available.</p>
+        {% endif %}
+      </div>
+
+      <!-- Pokemon with this Ability -->
+      <div class="card p-6">
+        <h2 class="text-sm font-semibold text-surface-400 uppercase tracking-wider mb-4">Pokémon With This Ability</h2>
+        {% if ability.pokemons_list or ability.pokemons %}
+        <div class="flex flex-wrap gap-2 max-h-64 overflow-y-auto">
+          {% if ability.pokemons_list %}
+            {% for poke in ability.pokemons_list %}
+            <a href="{% url 'pokemons:poke-detail' poke %}"
+               class="px-3 py-1.5 rounded-lg bg-surface-100 hover:bg-surface-200 text-sm font-medium text-surface-700 capitalize transition-colors">
+              {{ poke|cut:"-" }}
+            </a>
+            {% endfor %}
+          {% else %}
+            {% for poke in ability.pokemons %}
+            <a href="{% url 'pokemons:poke-detail' poke %}"
+               class="px-3 py-1.5 rounded-lg bg-surface-100 hover:bg-surface-200 text-sm font-medium text-surface-700 capitalize transition-colors">
+              {{ poke|cut:"-" }}
+            </a>
+            {% endfor %}
+          {% endif %}
+        </div>
+        {% else %}
+        <p class="text-surface-500 text-center py-8">No Pokémon data available.</p>
+        {% endif %}
+      </div>
+    </div>
   </div>
 
   {% else %}
-  <p class="text-center text-gray-500 mt-10">Ability not found.</p>
+  <!-- Error state -->
+  <div class="card p-12 text-center">
+    <div class="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
+      <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+      </svg>
+    </div>
+    <h2 class="text-xl font-bold text-surface-900 mb-2">Ability not found</h2>
+    <p class="text-surface-500 mb-6">{{ error }}</p>
+    <a href="{% url 'abilities:ability-search' %}" class="btn-primary">
+      Back to Search
+    </a>
+  </div>
   {% endif %}
-
 </div>
-
 {% endblock %}

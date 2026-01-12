@@ -1,5 +1,6 @@
-from apps.locations.models import Location
 import requests
+
+from apps.locations.models import Location
 
 
 def import_location_from_api(location_name_or_id, user=None):
@@ -16,7 +17,7 @@ def import_location_from_api(location_name_or_id, user=None):
     print(f"API CALL MADE FOR LOCATION {location_name_or_id}")
 
     location_id = data.get("id")
-    
+
     internal_location_name = data.get("name", "")
 
     areas_entries = data.get("areas", [])

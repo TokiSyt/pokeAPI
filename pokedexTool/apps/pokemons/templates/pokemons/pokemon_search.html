@@ -1,55 +1,99 @@
 {% extends "base.html" %}
 
-{% block title %}Pokémon search{% endblock title %}
+{% block title %}Search Pokémon{% endblock title %}
 
 {% block content %}
-<div class="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
-  <h1 class="text-4xl font-extrabold text-gray-800 mb-6">Poke Search</h1>
-
-  <!-- Search box -->
-  <div class="bg-white shadow-lg rounded-2xl p-6 w-full max-w-sm text-center">
-    <p class="text-gray-600 mb-4">Welcome back to your Pokedex!</p>
-
-    <form action="{% url 'pokemons:poke-detail' pokemon_name_or_id='placeholder' %}" 
-          method="get" 
-          onsubmit="event.preventDefault(); window.location.href=this.action.replace('placeholder', this.elements['pokemon_name_or_id'].value);">
-      {% csrf_token %}
-      {{ form.as_p }}
-      <br>
-      <button type="submit" class="w-full bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">
-        Search
-      </button>
-    </form>
+<div class="w-full h-full flex flex-col">
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-8 shrink-0">
+    <div>
+      <h1 class="text-3xl font-bold text-surface-900 mb-2">Search Pokémon</h1>
+      <p class="text-surface-500">Find Pokémon by name or ID.</p>
+    </div>
+    <a href="{% url 'pokedex:poke-home' %}" class="btn-secondary">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+      </svg>
+      Back
+    </a>
   </div>
 
-  <br><br>
+  <div class="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-8 flex-1 min-h-0">
+    <!-- Search panel -->
+    <div class="lg:col-span-1">
+      <div class="card p-6">
+        <h2 class="text-lg font-semibold text-surface-900 mb-4">Search</h2>
+        <form action="{% url 'pokemons:poke-detail' pokemon_name_or_id='placeholder' %}"
+              method="get"
+              onsubmit="event.preventDefault(); window.location.href=this.action.replace('placeholder', this.elements['pokemon_name_or_id'].value);">
+          {% csrf_token %}
+          <div class="mb-4">
+            <label for="pokemon_name_or_id" class="block text-sm font-medium text-surface-700 mb-2">Pokémon name or ID</label>
+            <input type="text"
+                   name="pokemon_name_or_id"
+                   id="pokemon_name_or_id"
+                   class="input"
+                   placeholder="e.g. pikachu or 25"
+                   required>
+          </div>
+          <button type="submit" class="w-full btn-primary">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+            Search
+          </button>
+        </form>
+      </div>
+    </div>
 
-  <div class="bg-white shadow-lg rounded-2xl p-4 w-full max-w-sm text-left">
-    <p class="text-gray-600 mb-4 text-center">Found pokémon list</p>
+    <!-- Results panel -->
+    <div class="lg:col-span-2 xl:col-span-3 flex flex-col min-h-0">
+      <div class="card flex flex-col flex-1 min-h-0">
 
-    <div class="max-h-64 overflow-y-auto pr-2">
-      {% for pokemon in pokemons %}
-        <span class="text-gray-500 font-mono">
-          #{{ pokemon.pokemon_id  }}
-        </span>
-        <div class="flex items-center gap-3 mb-3 border-b pb-2">
-          <img src="{{ pokemon.sprite_front_default }}" 
-               alt="{{ pokemon.name }}" 
-               class="w-12 h-12 object-contain">
-          <a href="{% url 'pokemons:poke-detail' pokemon_name_or_id=pokemon.name %}" class="font-semibold text-gray-800 hover:text-red-500">
-            {{ pokemon.name|capfirst }}
-          </a>
+        <!-- Header -->
+        <div class="p-4 border-b border-surface-200 shrink-0">
+          <h2 class="text-lg font-semibold text-surface-900">Your Pokémon Collection</h2>
+          <p class="text-sm text-surface-500">{{ pokemons|length }} Pokémon in your local database</p>
         </div>
-      {% endfor %}
+
+        <!-- Scrollable collection -->
+        {% if pokemons %}
+        <div class="flex-1 overflow-y-auto">
+          <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
+            {% for pokemon in pokemons %}
+            <a href="{% url 'pokemons:poke-detail' pokemon_name_or_id=pokemon.name %}"
+              class="flex items-center gap-4 p-4 hover:bg-surface-50 transition-colors group">
+              <div class="w-16 h-16 rounded-xl bg-surface-100 flex items-center justify-center">
+                <img src="{{ pokemon.sprite_front_default }}"
+                    alt="{{ pokemon.name }}"
+                    class="w-14 h-14 object-contain group-hover:scale-110 transition-transform">
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-mono text-surface-400">#{{ pokemon.pokemon_id|stringformat:"03d" }}</span>
+                </div>
+                <p class="font-semibold text-surface-900 capitalize">{{ pokemon.name }}</p>
+              </div>
+              <svg class="w-5 h-5 text-surface-300 group-hover:text-primary-500 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              </svg>
+            </a>
+            {% endfor %}
+          </div>
+        </div>
+        {% else %}
+        <div class="p-12 text-center">
+          <div class="w-16 h-16 rounded-full bg-surface-100 flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-surface-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-surface-900 mb-1">No Pokémon yet</h3>
+          <p class="text-surface-500 mb-4">Search for a Pokémon above to add it to your collection.</p>
+        </div>
+        {% endif %}
+      </div>
     </div>
   </div>
-
-  <div class="mt-6">
-      <a href="{% url 'pokedex:poke-home' %}" 
-          class="inline-block bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition">
-          ← Pokedex Home
-      </a>
-  </div>
-
 </div>
 {% endblock content %}

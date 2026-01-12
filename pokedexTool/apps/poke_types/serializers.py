@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from rest_framework.reverse import reverse
+
 from .models import PokemonType, TypeDamageRelation
 
 
@@ -37,7 +38,6 @@ class PokemonTypeSerializer(serializers.ModelSerializer):
 
 
 class PokemonTypeDetailSerializer(serializers.ModelSerializer):
-
     damage_relations = TypeDamageRelationSerializer(read_only=True)
     moves = serializers.SerializerMethodField()
 
@@ -51,7 +51,7 @@ class PokemonTypeDetailSerializer(serializers.ModelSerializer):
             "damage_relations",
             "moves",
         ]
-        
+
     def get_moves(self, obj):
         moves_dict = {}
         moves = [

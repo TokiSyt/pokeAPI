@@ -1,5 +1,6 @@
-from .views import MovesSearchView
 from django.urls import path
+
+from .views import MovesSearchView
 
 app_name = "items"
 

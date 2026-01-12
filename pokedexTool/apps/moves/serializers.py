@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from rest_framework.reverse import reverse
+
 from .models import PokemonMove
 
 
@@ -23,7 +24,6 @@ class PokemonMoveSerializer(serializers.ModelSerializer):
 
 
 class PokemonMoveDetailSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = PokemonMove
         fields = [

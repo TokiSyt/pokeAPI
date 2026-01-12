@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("abilities", "0002_alter_pokemonability_options_and_more"),
         ("pokemons", "0002_pokemon_moves"),

@@ -1,43 +1,42 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
-from .mixins import AdminUserPermissionMixin
 from rest_framework import generics
 
-from apps.pokemons.serializers import PokemonSerializer, PokemonDetailSerializer
-from apps.moves.serializers import PokemonMoveSerializer, PokemonMoveDetailSerializer
+from apps.abilities.models import PokemonAbility
 from apps.abilities.serializers import (
-    PokemonAbilitySerializer,
     PokemonAbilityDetailSerializer,
+    PokemonAbilitySerializer,
 )
-from apps.poke_types.serializers import (
-    PokemonTypeSerializer,
-    PokemonTypeDetailSerializer,
+from apps.generations.models import Generation
+from apps.generations.serializers import (
+    GenerationDetailSerializer,
+    GenerationSerializer,
 )
+from apps.locations.models import Area, Location
 from apps.locations.serializers import (
-    LocationsListSerializer,
+    AreasDetailSerializer,
     AreasListSerializer,
     LocationsDetailSerializer,
-    AreasDetailSerializer,
+    LocationsListSerializer,
 )
-from apps.generations.serializers import (
-    GenerationSerializer,
-    GenerationDetailSerializer,
-)
-
-from apps.poke_types.models import PokemonType
-from apps.pokemons.models import Pokemon
 from apps.moves.models import PokemonMove
-from apps.abilities.models import PokemonAbility
-from apps.locations.models import Location, Area
-from apps.generations.models import Generation
+from apps.moves.serializers import PokemonMoveDetailSerializer, PokemonMoveSerializer
+from apps.poke_types.models import PokemonType
+from apps.poke_types.serializers import (
+    PokemonTypeDetailSerializer,
+    PokemonTypeSerializer,
+)
+from apps.pokemons.models import Pokemon
+from apps.pokemons.serializers import PokemonDetailSerializer, PokemonSerializer
+
+from .mixins import AdminUserPermissionMixin
 
 
-class APIMenuView(TemplateView, LoginRequiredMixin):
+class APIMenuView(LoginRequiredMixin, TemplateView):
     template_name = "api/api_menu.html"
 
 
 class PokemonListAPIView(generics.ListAPIView):
-
     queryset = Pokemon.objects.all()
     serializer_class = PokemonSerializer
     lookup_field = "name"
@@ -51,7 +50,6 @@ class PokemonDetailAPIView(AdminUserPermissionMixin, generics.RetrieveAPIView):
 
 
 class PokemonMoveListAPIView(generics.ListAPIView):
-
     queryset = PokemonMove.objects.all()
     serializer_class = PokemonMoveSerializer
     lookup_field = "name"
@@ -65,7 +63,6 @@ class PokemonMoveDetailAPIView(AdminUserPermissionMixin, generics.RetrieveAPIVie
 
 
 class PokemonAbilityListAPIView(generics.ListAPIView):
-
     queryset = PokemonAbility.objects.all()
     serializer_class = PokemonAbilitySerializer
     lookup_field = "name"
@@ -79,7 +76,6 @@ class PokemonAbilityDetailAPIView(AdminUserPermissionMixin, generics.RetrieveAPI
 
 
 class PokemonTypeListAPIView(generics.ListAPIView):
-
     queryset = PokemonType.objects.all()
     serializer_class = PokemonTypeSerializer
     lookup_field = "name"
@@ -97,7 +93,6 @@ class LocationsAreasView(TemplateView, LoginRequiredMixin):
 
 
 class LocationsListAPIView(generics.ListAPIView):
-
     queryset = Location.objects.all()
     serializer_class = LocationsListSerializer
     lookup_field = "location_name"
@@ -111,7 +106,6 @@ class LocationDetailAPIView(AdminUserPermissionMixin, generics.RetrieveAPIView):
 
 
 class AreasListAPIView(generics.ListAPIView):
-
     queryset = Area.objects.all()
     serializer_class = AreasListSerializer
     lookup_field = "area_name"
@@ -125,7 +119,6 @@ class AreaDetailAPIView(AdminUserPermissionMixin, generics.RetrieveAPIView):
 
 
 class GenerationsListAPIView(generics.ListAPIView):
-
     queryset = Generation.objects.all()
     serializer_class = GenerationSerializer
     lookup_field = "internal_name"

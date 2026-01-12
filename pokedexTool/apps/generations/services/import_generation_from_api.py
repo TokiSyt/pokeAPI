@@ -1,5 +1,6 @@
-from apps.generations.models import Generation
 import requests
+
+from apps.generations.models import Generation
 
 
 def import_generation_from_api(gen_name_or_id, user=None):

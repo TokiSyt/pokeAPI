@@ -1,6 +1,6 @@
-from apps.moves.models import PokemonMove
-from apps.poke_types.models import PokemonType
 import requests
+
+from apps.moves.models import PokemonMove
 
 
 def create_or_update_move(poke_move_name_or_id, user=None):

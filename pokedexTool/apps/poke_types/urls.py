@@ -1,5 +1,6 @@
-from .views import TypeSearchView, TypeDetailView
 from django.urls import path
+
+from .views import TypeDetailView, TypeSearchView
 
 app_name = "poke_types"
 

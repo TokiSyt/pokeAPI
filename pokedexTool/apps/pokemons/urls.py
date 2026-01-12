@@ -1,5 +1,6 @@
-from .views import PokemonDetailView, PokemonSearchView
 from django.urls import path
+
+from .views import PokemonDetailView, PokemonSearchView
 
 app_name = "pokemons"
 

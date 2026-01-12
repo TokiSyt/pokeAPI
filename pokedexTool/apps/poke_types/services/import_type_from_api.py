@@ -1,7 +1,8 @@
-from apps.poke_types.models import PokemonType, TypeDamageRelation
-from asgiref.sync import async_to_sync
-from django.db import transaction
 import requests
+from django.db import transaction
+
+from apps.poke_types.models import PokemonType, TypeDamageRelation
+
 
 @transaction.atomic
 def import_pokemon_type_from_api(type_name_or_id: str) -> PokemonType | None:
@@ -20,7 +21,7 @@ def import_pokemon_type_from_api(type_name_or_id: str) -> PokemonType | None:
 
     if "generation" in data and data["generation"]:
         gen_name = data["generation"]["name"]
-        
+
     if "moves" in data:
         move_names = [move["name"] for move in data["moves"]]
 
@@ -37,20 +38,30 @@ def import_pokemon_type_from_api(type_name_or_id: str) -> PokemonType | None:
             "moves": move_names,
         },
     )
-    
+
     relation, _ = TypeDamageRelation.objects.get_or_create(type=type_obj)
     damage_data = data.get("damage_relations", {})
-    
+
     if damage_data:
-        
-        relation.double_damage_from = ",".join([t["name"] for t in damage_data.get("double_damage_from", [])])
-        relation.half_damage_from = ",".join([t["name"] for t in damage_data.get("half_damage_from", [])])
-        relation.no_damage_from = ",".join([t["name"] for t in damage_data.get("no_damage_from", [])])
-        relation.double_damage_to = ",".join([t["name"] for t in damage_data.get("double_damage_to", [])])
-        relation.half_damage_to = ",".join([t["name"] for t in damage_data.get("half_damage_to", [])])
-        relation.no_damage_to = ",".join([t["name"] for t in damage_data.get("no_damage_to", [])])
+        relation.double_damage_from = ",".join(
+            [t["name"] for t in damage_data.get("double_damage_from", [])]
+        )
+        relation.half_damage_from = ",".join(
+            [t["name"] for t in damage_data.get("half_damage_from", [])]
+        )
+        relation.no_damage_from = ",".join(
+            [t["name"] for t in damage_data.get("no_damage_from", [])]
+        )
+        relation.double_damage_to = ",".join(
+            [t["name"] for t in damage_data.get("double_damage_to", [])]
+        )
+        relation.half_damage_to = ",".join(
+            [t["name"] for t in damage_data.get("half_damage_to", [])]
+        )
+        relation.no_damage_to = ",".join(
+            [t["name"] for t in damage_data.get("no_damage_to", [])]
+        )
 
         relation.save()
-        
 
     return type_obj

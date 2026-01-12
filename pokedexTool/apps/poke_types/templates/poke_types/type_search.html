@@ -1,58 +1,97 @@
 {% extends "base.html" %}
 {% load type_color_filter %}
 
-{% block title %}Type search{% endblock title %}
+{% block title %}Search Types{% endblock title %}
 
 {% block content %}
-<div class="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
-  <h1 class="text-4xl font-extrabold text-gray-800 mb-6">Type Search</h1>
-
-  <!-- Search box -->
-  <div class="bg-white shadow-lg rounded-2xl p-6 w-full max-w-sm text-center">
-    <p class="text-gray-600 mb-4">Welcome back to your Pokedex!</p>
-
-    <form action="{% url 'poke_types:types-detail' poke_type_name_or_id='placeholder' %}" 
-          method="get" 
-          onsubmit="event.preventDefault(); window.location.href=this.action.replace('placeholder', this.elements['poke_type_name_or_id'].value);">
-      {% csrf_token %}
-      {{ form.as_p }}
-      <br>
-      <button type="submit" class="w-full bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">
-        Search
-      </button>
-    </form>
+<div class="w-full">
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-8">
+    <div>
+      <h1 class="text-3xl font-bold text-surface-900 mb-2">Search Types</h1>
+      <p class="text-surface-500">Find types by name or ID.</p>
+    </div>
+    <a href="{% url 'pokedex:poke-home' %}" class="btn-secondary">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+      </svg>
+      Back
+    </a>
   </div>
 
-  <br><br>
+  <div class="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+    <!-- Search panel -->
+    <div class="lg:col-span-1">
+      <div class="card p-6 sticky top-8">
+        <h2 class="text-lg font-semibold text-surface-900 mb-4">Search</h2>
+        <form action="{% url 'poke_types:types-detail' poke_type_name_or_id='placeholder' %}"
+              method="get"
+              onsubmit="event.preventDefault(); window.location.href=this.action.replace('placeholder', this.elements['poke_type_name_or_id'].value);">
+          {% csrf_token %}
+          <div class="mb-4">
+            <label for="poke_type_name_or_id" class="block text-sm font-medium text-surface-700 mb-2">Type name or ID</label>
+            <input type="text"
+                   name="poke_type_name_or_id"
+                   id="poke_type_name_or_id"
+                   class="input"
+                   placeholder="e.g. fire or 10"
+                   required>
+          </div>
+          <button type="submit" class="w-full btn-primary">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+            Search
+          </button>
+        </form>
+      </div>
+    </div>
 
-  <div class="bg-white shadow-lg rounded-2xl p-4 w-full max-w-sm text-left">
-    <p class="text-gray-600 mb-4 text-center">Found types list</p>
-
-    <div class="max-h-64 overflow-y-auto pr-2">
-      {% for type in types %}
-        <span class="text-gray-500 font-mono">
-          #{{ type.type_id  }}
-        </span>
-
-        <div class="flex items-center justify-between gap-3 mb-3 border-b pb-2">
-          <a href="{% url 'poke_types:types-detail' poke_type_name_or_id=type.name %}" class="font-semibold text-gray-800 hover:text-red-500">
-            {{ type.name|capfirst }}
-          </a>
-
-          <span class="text-white px-2 py-1 rounded"
-                            style="background-color: {{ type.name|type_color }};">
-          </span>
+    <!-- Results panel -->
+    <div class="lg:col-span-2 xl:col-span-3">
+      <div class="card">
+        <div class="p-4 border-b border-surface-200">
+          <h2 class="text-lg font-semibold text-surface-900">Types Collection</h2>
+          <p class="text-sm text-surface-500">{{ types|length }} types in your local database</p>
         </div>
-      {% endfor %}
+
+        {% if types %}
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 max-h-[calc(100vh-280px)] overflow-y-auto scrollbar-thin">
+          {% for type in types %}
+          <a href="{% url 'poke_types:types-detail' poke_type_name_or_id=type.name %}"
+             class="flex items-center gap-4 p-4 hover:bg-surface-50 transition-colors group">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center"
+                 style="background-color: {{ type.name|type_color }};">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/>
+              </svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-mono text-surface-400">#{{ type.type_id }}</span>
+                <span class="px-2 py-0.5 rounded text-xs font-medium text-white capitalize" style="background-color: {{ type.name|type_color }};">{{ type.name }}</span>
+              </div>
+              <p class="font-semibold text-surface-900 capitalize">{{ type.name }}</p>
+            </div>
+            <svg class="w-5 h-5 text-surface-300 group-hover:text-primary-500 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </a>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="p-12 text-center">
+          <div class="w-16 h-16 rounded-full bg-surface-100 flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-surface-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/>
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-surface-900 mb-1">No types yet</h3>
+          <p class="text-surface-500">Search for a type above to add it to your collection.</p>
+        </div>
+        {% endif %}
+      </div>
     </div>
   </div>
-
-  <div class="mt-6">
-      <a href="{% url 'pokedex:poke-home' %}" 
-          class="inline-block bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition">
-          ← Pokedex Home
-      </a>
-  </div>
-
 </div>
 {% endblock content %}

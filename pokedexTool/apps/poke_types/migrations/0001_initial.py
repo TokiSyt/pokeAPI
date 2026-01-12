@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = []
@@ -35,7 +34,7 @@ class Migration(migrations.Migration):
                         null=True,
                     ),
                 ),
-                ("moves", models.CharField(null=True)),
+                ("moves", models.TextField(null=True)),
             ],
             options={
                 "ordering": ["type_id"],

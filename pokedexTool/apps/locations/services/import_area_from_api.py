@@ -1,6 +1,7 @@
+import requests
+
 from apps.locations.models import Area, Location
 from apps.locations.services.import_location_from_api import import_location_from_api
-import requests
 
 
 def import_area_from_api(location_area_name_or_id, user=None):
@@ -24,11 +25,8 @@ def import_area_from_api(location_area_name_or_id, user=None):
         encounter_method_name = encounter_rates_entry.get("encounter_method", {}).get(
             "name", ""
         )
-        encounter_method_rate = encounter_rates_entry["version_details"][0].get(
-            "rate"
-        )
+        encounter_method_rate = encounter_rates_entry["version_details"][0].get("rate")
         encounter_method_rates.append((encounter_method_name, encounter_method_rate))
-        
 
     area_id = data.get("id")
     location_name_entry = data.get("location", {}).get("name", "")
@@ -73,4 +71,3 @@ def import_area_from_api(location_area_name_or_id, user=None):
         area.allowed_users.add(user)
 
     return area
-

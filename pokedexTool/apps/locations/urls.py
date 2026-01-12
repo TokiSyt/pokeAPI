@@ -1,5 +1,6 @@
-from .views import LocationSearchView, LocationDetailView, LocationAreaDetailView
 from django.urls import path
+
+from .views import LocationAreaDetailView, LocationDetailView, LocationSearchView
 
 app_name = "locations"
 

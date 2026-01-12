@@ -1,5 +1,6 @@
-from django.db import models
 import ast
+
+from django.db import models
 
 
 class PokemonType(models.Model):
@@ -19,7 +20,7 @@ class PokemonType(models.Model):
         help_text="The class of damage inflicted by this type (physical, special, etc.).",
     )
 
-    moves = models.CharField(null=True)
+    moves = models.TextField(null=True)
 
     def __str__(self):
         return f"{self.name}_({self.type_id})"
@@ -31,7 +32,7 @@ class PokemonType(models.Model):
             if not moves_list:
                 return [" "]
             return moves_list
-        except:
+        except (ValueError, SyntaxError):
             return []
 
     class Meta:

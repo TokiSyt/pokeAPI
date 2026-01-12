@@ -1,9 +1,10 @@
-from django.conf import settings
-from django.db import models
 import ast
 
-class Generation(models.Model):
+from django.conf import settings
+from django.db import models
 
+
+class Generation(models.Model):
     allowed_users = models.ManyToManyField(
         settings.AUTH_USER_MODEL, related_name="pokemon_generations"
     )
@@ -26,7 +27,7 @@ class Generation(models.Model):
             if not abilities_list:
                 return ["No abilities"]
             return abilities_list
-        except:
+        except (ValueError, SyntaxError):
             return []
 
     @property
@@ -36,7 +37,7 @@ class Generation(models.Model):
             if not moves_list:
                 return ["No moves"]
             return moves_list
-        except:
+        except (ValueError, SyntaxError):
             return []
 
     @property
@@ -46,5 +47,5 @@ class Generation(models.Model):
             if not types_list:
                 return ["No types"]
             return types_list
-        except:
+        except (ValueError, SyntaxError):
             return []

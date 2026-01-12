@@ -1,14 +1,14 @@
-from .services.pokemon_import import import_pokemon_from_api
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import TemplateView
-from .forms import PokemonSearchForm
 from django.shortcuts import render
-from .models import Pokemon, PokemonTypeRelation, PokemonAbilityRelation
+from django.views.generic import TemplateView
+
+from .forms import PokemonSearchForm
+from .models import Pokemon, PokemonAbilityRelation, PokemonTypeRelation
+from .services.pokemon_import import import_pokemon_from_api
 
 
 # POKEMONS
 class PokemonSearchView(LoginRequiredMixin, TemplateView):
-
     template_name = "pokemons/pokemon_search.html"
     form_class = PokemonSearchForm
 
@@ -21,11 +21,9 @@ class PokemonSearchView(LoginRequiredMixin, TemplateView):
 
 
 class PokemonDetailView(LoginRequiredMixin, TemplateView):
-
     template_name = "pokemons/pokemon_detail.html"
 
     def get(self, request, pokemon_name_or_id):
-
         pokemon = None
         pokemon_needs_update = False
 
