@@ -75,6 +75,9 @@ test-cov:
 ps:
 	$(DOCKER_COMPOSE) ps
 
+ruff:
+	ruff format
+
 # CSS (Tailwind)
 .PHONY: css css-watch css-install
 css-install:
