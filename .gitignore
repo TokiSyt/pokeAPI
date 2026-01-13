@@ -40,6 +40,13 @@ coverage.xml
 htmlcov/
 .pytest_cache/
 
+# Linting / Type checking
+.ruff_cache/
+.mypy_cache/
+
+# Node
+node_modules/
+
 # Environment variables
 .env
 .env.local
