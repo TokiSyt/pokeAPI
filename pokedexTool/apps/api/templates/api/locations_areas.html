@@ -1,23 +1,64 @@
 {% extends "base.html" %}
 
+{% block title %}Pokédex | Locations & Areas API{% endblock title %}
+
 {% block content %}
-<div class="min-h-screen bg-gray-100 flex flex-col items-center py-10">
-  <h1 class="text-4xl font-extrabold text-gray-800 mb-8">Poke API Menu</h1>
-
-  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full max-w-6xl">
-
-    <a href="{% url 'api:api-menu' %}" class="bg-white shadow-lg rounded-2xl p-6 text-center hover:bg-gray-50 transition">
-      <p class="text-gray-800 font-semibold text-lg">Back to APIs Lists</p>
-    </a>
-
-    <a href="{% url 'api:api-locations-list' %}" class="bg-white shadow-lg rounded-2xl p-6 text-center hover:bg-gray-50 transition">
-      <p class="text-gray-800 font-semibold text-lg">Locations API List</p>
-    </a>
-
-    <a href="{% url 'api:api-areas-list' %}" class="bg-white shadow-lg rounded-2xl p-6 text-center hover:bg-gray-50 transition">
-      <p class="text-gray-800 font-semibold text-lg">Areas API List</p>
-    </a>
+<div class="w-full">
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-8">
+    <div class="flex items-center gap-4">
+      <a href="{% url 'api:api-menu' %}" class="w-10 h-10 rounded-xl bg-surface-100 hover:bg-surface-200 flex items-center justify-center transition-colors">
+        <svg class="w-5 h-5 text-surface-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+        </svg>
+      </a>
+      <div>
+        <h1 class="text-3xl font-bold text-surface-900">Locations & Areas</h1>
+        <p class="text-surface-500 mt-1">Geographic API endpoints</p>
+      </div>
+    </div>
   </div>
 
+  <!-- API Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Locations Card -->
+    <a href="{% url 'api:api-locations-list' %}" class="card p-6 hover:shadow-lg transition-shadow group">
+      <div class="flex items-start gap-4">
+        <div class="w-14 h-14 rounded-xl bg-amber-100 flex items-center justify-center group-hover:bg-amber-200 transition-colors flex-shrink-0">
+          <svg class="w-7 h-7 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+        </div>
+        <div class="flex-1">
+          <h2 class="text-xl font-semibold text-surface-900 mb-1">Locations</h2>
+          <p class="text-sm text-surface-500 mb-3">/api/locations/</p>
+          <p class="text-sm text-surface-600">Browse all registered locations in the Pokémon world, including cities, routes, and landmarks.</p>
+        </div>
+        <svg class="w-5 h-5 text-surface-400 group-hover:text-amber-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+      </div>
+    </a>
+
+    <!-- Areas Card -->
+    <a href="{% url 'api:api-areas-list' %}" class="card p-6 hover:shadow-lg transition-shadow group">
+      <div class="flex items-start gap-4">
+        <div class="w-14 h-14 rounded-xl bg-amber-100 flex items-center justify-center group-hover:bg-amber-200 transition-colors flex-shrink-0">
+          <svg class="w-7 h-7 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+          </svg>
+        </div>
+        <div class="flex-1">
+          <h2 class="text-xl font-semibold text-surface-900 mb-1">Areas</h2>
+          <p class="text-sm text-surface-500 mb-3">/api/areas/</p>
+          <p class="text-sm text-surface-600">Explore specific areas within locations where Pokémon can be encountered.</p>
+        </div>
+        <svg class="w-5 h-5 text-surface-400 group-hover:text-amber-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+      </div>
+    </a>
+  </div>
 </div>
 {% endblock content %}
