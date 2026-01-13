@@ -4,108 +4,151 @@
 {% block title %}Pokédex | {{ generation.name|capfirst }}{% endblock title %}
 
 {% block content %}
-<div class="min-h-screen bg-gray-100 flex justify-center items-start py-8 px-4">
-
+<div class="w-full">
   {% if generation %}
-  <div class="bg-white shadow-xl rounded-3xl p-6 w-full max-w-xl overflow-y-auto">
-
-    <!-- Header -->
-    <div class="text-center mb-6">
-      <h2 class="text-3xl font-bold text-gray-900 capitalize">{{ generation.name }}</h2>
-      <p class="text-gray-500 text-sm mt-1">Generation ID: #{{ generation.gen_id }}</p>
-    </div>
-
-    <!-- Main Region -->
-    <div class="mb-6 p-4 bg-gray-50 rounded-2xl shadow-inner text-center">
-      <p class="text-gray-600">Main Region</p>
-      <p class="font-semibold capitalize text-gray-900">
-        {% if generation.main_region %}
-          <a href="{% url 'locations:locations-detail' generation.main_region %}" class="text-gray-900 hover:text-red-500 font-semibold transition">
-            {{ generation.main_region|default:"Unknown" }}
-          </a>
-        {% else %}
-          Unknown
-        {% endif %}
-      </p>
-    </div>
-
-    <!-- Types -->
-    <div class="mb-6 p-4 bg-gray-50 rounded-2xl shadow-inner text-center">
-      <h3 class="text-xl font-semibold text-gray-800 mb-3">Types</h3>
-      <ul class="flex justify-center gap-2 flex-wrap">
-        {% for type in generation.types_list %}
-        <li class="px-3 py-1 rounded-full font-medium text-white" style="background-color: {{ type|type_color|default:'#888' }};">
-          {% if type != "No types" %}
-          <a href="{% url 'poke_types:types-detail' type %}">{{ type|capfirst }}</a>
-          {% else %}
-          {{ type }}
-          {% endif %}
-        </li>
-        {% endfor %}
-      </ul>
-      {% if not generation.types_list %}
-      <button onclick="location.reload()" class="inline-block mt-3 text-white font-semibold px-6 py-2 rounded-full shadow transition-transform transform hover:scale-105" style="background-color: #888;">
-        Refresh
-      </button>
-      {% endif %}
-    </div>
-
-    <!-- Abilities -->
-    <div class="mb-6 p-4 bg-gray-50 rounded-2xl shadow-inner text-center">
-      <h3 class="text-xl font-semibold text-gray-800 mb-3">Abilities</h3>
-      <ul class="flex flex-wrap justify-center gap-2 max-h-48 overflow-y-auto">
-        {% for ability in generation.abilities_list %}
-        <li class="px-3 py-1 rounded-full font-medium text-white" style="background-color: {{ ability|type_color|default:'#ebdf79ff' }};">
-          {% if ability != "No abilities" %}
-          <a href="{% url 'abilities:ability-detail' ability %}">{{ ability|capfirst }}</a>
-          {% else %}
-          {{ ability }}
-          {% endif %}
-        </li>
-        {% endfor %}
-      </ul>
-      {% if not generation.abilities_list %}
-      <button onclick="location.reload()" class="inline-block mt-3 text-white font-semibold px-6 py-2 rounded-full shadow transition-transform transform hover:scale-105" style="background-color: #ebdf79ff;">
-        Refresh
-      </button>
-      {% endif %}
-    </div>
-
-    <!-- Associated Moves -->
-    <div class="mb-6 p-4 bg-gray-50 rounded-2xl shadow-inner text-center">
-      <h3 class="text-xl font-semibold text-gray-800 mb-3">Associated Moves</h3>
-      <ul class="flex flex-wrap justify-center gap-2 max-h-48 overflow-y-auto">
-        {% for move in generation.moves_list %}
-        <li class="flex items-center gap-2 px-2 py-1 rounded-lg bg-white shadow-sm">
-          <span class="capitalize text-gray-800 font-medium">
-            {% if move != "No moves" %}
-            <a href="{% url 'poke_moves:move-detail' move %}">{{ move }}</a>
-            {% else %}
-            {{ move }}
-            {% endif %}
-          </span>
-        </li>
-        {% endfor %}
-      </ul>
-      {% if not generation.moves_list %}
-      <button onclick="location.reload()" class="inline-block mt-3 text-white font-semibold px-6 py-2 rounded-full shadow transition-transform transform hover:scale-105" style="background-color: #ccc;">
-        Refresh
-      </button>
-      {% endif %}
-    </div>
-
-    <!-- Back Button -->
-    <div class="text-center mb-4">
-      <a href="{% url 'generations:gen-search' %}" class="inline-block bg-gray-500 text-white px-5 py-2 rounded-full hover:bg-gray-600 transition font-semibold">
-        ← Back to Generation
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center gap-4">
+      <a href="{% url 'generations:gen-search' %}" class="w-10 h-10 rounded-xl bg-surface-100 hover:bg-surface-200 flex items-center justify-center transition-colors">
+        <svg class="w-5 h-5 text-surface-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+        </svg>
       </a>
+      <div>
+        <p class="text-sm font-mono text-surface-400">#{{ generation.gen_id }}</p>
+        <h1 class="text-3xl font-bold text-surface-900 capitalize">{{ generation.name }}</h1>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <!-- Left column - Icon & Basic Info -->
+    <div class="lg:col-span-1 space-y-6">
+      <!-- Icon -->
+      <div class="card p-6">
+        <div class="flex justify-center mb-4">
+          <div class="w-24 h-24 rounded-2xl bg-indigo-100 flex items-center justify-center">
+            <svg class="w-12 h-12 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+            </svg>
+          </div>
+        </div>
+        <div class="flex justify-center">
+          <span class="px-4 py-1.5 rounded-full text-sm font-semibold text-white bg-indigo-500">
+            Generation
+          </span>
+        </div>
+      </div>
+
+      <!-- Basic Info -->
+      <div class="card p-6">
+        <h2 class="text-sm font-semibold text-surface-400 uppercase tracking-wider mb-4">Basic Info</h2>
+        <div class="space-y-3">
+          <div class="p-3 rounded-xl bg-surface-50">
+            <p class="text-xs text-surface-500 mb-1">Main Region</p>
+            {% if generation.main_region %}
+            <a href="{% url 'locations:locations-detail' generation.main_region %}" class="font-medium text-surface-900 hover:text-primary-500 transition-colors capitalize">
+              {{ generation.main_region }}
+            </a>
+            {% else %}
+            <p class="font-medium text-surface-900">Unknown</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Types -->
+      <div class="card p-6">
+        <h2 class="text-sm font-semibold text-surface-400 uppercase tracking-wider mb-4">Types Introduced</h2>
+        {% if generation.types_list %}
+        <div class="flex flex-wrap gap-2">
+          {% for type in generation.types_list %}
+            {% if type != "No types" %}
+            <a href="{% url 'poke_types:types-detail' type %}"
+               class="px-3 py-1 rounded-full text-sm font-medium text-white transition-opacity hover:opacity-80"
+               style="background-color: {{ type|type_color|default:'#888' }};">
+              {{ type|capfirst }}
+            </a>
+            {% else %}
+            <span class="text-surface-500">{{ type }}</span>
+            {% endif %}
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-4">
+          <p class="text-surface-500 mb-2">Data not loaded</p>
+          <button onclick="location.reload()" class="text-sm text-primary-500 hover:underline">Refresh</button>
+        </div>
+        {% endif %}
+      </div>
     </div>
 
+    <!-- Right column - Abilities & Moves -->
+    <div class="lg:col-span-2 xl:col-span-3 space-y-6">
+      <!-- Abilities -->
+      <div class="card p-6">
+        <h2 class="text-sm font-semibold text-surface-400 uppercase tracking-wider mb-4">Abilities Introduced</h2>
+        {% if generation.abilities_list %}
+        <div class="flex flex-wrap gap-2 max-h-48 overflow-y-auto">
+          {% for ability in generation.abilities_list %}
+            {% if ability != "No abilities" %}
+            <a href="{% url 'abilities:ability-detail' ability %}"
+               class="px-3 py-1.5 rounded-lg bg-purple-100 hover:bg-purple-200 text-sm font-medium text-purple-700 capitalize transition-colors">
+              {{ ability|cut:"-" }}
+            </a>
+            {% else %}
+            <span class="text-surface-500">{{ ability }}</span>
+            {% endif %}
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-8">
+          <p class="text-surface-500 mb-2">Data not loaded</p>
+          <button onclick="location.reload()" class="text-sm text-primary-500 hover:underline">Refresh</button>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Moves -->
+      <div class="card p-6">
+        <h2 class="text-sm font-semibold text-surface-400 uppercase tracking-wider mb-4">Moves Introduced</h2>
+        {% if generation.moves_list %}
+        <div class="flex flex-wrap gap-2 max-h-64 overflow-y-auto">
+          {% for move in generation.moves_list %}
+            {% if move != "No moves" %}
+            <a href="{% url 'poke_moves:move-detail' move %}"
+               class="px-3 py-1.5 rounded-lg bg-surface-100 hover:bg-surface-200 text-sm font-medium text-surface-700 capitalize transition-colors">
+              {{ move|cut:"-" }}
+            </a>
+            {% else %}
+            <span class="text-surface-500">{{ move }}</span>
+            {% endif %}
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-8">
+          <p class="text-surface-500 mb-2">Data not loaded</p>
+          <button onclick="location.reload()" class="text-sm text-primary-500 hover:underline">Refresh</button>
+        </div>
+        {% endif %}
+      </div>
+    </div>
   </div>
 
   {% else %}
-  <div class="text-red-500 font-semibold text-center">{{ error }}</div>
+  <!-- Error state -->
+  <div class="card p-12 text-center">
+    <div class="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
+      <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+      </svg>
+    </div>
+    <h2 class="text-xl font-bold text-surface-900 mb-2">Generation not found</h2>
+    <p class="text-surface-500 mb-6">{{ error }}</p>
+    <a href="{% url 'generations:gen-search' %}" class="btn-primary">
+      Back to Search
+    </a>
+  </div>
   {% endif %}
-
 </div>
 {% endblock content %}

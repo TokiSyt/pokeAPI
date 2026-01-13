@@ -1,14 +1,14 @@
-from .services.import_type_from_api import import_pokemon_type_from_api
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import TemplateView
-from .models import PokemonType, TypeDamageRelation
-from django.shortcuts import render
-from .forms import TypeSearchForm
 from django.db.models import Q
+from django.shortcuts import render
+from django.views.generic import TemplateView
+
+from .forms import TypeSearchForm
+from .models import PokemonType, TypeDamageRelation
+from .services.import_type_from_api import import_pokemon_type_from_api
 
 
 class TypeSearchView(LoginRequiredMixin, TemplateView):
-
     template_name = "poke_types/type_search.html"
     form_class = TypeSearchForm
 
@@ -21,11 +21,9 @@ class TypeSearchView(LoginRequiredMixin, TemplateView):
 
 
 class TypeDetailView(LoginRequiredMixin, TemplateView):
-
     template_name = "poke_types/type_detail.html"
 
     def get(self, request, poke_type_name_or_id):
-
         type_obj = None
         type_needs_update = False
 
@@ -35,7 +33,7 @@ class TypeDetailView(LoginRequiredMixin, TemplateView):
 
             else:
                 type_obj = PokemonType.objects.get(Q(name=poke_type_name_or_id))
-            
+
             print(f"type {type_obj.name} fetched from database")
 
         except PokemonType.DoesNotExist:
@@ -53,10 +51,10 @@ class TypeDetailView(LoginRequiredMixin, TemplateView):
                 context,
                 status=404,
             )
-            
+
         else:
             type_relation = TypeDamageRelation.objects.get(type=type_obj)
-            
+
             context = {
                 "type": type_obj,
                 "type_relation": type_relation,

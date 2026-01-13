@@ -1,29 +1,30 @@
+from django.urls import path
 from rest_framework.authtoken.views import obtain_auth_token
+
 from .views import (
     APIMenuView,
-    PokemonListAPIView,
-    PokemonDetailAPIView,
-    PokemonMoveListAPIView,
-    PokemonMoveDetailAPIView,
-    PokemonAbilityListAPIView,
-    PokemonAbilityDetailAPIView,
-    PokemonTypeListAPIView,
-    PokemonTypeDetailAPIView,
+    AreaDetailAPIView,
+    AreasListAPIView,
+    GenerationDetailAPIView,
+    GenerationsListAPIView,
+    LocationDetailAPIView,
     LocationsAreasView,
     LocationsListAPIView,
-    LocationDetailAPIView,
-    AreasListAPIView,
-    AreaDetailAPIView,
-    GenerationsListAPIView,
-    GenerationDetailAPIView
+    PokemonAbilityDetailAPIView,
+    PokemonAbilityListAPIView,
+    PokemonDetailAPIView,
+    PokemonListAPIView,
+    PokemonMoveDetailAPIView,
+    PokemonMoveListAPIView,
+    PokemonTypeDetailAPIView,
+    PokemonTypeListAPIView,
 )
-from django.urls import path
 
 app_name = "api"
 
 urlpatterns = [
     path("", APIMenuView.as_view(), name="api-menu"),
-    path("auth/", obtain_auth_token),
+    path("auth/", obtain_auth_token, name="api-auth"),
     path("pokemons/", PokemonListAPIView.as_view(), name="api-poke-list"),
     path(
         "pokemons/<str:pokemon_name>",

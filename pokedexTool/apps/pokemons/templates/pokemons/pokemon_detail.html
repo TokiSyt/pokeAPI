@@ -1,138 +1,162 @@
-{% extends "base.html" %}
-{% load type_color_filter %}
+  {% extends "base.html" %}
+  {% load type_color_filter %}
 
-{% block title %}Pokédex | {{ pokemon.name|capfirst }}{% endblock title %}
+  {% block title %}Pokédex | {{ pokemon.name|capfirst }}{% endblock title %}
 
-{% block content %}
-<div class="min-h-screen bg-gray-100 flex justify-center items-start py-8 px-4">
-
-  {% if pokemon %}
-  <div class="bg-white shadow-xl rounded-3xl p-6 w-full max-w-xl h-[90vh] overflow-y-auto">
-
-    <!-- Header / Sprites -->
-    <div class="text-center mb-6">
-      <h2 class="text-3xl font-bold text-gray-900 capitalize">{{ pokemon.name }}</h2>
-      <div class="flex justify-center items-center gap-6 mt-4">
-        <div class="text-center">
-          <p class="text-gray-500 text-sm">Default</p>
-          <img src="{{ pokemon.sprite_front_default }}" alt="{{ pokemon.name }}" class="mx-auto w-24 h-24">
+  {% block content %}
+  <div class="w-full">
+    {% if pokemon %}
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6">
+      <div class="flex items-center gap-4">
+        <a href="{% url 'pokemons:poke-search' %}" class="w-10 h-10 rounded-xl bg-surface-100 hover:bg-surface-200 flex items-center justify-center transition-colors">
+          <svg class="w-5 h-5 text-surface-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+          </svg>
+        </a>
+        <div>
+          <p class="text-sm font-mono text-surface-400">#{{ pokemon.pokemon_id|stringformat:"03d" }}</p>
+          <h1 class="text-3xl font-bold text-surface-900 capitalize">{{ pokemon.name }}</h1>
         </div>
-        {% if pokemon.sprite_front_shiny %}
-        <div class="text-center">
-          <p class="text-gray-500 text-sm">Shiny</p>
-          <img src="{{ pokemon.sprite_front_shiny }}" alt="{{ pokemon.name }}" class="mx-auto w-24 h-24">
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <!-- Left column - Sprites & Basic Info -->
+      <div class="lg:col-span-1 space-y-6">
+        <!-- Sprites -->
+        <div class="card p-6">
+          <div class="flex justify-center gap-6 mb-4">
+            <div class="text-center">
+              <div class="w-32 h-32 rounded-2xl bg-surface-50 flex items-center justify-center mb-2">
+                <img src="{{ pokemon.sprite_front_default }}" alt="{{ pokemon.name }}" class="w-28 h-28">
+              </div>
+              <span class="text-xs text-surface-500">Default</span>
+            </div>
+            {% if pokemon.sprite_front_shiny %}
+            <div class="text-center">
+              <div class="w-32 h-32 rounded-2xl bg-gradient-to-br from-amber-50 to-yellow-100 flex items-center justify-center mb-2">
+                <img src="{{ pokemon.sprite_front_shiny }}" alt="{{ pokemon.name }} shiny" class="w-28 h-28">
+              </div>
+              <span class="text-xs text-surface-500">Shiny</span>
+            </div>
+            {% endif %}
+          </div>
+
+          <!-- Types -->
+          <div class="flex justify-center gap-2">
+            {% for relation in type_relations.all %}
+            <a href="{% url 'poke_types:types-detail' relation.type.name %}"
+              class="px-4 py-1.5 rounded-full text-sm font-semibold text-white capitalize transition-opacity hover:opacity-80"
+              style="background-color: {{ relation.type.name|type_color }};">
+              {{ relation.type.name }}
+            </a>
+            {% endfor %}
+          </div>
         </div>
-        {% endif %}
+
+        <!-- Basic Info -->
+        <div class="card p-6">
+          <h2 class="text-sm font-semibold text-surface-400 uppercase tracking-wider mb-4">Basic Info</h2>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="stat-card text-center">
+              <p class="text-2xl font-bold text-surface-900">{{ pokemon.height }}</p>
+              <p class="text-xs text-surface-500">Height</p>
+            </div>
+            <div class="stat-card text-center">
+              <p class="text-2xl font-bold text-surface-900">{{ pokemon.weight }}</p>
+              <p class="text-xs text-surface-500">Weight</p>
+            </div>
+            <div class="stat-card text-center col-span-2">
+              <p class="text-2xl font-bold text-surface-900">{{ pokemon.base_experience }}</p>
+              <p class="text-xs text-surface-500">Base Experience</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Abilities -->
+        <div class="card p-6">
+          <h2 class="text-sm font-semibold text-surface-400 uppercase tracking-wider mb-4">Abilities</h2>
+          <div class="space-y-2">
+            {% for relation in ability_relations.all %}
+            <a href="{% url 'abilities:ability-detail' relation.ability.name %}"
+              class="block p-3 rounded-xl bg-surface-50 hover:bg-surface-100 transition-colors">
+              <span class="font-medium text-surface-900 capitalize">{{ relation.ability.name|cut:"-" }}</span>
+            </a>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Right column - Stats & Moves -->
+      <div class="lg:col-span-2 xl:col-span-3 space-y-6">
+        <!-- Base Stats -->
+        <div class="card p-6">
+          <h2 class="text-sm font-semibold text-surface-400 uppercase tracking-wider mb-4">Base Stats</h2>
+          <div class="grid grid-cols-1 xl:grid-cols-2 gap-x-8 gap-y-4">
+            {% for stat in pokemon.stats.all %}
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <span class="text-sm font-medium text-surface-600 capitalize">{{ stat.stat_name|cut:"-" }}</span>
+                <span class="text-sm font-bold text-surface-900">{{ stat.base_stat }}</span>
+              </div>
+              <div class="h-2 bg-surface-100 rounded-full overflow-hidden">
+                {% widthratio stat.base_stat 255 100 as stat_percent %}
+                <div class="h-full rounded-full transition-all duration-500
+                            {% if stat.base_stat < 50 %}bg-red-400
+                            {% elif stat.base_stat < 80 %}bg-amber-400
+                            {% elif stat.base_stat < 100 %}bg-green-400
+                            {% else %}bg-emerald-500{% endif %}"
+                    style="width: {{ stat_percent }}%">
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Moves -->
+        <div class="card p-6">
+          <h2 class="text-sm font-semibold text-surface-400 uppercase tracking-wider mb-4">Moves</h2>
+          {% if pokemon.moves_list %}
+          <div class="flex flex-wrap gap-2 max-h-96 overflow-y-auto scrollbar-thin">
+            {% for move in pokemon.moves_list %}
+            <a href="{% url 'poke_moves:move-detail' move %}"
+              class="px-3 py-1.5 rounded-lg bg-surface-100 hover:bg-surface-200 text-sm font-medium text-surface-700 capitalize transition-colors">
+              {{ move|cut:"-" }}
+            </a>
+            {% endfor %}
+          </div>
+          {% elif pokemon.moves %}
+          <div class="flex flex-wrap gap-2 max-h-96 overflow-y-auto scrollbar-thin">
+            {% for move in pokemon.moves %}
+            <a href="{% url 'poke_moves:move-detail' move %}"
+              class="px-3 py-1.5 rounded-lg bg-surface-100 hover:bg-surface-200 text-sm font-medium text-surface-700 capitalize transition-colors">
+              {{ move|cut:"-" }}
+            </a>
+            {% endfor %}
+          </div>
+          {% else %}
+          <p class="text-surface-500 text-center py-8">No moves data available.</p>
+          {% endif %}
+        </div>
       </div>
     </div>
 
-    <!-- Basic Info -->
-    <div class="grid grid-cols-2 gap-4 text-gray-700 mb-6">
-      <div class="p-2 bg-gray-50 rounded-xl shadow-inner text-center">
-        <p class="text-gray-500 text-sm">ID</p>
-        <p class="font-semibold">#{{ pokemon.pokemon_id }}</p>
-      </div>
-      <div class="p-2 bg-gray-50 rounded-xl shadow-inner text-center">
-        <p class="text-gray-500 text-sm">Height</p>
-        <p class="font-semibold">{{ pokemon.height }}</p>
-      </div>
-      <div class="p-2 bg-gray-50 rounded-xl shadow-inner text-center">
-        <p class="text-gray-500 text-sm">Weight</p>
-        <p class="font-semibold">{{ pokemon.weight }}</p>
-      </div>
-      <div class="p-2 bg-gray-50 rounded-xl shadow-inner text-center">
-        <p class="text-gray-500 text-sm">Base XP</p>
-        <p class="font-semibold">{{ pokemon.base_experience }}</p>
-      </div>
-    </div>
-
-    <!-- Base Stats -->
-    <div class="mb-6 p-4 bg-gray-50 rounded-2xl shadow-inner">
-      <h3 class="text-xl font-semibold text-gray-800 mb-3 text-center">Base Stats</h3>
-      <ul>
-        {% for stat in pokemon.stats.all %}
-        <li class="flex justify-between mb-1 p-2 bg-white rounded-lg shadow-sm">
-          <span class="capitalize">{{ stat.stat_name }}</span>
-          <span class="font-mono font-semibold">{{ stat.base_stat }}</span>
-        </li>
-        {% endfor %}
-      </ul>
-    </div>
-
-    <!-- Types -->
-    <div class="mb-6 p-4 bg-gray-50 rounded-2xl shadow-inner text-center">
-      <h3 class="text-xl font-semibold text-gray-800 mb-3">Types</h3>
-      <ul class="flex justify-center gap-2 flex-wrap">
-        {% for relation in type_relations.all %}
-        <li class="px-3 py-1 rounded-full font-medium text-white"
-            style="background-color: {{ relation.type.name|type_color }};">
-          <a href="{% url 'poke_types:types-detail' relation.type.name %}" class="capitalize">{{ relation.type.name }}</a>
-        </li>
-        {% endfor %}
-      </ul>
-    </div>
-
-    <!-- Abilities -->
-    <div class="mb-6 p-4 bg-gray-50 rounded-2xl shadow-inner text-center">
-      <h3 class="text-xl font-semibold text-gray-800 mb-3">Abilities</h3>
-      <ul class="flex justify-center gap-2 flex-wrap">
-        {% for relation in ability_relations.all %}
-        <li class="px-3 py-1 rounded-full font-medium text-white"
-            style="background-color: {{ relation.ability.name|type_color|default:'#888' }};">
-          <a href="{% url 'abilities:ability-detail' relation.ability.name %}">{{ relation.ability.name|capfirst }}</a>
-        </li>
-        {% endfor %}
-      </ul>
-    </div>
-
-    <!-- Associated Moves -->
-    {% if pokemon.moves_list %}
-    <div class="mb-6 p-4 bg-gray-50 rounded-2xl shadow-inner">
-      <h3 class="text-xl font-semibold text-gray-800 mb-3 text-center">Associated Moves</h3>
-      <ul class="flex flex-wrap justify-center gap-2 max-h-48 overflow-y-auto">
-        {% for move in pokemon.moves_list %}
-        <li class="flex items-center gap-2 px-2 py-1 rounded-lg bg-white shadow-sm">
-          <span class="w-3 h-3 rounded-full"
-                style="background-color: {{ type.name|type_color|default:'#ccc' }};">
-          </span>
-          <span class="capitalize text-gray-800 font-medium">
-            <a href="{% url 'poke_moves:move-detail' move %}">{{ move }}</a>
-          </span>
-        </li>
-        {% endfor %}
-      </ul>
-    </div>
     {% else %}
-    <div class="mb-6 p-4 bg-gray-50 rounded-2xl shadow-inner">
-      <h3 class="text-xl font-semibold text-gray-800 mb-3 text-center">Associated Moves</h3>
-      <ul class="flex flex-wrap justify-center gap-2 max-h-48 overflow-y-auto">
-        {% for move in pokemon.moves %}
-        <li class="flex items-center gap-2 px-2 py-1 rounded-lg bg-white shadow-sm">
-          <span class="w-3 h-3 rounded-full"
-                style="background-color: {{ type.name|type_color|default:'#ccc' }};">
-          </span>
-          <span class="capitalize text-gray-800 font-medium">
-            <a href="{% url 'poke_moves:move-detail' move %}">{{ move }}</a>
-          </span>
-        </li>
-        {% endfor %}
-      </ul>
-    </div>
-    {% endif %}
-
-    <!-- Back Button -->
-    <div class="text-center mb-4">
-      <a href="{% url 'pokemons:poke-search' %}"
-         class="inline-block bg-gray-500 text-white px-5 py-2 rounded-full hover:bg-gray-600 transition font-semibold">
-         ← Back to Pokémons
+    <!-- Error state -->
+    <div class="card p-12 text-center">
+      <div class="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
+        <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+        </svg>
+      </div>
+      <h2 class="text-xl font-bold text-surface-900 mb-2">Pokémon not found</h2>
+      <p class="text-surface-500 mb-6">{{ error }}</p>
+      <a href="{% url 'pokemons:poke-search' %}" class="btn-primary">
+        Back to Search
       </a>
     </div>
-
+    {% endif %}
   </div>
-
-  {% else %}
-  <div class="text-red-500 font-semibold text-center">{{ error }}</div>
-  {% endif %}
-
-</div>
-{% endblock content %}
+  {% endblock content %}

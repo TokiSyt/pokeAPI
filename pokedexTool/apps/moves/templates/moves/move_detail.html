@@ -4,119 +4,153 @@
 {% block title %}Pokédex | {{ move.name|capfirst }}{% endblock title %}
 
 {% block content %}
-
-<div class="min-h-screen bg-gray-100 flex flex-col items-center justify-start py-12 px-4">
-
+<div class="w-full">
   {% if move %}
-  <div class="bg-white shadow-xl rounded-3xl p-8 w-full max-w-3xl">
-    
-    <!-- Header -->
-    <div class="text-center mb-8">
-      <h2 class="text-4xl font-bold text-gray-900 capitalize">{{ move.name }}</h2>
-      <div class="mx-auto w-40 h-2 rounded-full mt-2"
-           style="background-color: {{ move.type|type_color }};">
-      </div>
-    </div>
-
-    <!-- Basic Info Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 text-gray-700 mb-8">
-      <div class="p-4 bg-gray-50 rounded-xl shadow-inner">
-        <p class="text-gray-500 text-sm">ID</p>
-        <p class="font-semibold">{{ move.move_id }}</p>
-      </div>
-      <div class="p-4 bg-gray-50 rounded-xl shadow-inner">
-        <p class="text-gray-500 text-sm">Generation</p>
-        <p class="font-semibold"><a href="{% url 'generations:gen-detail' move.generation %}" class="text-gray-900 hover:text-red-500 font-semibold transition">{{ move.generation|default:"Unknown" }}</a></p>
-      </div>
-      <div class="p-4 bg-gray-50 rounded-xl shadow-inner">
-        <p class="text-gray-500 text-sm">Damage Class</p>
-        <p class="font-semibold capitalize">{{ move.damage_class }}</p>
-      </div>
-      <div class="p-4 bg-gray-50 rounded-xl shadow-inner">
-        <p class="text-gray-500 text-sm">Type</p>
-        <span class="px-3 py-0 rounded-lg text-white font-medium"
-              style="background-color: {{ move.type|type_color }};">
-          <a href="{% url 'poke_types:types-detail' move.type %}">{{ move.type|capfirst }}</a>
-        </span>
-      </div>
-      <div class="p-4 bg-gray-50 rounded-xl shadow-inner">
-        <p class="text-gray-500 text-sm">Category</p>
-        <p class="font-semibold capitalize">{{ move.category|default:"N/A" }}</p>
-      </div>
-      <div class="p-4 bg-gray-50 rounded-xl shadow-inner">
-        <p class="text-gray-500 text-sm">Ailment</p>
-        <p class="font-semibold capitalize">{{ move.ailment|default:"None" }}</p>
-      </div>
-    </div>
-
-    <!-- Move Stats -->
-    <div class="grid grid-cols-1 sm:grid-cols-4 gap-6 text-gray-700 mb-8">
-      <div class="p-4 bg-gray-50 rounded-xl text-center shadow-inner">
-        <p class="text-gray-500 text-sm">Power</p>
-        <p class="font-semibold">{{ move.power|default:"—" }}</p>
-      </div>
-      <div class="p-4 bg-gray-50 rounded-xl text-center shadow-inner">
-        <p class="text-gray-500 text-sm">Accuracy</p>
-        <p class="font-semibold">{{ move.accuracy|default:"—" }}</p>
-      </div>
-      <div class="p-4 bg-gray-50 rounded-xl text-center shadow-inner">
-        <p class="text-gray-500 text-sm">PP</p>
-        <p class="font-semibold">{{ move.pp|default:"—" }}</p>
-      </div>
-      <div class="p-4 bg-gray-50 rounded-xl text-center shadow-inner">
-        <p class="text-gray-500 text-sm">Priority</p>
-        <p class="font-semibold">{{ move.priority }}</p>
-      </div>
-    </div>
-
-    <!-- Effects -->
-    {% if move.effect or move.short_effect %}
-    <div class="mb-8 p-6 bg-gray-50 rounded-2xl shadow-inner">
-      <h3 class="text-2xl font-semibold text-gray-800 mb-4 text-center">Move Effects</h3>
-
-      {% if move.short_effect %}
-        <p class="text-gray-700 mb-3">
-          <strong>Short Effect:</strong> {{ move.short_effect }}
-        </p>
-      {% endif %}
-
-      {% if move.effect %}
-        <p class="text-gray-700 whitespace-pre-line">
-          <strong>Full Effect:</strong> {{ move.effect }}
-        </p>
-      {% endif %}
-    </div>
-    {% endif %}
-
-    <!-- Ailment Chance -->
-    <div class="mb-8 p-4 bg-gray-50 rounded-2xl shadow-inner text-center">
-      <p class="text-gray-700 font-medium">Ailment Chance: <span class="font-bold">{{ move.ailment_chance|default:"0" }}%</span></p>
-    </div>
-
-    <!-- Flavor Text -->
-    <div class="mb-8 p-6 bg-gray-50 rounded-2xl shadow-inner">
-      <h3 class="text-2xl font-semibold text-gray-800 mb-4 text-center">Flavor Text</h3>
-      {% if move.flavor_text %}
-        <p class="italic text-gray-600 text-center">{{ move.flavor_text }}</p>
-      {% else %}
-        <p class="text-gray-400 text-center">No flavor text available.</p>
-      {% endif %}
-    </div>
-
-    <!-- Back Button -->
-    <div class="text-center">
-      <a href="{% url 'poke_moves:moves-search' %}"
-         class="inline-block bg-gray-500 text-white px-6 py-3 rounded-full hover:bg-gray-600 transition font-semibold">
-         ← Back to Moves
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center gap-4">
+      <a href="{% url 'poke_moves:moves-search' %}" class="w-10 h-10 rounded-xl bg-surface-100 hover:bg-surface-200 flex items-center justify-center transition-colors">
+        <svg class="w-5 h-5 text-surface-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+        </svg>
       </a>
+      <div>
+        <p class="text-sm font-mono text-surface-400">#{{ move.move_id }}</p>
+        <h1 class="text-3xl font-bold text-surface-900 capitalize">{{ move.name|cut:"-" }}</h1>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <!-- Left column - Type & Basic Info -->
+    <div class="lg:col-span-1 space-y-6">
+      <!-- Type Badge -->
+      <div class="card p-6">
+        <div class="flex justify-center mb-4">
+          <div class="w-24 h-24 rounded-2xl flex items-center justify-center" style="background-color: {{ move.type|type_color }}20;">
+            <svg class="w-12 h-12" style="color: {{ move.type|type_color }};" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+          </div>
+        </div>
+        <div class="flex justify-center">
+          <a href="{% url 'poke_types:types-detail' move.type %}"
+             class="px-4 py-1.5 rounded-full text-sm font-semibold text-white capitalize transition-opacity hover:opacity-80"
+             style="background-color: {{ move.type|type_color }};">
+            {{ move.type }}
+          </a>
+        </div>
+      </div>
+
+      <!-- Basic Info -->
+      <div class="card p-6">
+        <h2 class="text-sm font-semibold text-surface-400 uppercase tracking-wider mb-4">Basic Info</h2>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="stat-card text-center">
+            <p class="text-2xl font-bold text-surface-900">{{ move.power|default:"—" }}</p>
+            <p class="text-xs text-surface-500">Power</p>
+          </div>
+          <div class="stat-card text-center">
+            <p class="text-2xl font-bold text-surface-900">{{ move.accuracy|default:"—" }}</p>
+            <p class="text-xs text-surface-500">Accuracy</p>
+          </div>
+          <div class="stat-card text-center">
+            <p class="text-2xl font-bold text-surface-900">{{ move.pp|default:"—" }}</p>
+            <p class="text-xs text-surface-500">PP</p>
+          </div>
+          <div class="stat-card text-center">
+            <p class="text-2xl font-bold text-surface-900">{{ move.priority }}</p>
+            <p class="text-xs text-surface-500">Priority</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Classification -->
+      <div class="card p-6">
+        <h2 class="text-sm font-semibold text-surface-400 uppercase tracking-wider mb-4">Classification</h2>
+        <div class="space-y-3">
+          <div class="p-3 rounded-xl bg-surface-50">
+            <p class="text-xs text-surface-500 mb-1">Damage Class</p>
+            <p class="font-medium text-surface-900 capitalize">{{ move.damage_class }}</p>
+          </div>
+          <div class="p-3 rounded-xl bg-surface-50">
+            <p class="text-xs text-surface-500 mb-1">Category</p>
+            <p class="font-medium text-surface-900 capitalize">{{ move.category|default:"N/A" }}</p>
+          </div>
+          <div class="p-3 rounded-xl bg-surface-50">
+            <p class="text-xs text-surface-500 mb-1">Generation</p>
+            <a href="{% url 'generations:gen-detail' move.generation %}" class="font-medium text-surface-900 hover:text-primary-500 transition-colors">
+              {{ move.generation|default:"Unknown" }}
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
 
+    <!-- Right column - Effects & Details -->
+    <div class="lg:col-span-2 xl:col-span-3 space-y-6">
+      <!-- Effects -->
+      {% if move.effect or move.short_effect %}
+      <div class="card p-6">
+        <h2 class="text-sm font-semibold text-surface-400 uppercase tracking-wider mb-4">Move Effects</h2>
+        <div class="space-y-4">
+          {% if move.short_effect %}
+          <div class="p-4 rounded-xl bg-surface-50">
+            <p class="text-xs text-surface-500 mb-2">Short Effect</p>
+            <p class="text-surface-700">{{ move.short_effect }}</p>
+          </div>
+          {% endif %}
+          {% if move.effect %}
+          <div class="p-4 rounded-xl bg-surface-50 overflow-y-auto max-h-72">
+            <p class="text-xs text-surface-500 mb-2 bg-surface-50 pb-1">Full Effect</p>
+            <p class="text-surface-700 whitespace-pre-line">{{ move.effect }}</p>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Ailment -->
+      <div class="card p-6">
+        <h2 class="text-sm font-semibold text-surface-400 uppercase tracking-wider mb-4">Status Effect</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="p-4 rounded-xl bg-surface-50">
+            <p class="text-xs text-surface-500 mb-1">Ailment</p>
+            <p class="font-medium text-surface-900 capitalize">{{ move.ailment|default:"None" }}</p>
+          </div>
+          <div class="p-4 rounded-xl bg-surface-50">
+            <p class="text-xs text-surface-500 mb-1">Ailment Chance</p>
+            <p class="font-medium text-surface-900">{{ move.ailment_chance|default:"0" }}%</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Flavor Text -->
+      <div class="card p-6">
+        <h2 class="text-sm font-semibold text-surface-400 uppercase tracking-wider mb-4">Flavor Text</h2>
+        {% if move.flavor_text %}
+        <p class="text-surface-600 italic text-center py-4">{{ move.flavor_text }}</p>
+        {% else %}
+        <p class="text-surface-500 text-center py-8">No flavor text available.</p>
+        {% endif %}
+      </div>
+    </div>
   </div>
 
   {% else %}
-  <div class="text-red-500 font-semibold text-center">{{ error }}</div>
+  <!-- Error state -->
+  <div class="card p-12 text-center">
+    <div class="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
+      <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+      </svg>
+    </div>
+    <h2 class="text-xl font-bold text-surface-900 mb-2">Move not found</h2>
+    <p class="text-surface-500 mb-6">{{ error }}</p>
+    <a href="{% url 'poke_moves:moves-search' %}" class="btn-primary">
+      Back to Search
+    </a>
+  </div>
   {% endif %}
-
 </div>
-
 {% endblock content %}

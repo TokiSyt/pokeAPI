@@ -1,113 +1,165 @@
 {% extends "base.html" %}
-{% load type_color_filter %}
 
-{% block title %}Location search{% endblock title %}
+{% block title %}Search Locations{% endblock title %}
 
 {% block content %}
-<div class="min-h-screen bg-gray-100 flex flex-col items-center justify-center px-4">
-
-  <h1 class="text-4xl font-extrabold text-gray-800 mb-10">Location Search</h1>
-
-  <!-- TWO-COLUMN CONTAINER -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-4xl">
-
-    <!-- LEFT COLUMN: LOCATION SEARCH + RESULTS -->
-    <div class="flex flex-col items-center">
-
-      <!-- Location Search Box -->
-      <div class="bg-white shadow-lg rounded-2xl p-6 w-full text-center">
-      <h2 class="text-2xl font-bold text-gray-800 mb-3">Search by Location</h2>
-      <p>Location name or id:</p>
-
-        <form action="{% url 'locations:locations-detail' location_name_or_id='placeholder' %}" 
-              method="get" 
-              onsubmit="event.preventDefault(); window.location.href=this.action.replace('placeholder', this.elements['location_name_or_id'].value);">
-          {% csrf_token %}
-          {{ form_a.as_p }}
-
-          <button type="submit" class="w-full bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition mt-4">
-            Search
-          </button>
-        </form>
-      </div>
-
-      <!-- Location Results -->
-      <div class="bg-white shadow-lg rounded-2xl p-4 w-full text-left mt-4">
-        <p class="text-gray-600 mb-3 text-center">Found locations list</p>
-
-        <div class="max-h-64 overflow-y-auto pr-2">
-          {% if locations %}
-            {% for location in locations %}
-              <span class="text-gray-500 font-mono">#{{ location.location_id }}</span>
-              <div class="flex items-center justify-between gap-3 mb-3 border-b pb-2">
-                <a href="{% url 'locations:locations-detail' location_name_or_id=location.internal_location_name %}" 
-                   class="font-semibold text-gray-800 hover:text-red-500">
-                  {{ location.location_name|capfirst }}
-                </a>
-              </div>
-            {% endfor %}
-          {% else %}
-            <p class="text-gray-500 text-center">No results yet.</p>
-          {% endif %}
-        </div>
-      </div>
-
+<div class="w-full">
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-8">
+    <div>
+      <h1 class="text-3xl font-bold text-surface-900 mb-2">Search Locations</h1>
+      <p class="text-surface-500">Find locations and areas by name or ID.</p>
     </div>
-
-
-    <!-- RIGHT COLUMN: AREA SEARCH + RESULTS -->
-    <div class="flex flex-col items-center">
-
-      <!-- Area Search Box -->
-      <div class="bg-white shadow-lg rounded-2xl p-6 w-full text-center">
-        <h2 class="text-2xl font-bold text-gray-800 mb-3">Search by Location Area</h2>
-        <p>Area name or id:</p>
-
-        <form action="{% url 'locations:locations-area-detail' location_area_name_or_id='placeholder' %}" 
-              method="get" 
-              onsubmit="event.preventDefault(); window.location.href=this.action.replace('placeholder', this.elements['location_name_or_id'].value);">
-          {% csrf_token %}
-          {{ form_b.as_p }}
-
-          <button type="submit" class="w-full bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition mt-4">
-            Search
-          </button>
-        </form>
-
-      </div>
-
-      <!-- Area Search Results -->
-      <div class="bg-white shadow-lg rounded-2xl p-4 w-full text-left mt-4">
-        <p class="text-gray-600 mb-3 text-center">Found areas list</p>
-
-        <div class="max-h-64 overflow-y-auto pr-2">
-          {% if areas %}
-            {% for area in areas %}
-              <span class="text-gray-500 font-mono">#{{ area.area_id }}</span>
-              <div class="flex items-center justify-between gap-3 mb-3 border-b pb-2">
-                <a href="{% url 'locations:locations-area-detail' location_area_name_or_id=area.internal_area_name %}" 
-                   class="font-semibold text-gray-800 hover:text-red-500">
-                  {{ area.area_name|capfirst }}
-                </a>
-              </div>
-            {% endfor %}
-          {% else %}
-            <p class="text-gray-500 text-center">No results yet.</p>
-          {% endif %}
-        </div>
-      </div>
-
-    </div>
-
-  </div>
-
-  <!-- Back button -->
-  <div class="mt-10">
-    <a href="{% url 'pokedex:poke-home' %}" 
-       class="inline-block bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition">
-       ← Pokedex Home
+    <a href="{% url 'pokedex:poke-home' %}" class="btn-secondary">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+      </svg>
+      Back
     </a>
   </div>
 
+  <div class="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+    <!-- Search panel -->
+    <div class="lg:col-span-1 space-y-6">
+      <!-- Location Search -->
+      <div class="card p-6 sticky top-8">
+        <h2 class="text-lg font-semibold text-surface-900 mb-4">Search Location</h2>
+        <form action="{% url 'locations:locations-detail' location_name_or_id='placeholder' %}"
+              method="get"
+              onsubmit="event.preventDefault(); window.location.href=this.action.replace('placeholder', this.elements['location_name_or_id'].value);">
+          {% csrf_token %}
+          <div class="mb-4">
+            <label for="location_name_or_id" class="block text-sm font-medium text-surface-700 mb-2">Location name or ID</label>
+            <input type="text"
+                   name="location_name_or_id"
+                   id="location_name_or_id"
+                   class="input"
+                   placeholder="e.g. pallet-town"
+                   required>
+          </div>
+          <button type="submit" class="w-full btn-primary">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+            Search Location
+          </button>
+        </form>
+      </div>
+
+      <!-- Area Search -->
+      <div class="card p-6">
+        <h2 class="text-lg font-semibold text-surface-900 mb-4">Search Area</h2>
+        <form action="{% url 'locations:locations-area-detail' location_area_name_or_id='placeholder' %}"
+              method="get"
+              onsubmit="event.preventDefault(); window.location.href=this.action.replace('placeholder', this.elements['location_area_name_or_id'].value);">
+          {% csrf_token %}
+          <div class="mb-4">
+            <label for="location_area_name_or_id" class="block text-sm font-medium text-surface-700 mb-2">Area name or ID</label>
+            <input type="text"
+                   name="location_area_name_or_id"
+                   id="location_area_name_or_id"
+                   class="input"
+                   placeholder="e.g. viridian-forest-area"
+                   required>
+          </div>
+          <button type="submit" class="w-full btn-primary">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+            Search Area
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Results panels -->
+    <div class="lg:col-span-2 xl:col-span-3 space-y-6">
+      <!-- Locations Collection -->
+      <div class="card">
+        <div class="p-4 border-b border-surface-200">
+          <h2 class="text-lg font-semibold text-surface-900">Locations Collection</h2>
+          <p class="text-sm text-surface-500">{{ locations|length }} locations in your local database</p>
+        </div>
+
+        {% if locations %}
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 max-h-[calc(50vh-180px)] overflow-y-auto scrollbar-thin">
+          {% for location in locations %}
+          <a href="{% url 'locations:locations-detail' location_name_or_id=location.internal_location_name %}"
+             class="flex items-center gap-4 p-4 hover:bg-surface-50 transition-colors group">
+            <div class="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center">
+              <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-mono text-surface-400">#{{ location.location_id }}</span>
+              </div>
+              <p class="font-semibold text-surface-900 capitalize">{{ location.location_name }}</p>
+            </div>
+            <svg class="w-5 h-5 text-surface-300 group-hover:text-primary-500 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </a>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="p-12 text-center">
+          <div class="w-16 h-16 rounded-full bg-surface-100 flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-surface-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-surface-900 mb-1">No locations yet</h3>
+          <p class="text-surface-500">Search for a location above to add it to your collection.</p>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Areas Collection -->
+      <div class="card">
+        <div class="p-4 border-b border-surface-200">
+          <h2 class="text-lg font-semibold text-surface-900">Areas Collection</h2>
+          <p class="text-sm text-surface-500">{{ areas|length }} areas in your local database</p>
+        </div>
+
+        {% if areas %}
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 max-h-[calc(50vh-180px)] overflow-y-auto scrollbar-thin">
+          {% for area in areas %}
+          <a href="{% url 'locations:locations-area-detail' location_area_name_or_id=area.internal_area_name %}"
+             class="flex items-center gap-4 p-4 hover:bg-surface-50 transition-colors group">
+            <div class="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center">
+              <svg class="w-6 h-6 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+              </svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-mono text-surface-400">#{{ area.area_id }}</span>
+              </div>
+              <p class="font-semibold text-surface-900 capitalize">{{ area.area_name }}</p>
+            </div>
+            <svg class="w-5 h-5 text-surface-300 group-hover:text-primary-500 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </a>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="p-12 text-center">
+          <div class="w-16 h-16 rounded-full bg-surface-100 flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-surface-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-surface-900 mb-1">No areas yet</h3>
+          <p class="text-surface-500">Search for an area above to add it to your collection.</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock content %}

@@ -1,48 +1,122 @@
 {% extends "base.html" %}
 
+{% block title %}Pokédex | API{% endblock title %}
+
 {% block content %}
-<div class="min-h-screen bg-gray-100 flex flex-col items-center py-10">
-  <h1 class="text-4xl font-extrabold text-gray-800 mb-8">Poke API Menu</h1>
-
-  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full max-w-6xl">
-
-    <a href="{% url 'api:api-poke-list' %}" class="bg-white shadow-lg rounded-2xl p-6 text-center hover:bg-gray-50 transition">
-      <p class="text-gray-800 font-semibold text-lg">Pokémons API List</p>
-    </a>
-
-    <a href="{% url 'api:api-move-list' %}" class="bg-white shadow-lg rounded-2xl p-6 text-center hover:bg-gray-50 transition">
-      <p class="text-gray-800 font-semibold text-lg">Moves API List</p>
-    </a>
-
-    <a href="{% url 'api:api-ability-list' %}" class="bg-white shadow-lg rounded-2xl p-6 text-center hover:bg-gray-50 transition">
-      <p class="text-gray-800 font-semibold text-lg">Abilities API List</p>
-    </a>
-
-    <a href="{% url 'api:api-types-list' %}" class="bg-white shadow-lg rounded-2xl p-6 text-center hover:bg-gray-50 transition">
-      <p class="text-gray-800 font-semibold text-lg">Types API List</p>
-    </a>
-
-    <a href="{% url 'api:api-locations-areas' %}" class="bg-white shadow-lg rounded-2xl p-6 text-center hover:bg-gray-50 transition">
-      <p class="text-gray-800 font-semibold text-lg">Locations & Areas API Lists</p>
-    </a>
-
-    {% comment %} <a href="#" class="bg-white shadow-lg rounded-2xl p-6 text-center hover:bg-gray-50 transition">
-      <p class="text-gray-800 font-semibold text-lg">Items API List(WIP)</p>
-    </a>
-
-    <a href="#" class="bg-white shadow-lg rounded-2xl p-6 text-center hover:bg-gray-50 transition">
-      <p class="text-gray-800 font-semibold text-lg">Berries API List(WIP)</p>
-    </a> {% endcomment %}
-
-    <a href="{% url 'api:api-generations-list' %}" class="bg-white shadow-lg rounded-2xl p-6 text-center hover:bg-gray-50 transition">
-      <p class="text-gray-800 font-semibold text-lg">Generations API List</p>
-    </a>
-
-    <hr><hr><hr>
-    <br>
-    <p class="text-gray-800 mb-8" style="text-align: center">API List will only show objects that the local server has registered on the database.<br><br>All users can see/retrieve the information as long as the local database has it registered. <br><br> To register the objects, you can search in the Pokedex tab what items you want to add to the database or mass-import the objects to populate it.</p>
-
+<div class="w-full">
+  <!-- Header -->
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-surface-900">API Endpoints</h1>
+    <p class="text-surface-500 mt-2">Access your Pokédex data through the REST API</p>
   </div>
 
+  <!-- API Endpoints Grid -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+    <a href="{% url 'api:api-poke-list' %}" class="card p-6 hover:shadow-lg transition-shadow group">
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 rounded-xl bg-primary-100 flex items-center justify-center group-hover:bg-primary-200 transition-colors">
+          <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10" stroke-width="2"/>
+            <circle cx="12" cy="12" r="3"/>
+            <line x1="2" y1="12" x2="9" y2="12" stroke-width="2"/>
+            <line x1="15" y1="12" x2="22" y2="12" stroke-width="2"/>
+          </svg>
+        </div>
+        <div>
+          <p class="font-semibold text-surface-900">Pokémon</p>
+          <p class="text-sm text-surface-500">/api/pokemons/</p>
+        </div>
+      </div>
+    </a>
+
+    <a href="{% url 'api:api-move-list' %}" class="card p-6 hover:shadow-lg transition-shadow group">
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center group-hover:bg-blue-200 transition-colors">
+          <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+        </div>
+        <div>
+          <p class="font-semibold text-surface-900">Moves</p>
+          <p class="text-sm text-surface-500">/api/moves/</p>
+        </div>
+      </div>
+    </a>
+
+    <a href="{% url 'api:api-ability-list' %}" class="card p-6 hover:shadow-lg transition-shadow group">
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center group-hover:bg-purple-200 transition-colors">
+          <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+          </svg>
+        </div>
+        <div>
+          <p class="font-semibold text-surface-900">Abilities</p>
+          <p class="text-sm text-surface-500">/api/abilities/</p>
+        </div>
+      </div>
+    </a>
+
+    <a href="{% url 'api:api-types-list' %}" class="card p-6 hover:shadow-lg transition-shadow group">
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center group-hover:bg-green-200 transition-colors">
+          <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/>
+          </svg>
+        </div>
+        <div>
+          <p class="font-semibold text-surface-900">Types</p>
+          <p class="text-sm text-surface-500">/api/types/</p>
+        </div>
+      </div>
+    </a>
+
+    <a href="{% url 'api:api-locations-areas' %}" class="card p-6 hover:shadow-lg transition-shadow group">
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center group-hover:bg-amber-200 transition-colors">
+          <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+        </div>
+        <div>
+          <p class="font-semibold text-surface-900">Locations & Areas</p>
+          <p class="text-sm text-surface-500">/api/locations/ & /api/areas/</p>
+        </div>
+      </div>
+    </a>
+
+    <a href="{% url 'api:api-generations-list' %}" class="card p-6 hover:shadow-lg transition-shadow group">
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 rounded-xl bg-cyan-100 flex items-center justify-center group-hover:bg-cyan-200 transition-colors">
+          <svg class="w-6 h-6 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <div>
+          <p class="font-semibold text-surface-900">Generations</p>
+          <p class="text-sm text-surface-500">/api/generations/</p>
+        </div>
+      </div>
+    </a>
+  </div>
+
+  <!-- Info Card -->
+  <div class="card p-6">
+    <div class="flex gap-4">
+      <div class="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center flex-shrink-0">
+        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+      </div>
+      <div>
+        <h3 class="font-semibold text-surface-900 mb-2">How it works</h3>
+        <p class="text-surface-600 text-sm leading-relaxed">
+          The API only returns objects registered in your local database. All users can retrieve information as long as it exists locally.
+          To populate the database, search in the Pokédex tab for items you want to add, or use mass-import to bulk populate data.
+        </p>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock content %}

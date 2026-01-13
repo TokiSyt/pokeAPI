@@ -1,42 +1,128 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="min-h-screen bg-gray-100 flex items-center justify-center">
-  <div class="bg-white shadow-lg rounded-2xl p-8 w-full max-w-sm text-center">
-    <h1 class="text-4xl font-extrabold text-gray-800 mb-6">Sign Up</h1>
+<div class="min-h-screen flex">
+  <!-- Left side - Branding -->
+  <div class="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary-600 to-primary-800 p-12 flex-col justify-between">
+    <div>
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+          <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
+            <circle cx="12" cy="12" r="3" fill="currentColor"/>
+            <line x1="2" y1="12" x2="9" y2="12" stroke="currentColor" stroke-width="2"/>
+            <line x1="15" y1="12" x2="22" y2="12" stroke="currentColor" stroke-width="2"/>
+          </svg>
+        </div>
+        <span class="text-xl font-bold text-white">PokéAPI</span>
+      </div>
+    </div>
 
-    <form method="post" class="space-y-4 text-left">
-      {% csrf_token %}
+    <div>
+      <h1 class="text-4xl font-bold text-white mb-4">Start Your Journey</h1>
+      <p class="text-primary-100 text-lg">Create your account and begin building your personal Pokédex today.</p>
+    </div>
 
-      {{ form.as_p }}
+    <div class="space-y-3">
+      <div class="flex items-center gap-3 text-primary-100">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+        </svg>
+        <span>Access to complete Pokémon database</span>
+      </div>
+      <div class="flex items-center gap-3 text-primary-100">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+        </svg>
+        <span>Personal Pokédex collection</span>
+      </div>
+      <div class="flex items-center gap-3 text-primary-100">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+        </svg>
+        <span>REST API access with token auth</span>
+      </div>
+    </div>
+  </div>
 
-      <p> Your password can’t be entirely numeric. <br>
-        <br>
-Your password must contain at least 8 characters.</p>
+  <!-- Right side - Form -->
+  <div class="flex-1 flex items-center justify-center p-8 bg-surface-50">
+    <div class="w-full max-w-md">
+      <div class="text-center mb-8">
+        <div class="lg:hidden flex items-center justify-center gap-3 mb-6">
+          <div class="w-10 h-10 rounded-xl bg-primary-500 flex items-center justify-center">
+            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
+              <circle cx="12" cy="12" r="3" fill="currentColor"/>
+              <line x1="2" y1="12" x2="9" y2="12" stroke="currentColor" stroke-width="2"/>
+              <line x1="15" y1="12" x2="22" y2="12" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </div>
+          <span class="text-xl font-bold text-surface-900">PokéAPI</span>
+        </div>
+        <h2 class="text-2xl font-bold text-surface-900 mb-2">Create your account</h2>
+        <p class="text-surface-500">Join the community of Pokémon trainers</p>
+      </div>
 
-      <button type="submit" 
-              class="w-full bg-red-500 text-white px-4 py-3 rounded-2xl hover:bg-red-600 transition">
-        Sign Up
-      </button>
-    </form>
+      <form method="post" class="space-y-5">
+        {% csrf_token %}
 
-    <p class="text-gray-600 text-sm mt-6 text-center">
-      Already have an account? 
-      <a href="{% url 'login' %}" class="text-red-500 hover:underline">Log in here</a>.
-    </p>
+        <div>
+          <label for="id_username" class="block text-sm font-medium text-surface-700 mb-2">Username</label>
+          <input type="text" name="username" id="id_username" required autofocus
+                 class="input"
+                 placeholder="Choose a username">
+          {% if form.username.errors %}
+          <p class="mt-1 text-sm text-red-500">{{ form.username.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <div>
+          <label for="id_email" class="block text-sm font-medium text-surface-700 mb-2">Email</label>
+          <input type="email" name="email" id="id_email"
+                 class="input"
+                 placeholder="your@email.com">
+          {% if form.email.errors %}
+          <p class="mt-1 text-sm text-red-500">{{ form.email.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <div>
+          <label for="id_password1" class="block text-sm font-medium text-surface-700 mb-2">Password</label>
+          <input type="password" name="password1" id="id_password1" required
+                 class="input"
+                 placeholder="Create a password">
+          {% if form.password1.errors %}
+          <p class="mt-1 text-sm text-red-500">{{ form.password1.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <div>
+          <label for="id_password2" class="block text-sm font-medium text-surface-700 mb-2">Confirm Password</label>
+          <input type="password" name="password2" id="id_password2" required
+                 class="input"
+                 placeholder="Confirm your password">
+          {% if form.password2.errors %}
+          <p class="mt-1 text-sm text-red-500">{{ form.password2.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <div class="p-3 rounded-lg bg-surface-100 text-sm text-surface-600">
+          <p>Password must be at least 8 characters and cannot be entirely numeric.</p>
+        </div>
+
+        <button type="submit" class="w-full btn-primary py-3 text-base">
+          Create Account
+        </button>
+      </form>
+
+      <div class="mt-8 text-center">
+        <p class="text-surface-500">
+          Already have an account?
+          <a href="{% url 'login' %}" class="font-semibold text-primary-600 hover:text-primary-500">Sign in</a>
+        </p>
+      </div>
+    </div>
   </div>
 </div>
-
-<style>
-  input {
-    border: 1px solid #D1D5DB; 
-    border-radius: 0.5rem;
-    padding: 0.5rem 0.75rem;
-    width: 100%;
-    outline: none;
-  }
-  input:focus {
-    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.5);
-  }
-</style>
 {% endblock content %}

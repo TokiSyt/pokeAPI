@@ -1,5 +1,6 @@
-from .views import GenSearchView, GenDetailView
 from django.urls import path
+
+from .views import GenDetailView, GenSearchView
 
 app_name = "generations"
 

@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("pokemons", "0001_initial"),
     ]
@@ -13,6 +12,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="pokemon",
             name="moves",
-            field=models.CharField(null=True),
+            field=models.TextField(null=True),
         ),
     ]

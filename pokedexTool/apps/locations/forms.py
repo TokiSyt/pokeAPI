@@ -13,6 +13,7 @@ class LocationSearchForm(forms.Form):
         ),
     )
 
+
 class AreaSearchForm(forms.Form):
     location_name_or_id = forms.CharField(
         label="",

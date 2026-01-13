@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("locations", "0002_location_allowed_users"),
     ]
@@ -13,7 +12,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="location",
             name="internal_location_name",
-            field=models.CharField(default=1),
+            field=models.CharField(default="", max_length=200),
             preserve_default=False,
         ),
     ]

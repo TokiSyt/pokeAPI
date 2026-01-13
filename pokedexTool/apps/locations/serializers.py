@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from rest_framework.reverse import reverse
-from .models import Location, Area
+
+from .models import Area, Location
 
 
 class AreasListSerializer(serializers.ModelSerializer):
@@ -23,7 +24,6 @@ class AreasListSerializer(serializers.ModelSerializer):
 
 
 class AreasDetailSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Area
         fields = [
@@ -56,7 +56,6 @@ class LocationsListSerializer(serializers.ModelSerializer):
 
 
 class LocationsDetailSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Location
         fields = [

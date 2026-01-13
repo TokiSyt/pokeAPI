@@ -1,12 +1,14 @@
-from django.db import models
-from django.conf import settings
 import ast
+
+from django.conf import settings
+from django.db import models
+
 
 class PokemonAbility(models.Model):
     """
     Represents a Pokémon ability with localized names, effects, and flavor text.
     """
-    
+
     allowed_users = models.ManyToManyField(
         settings.AUTH_USER_MODEL, related_name="pokemon_ability"
     )
@@ -17,11 +19,21 @@ class PokemonAbility(models.Model):
     generation = models.CharField(max_length=50, blank=True, null=True)
     is_main_series = models.BooleanField(default=True)
 
-    names = models.TextField(blank=True, null=True, help_text="List of localized names (dicts)")
-    effect_entries = models.TextField(blank=True, null=True, help_text="Localized effects (dicts)")
-    flavor_text_entries = models.TextField(blank=True, null=True, help_text="Localized flavor texts (dicts)")
+    names = models.TextField(
+        blank=True, null=True, help_text="List of localized names (dicts)"
+    )
+    effect_entries = models.TextField(
+        blank=True, null=True, help_text="Localized effects (dicts)"
+    )
+    flavor_text_entries = models.TextField(
+        blank=True, null=True, help_text="Localized flavor texts (dicts)"
+    )
 
-    pokemons = models.TextField(blank=True, null=True, help_text="List of Pokémon names or IDs that can have this ability")
+    pokemons = models.TextField(
+        blank=True,
+        null=True,
+        help_text="List of Pokémon names or IDs that can have this ability",
+    )
 
     def __str__(self):
         return f"{self.name}_({self.ability_id})"
@@ -30,30 +42,34 @@ class PokemonAbility(models.Model):
     def names_list(self):
         try:
             return ast.literal_eval(self.names) if self.names else []
-        except:
+        except (ValueError, SyntaxError):
             return []
 
     @property
     def effects_list(self):
         try:
             return ast.literal_eval(self.effect_entries) if self.effect_entries else []
-        except:
+        except (ValueError, SyntaxError):
             return []
 
     @property
     def flavor_text_list(self):
         try:
             # showing to user the first one only | they are all similar
-            data = ast.literal_eval(self.flavor_text_entries) if self.flavor_text_entries else []
+            data = (
+                ast.literal_eval(self.flavor_text_entries)
+                if self.flavor_text_entries
+                else []
+            )
             return data[1:2]
-        except:
+        except (ValueError, SyntaxError):
             return []
 
     @property
     def pokemons_list(self):
         try:
             return ast.literal_eval(self.pokemons) if self.pokemons else []
-        except:
+        except (ValueError, SyntaxError):
             return []
 
     class Meta:

@@ -1,55 +1,94 @@
 {% extends "base.html" %}
-{% load type_color_filter %}
 
-{% block title %}Generation search{% endblock title %}
+{% block title %}Search Generations{% endblock title %}
 
 {% block content %}
-<div class="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
-  <h1 class="text-4xl font-extrabold text-gray-800 mb-6">Generation Search</h1>
-
-  <!-- Search box -->
-  <div class="bg-white shadow-lg rounded-2xl p-6 w-full max-w-sm text-center">
-    <p class="text-gray-600 mb-4">Welcome back to your Pokedex!</p>
-
-    <form action="{% url 'generations:gen-detail' generation_name_or_id='placeholder' %}" 
-          method="get" 
-          onsubmit="event.preventDefault(); window.location.href=this.action.replace('placeholder', this.elements['generation_name_or_id'].value);">
-      {% csrf_token %}
-      {{ form.as_p }}
-      <br>
-      <button type="submit" class="w-full bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">
-        Search
-      </button>
-    </form>
+<div class="w-full">
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-8">
+    <div>
+      <h1 class="text-3xl font-bold text-surface-900 mb-2">Search Generations</h1>
+      <p class="text-surface-500">Find generations by name or ID.</p>
+    </div>
+    <a href="{% url 'pokedex:poke-home' %}" class="btn-secondary">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+      </svg>
+      Back
+    </a>
   </div>
 
-  <br><br>
-
-  <div class="bg-white shadow-lg rounded-2xl p-4 w-full max-w-sm text-left">
-    <p class="text-gray-600 mb-4 text-center">Found generations list</p>
-
-    <div class="max-h-64 overflow-y-auto pr-2">
-      {% if gens %}
-        {% for gen in gens %}
-          <span class="text-gray-500 font-mono">
-            #{{ gen.gen_id  }}
-          </span>
-          <div class="flex items-center justify-between gap-3 mb-3 border-b pb-2">
-            <a href="{% url 'generations:gen-detail' generation_name_or_id=gen.internal_name %}" class="font-semibold text-gray-800 hover:text-red-500">
-              {{ gen.name|capfirst }}
-            </a>
+  <div class="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+    <!-- Search panel -->
+    <div class="lg:col-span-1">
+      <div class="card p-6 sticky top-8">
+        <h2 class="text-lg font-semibold text-surface-900 mb-4">Search</h2>
+        <form action="{% url 'generations:gen-detail' generation_name_or_id='placeholder' %}"
+              method="get"
+              onsubmit="event.preventDefault(); window.location.href=this.action.replace('placeholder', this.elements['generation_name_or_id'].value);">
+          {% csrf_token %}
+          <div class="mb-4">
+            <label for="generation_name_or_id" class="block text-sm font-medium text-surface-700 mb-2">Generation name or ID</label>
+            <input type="text"
+                   name="generation_name_or_id"
+                   id="generation_name_or_id"
+                   class="input"
+                   placeholder="e.g. generation-i or 1"
+                   required>
           </div>
-        {% endfor %}
-      {% endif %}
+          <button type="submit" class="w-full btn-primary">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+            Search
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Results panel -->
+    <div class="lg:col-span-2 xl:col-span-3">
+      <div class="card">
+        <div class="p-4 border-b border-surface-200">
+          <h2 class="text-lg font-semibold text-surface-900">Generations Collection</h2>
+          <p class="text-sm text-surface-500">{{ gens|length }} generations in your local database</p>
+        </div>
+
+        {% if gens %}
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 max-h-[calc(100vh-280px)] overflow-y-auto scrollbar-thin">
+          {% for gen in gens %}
+          <a href="{% url 'generations:gen-detail' generation_name_or_id=gen.internal_name %}"
+             class="flex items-center gap-4 p-4 hover:bg-surface-50 transition-colors group">
+            <div class="w-12 h-12 rounded-xl bg-indigo-100 flex items-center justify-center">
+              <svg class="w-6 h-6 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+              </svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-mono text-surface-400">#{{ gen.gen_id }}</span>
+              </div>
+              <p class="font-semibold text-surface-900 capitalize">{{ gen.name }}</p>
+            </div>
+            <svg class="w-5 h-5 text-surface-300 group-hover:text-primary-500 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </a>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="p-12 text-center">
+          <div class="w-16 h-16 rounded-full bg-surface-100 flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-surface-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-surface-900 mb-1">No generations yet</h3>
+          <p class="text-surface-500">Search for a generation above to add it to your collection.</p>
+        </div>
+        {% endif %}
+      </div>
     </div>
   </div>
-
-  <div class="mt-6">
-      <a href="{% url 'pokedex:poke-home' %}" 
-          class="inline-block bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition">
-          ← Pokedex Home
-      </a>
-  </div>
-
 </div>
 {% endblock content %}

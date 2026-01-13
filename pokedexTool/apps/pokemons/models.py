@@ -1,9 +1,10 @@
+import ast
+
 from django.conf import settings
 from django.db import models
-from apps.poke_types.models import PokemonType
-from apps.moves.models import PokemonMove
+
 from apps.abilities.models import PokemonAbility
-import ast
+from apps.poke_types.models import PokemonType
 
 
 class Pokemon(models.Model):
@@ -28,7 +29,7 @@ class Pokemon(models.Model):
         upload_to="pokemon_sprites/", null=True, blank=True
     )
 
-    moves = models.CharField(null=True)
+    moves = models.TextField(null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -40,7 +41,7 @@ class Pokemon(models.Model):
     def moves_list(self):
         try:
             return ast.literal_eval(self.moves)
-        except:
+        except (ValueError, SyntaxError):
             return []
 
     def __str__(self):

@@ -1,18 +1,18 @@
-from apps.pokemons.models import (
-    Pokemon,
-    PokemonType,
-    PokemonTypeRelation,
-    PokemonAbilityRelation,
-    PokemonStat,
-)
+import requests
+from django.db import transaction
 
-from apps.poke_types.services.import_type_from_api import import_pokemon_type_from_api
+from apps.abilities.models import PokemonAbility
 from apps.abilities.services.import_ability_from_api import (
     import_pokemon_ability_from_api,
 )
-from apps.abilities.models import PokemonAbility
-from django.db import transaction
-import requests
+from apps.poke_types.services.import_type_from_api import import_pokemon_type_from_api
+from apps.pokemons.models import (
+    Pokemon,
+    PokemonAbilityRelation,
+    PokemonStat,
+    PokemonType,
+    PokemonTypeRelation,
+)
 
 
 @transaction.atomic
@@ -61,7 +61,6 @@ def import_pokemon_from_api(pokemon_name: str, user) -> Pokemon | None:
         )
 
     for ability_data in data["abilities"]:
-
         ability_name = ability_data["ability"]["name"]
         ability_obj_qs = PokemonAbility.objects.filter(name=ability_name)
 

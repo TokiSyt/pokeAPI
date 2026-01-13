@@ -1,11 +1,12 @@
-from .services.import_location_from_api import import_location_from_api
-from .services.import_area_from_api import import_area_from_api
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import TemplateView
-from .forms import LocationSearchForm, AreaSearchForm
-from django.shortcuts import render
 from django.db.models import Q
-from .models import Location, Area
+from django.shortcuts import render
+from django.views.generic import TemplateView
+
+from .forms import AreaSearchForm, LocationSearchForm
+from .models import Area, Location
+from .services.import_area_from_api import import_area_from_api
+from .services.import_location_from_api import import_location_from_api
 
 
 class LocationSearchView(LoginRequiredMixin, TemplateView):
@@ -24,11 +25,9 @@ class LocationSearchView(LoginRequiredMixin, TemplateView):
 
 
 class LocationDetailView(LoginRequiredMixin, TemplateView):
-
     template_name = "locations/location_detail.html"
 
     def get(self, request, location_name_or_id):
-
         location_obj = None
         location_needs_update = False
 
@@ -76,11 +75,9 @@ class LocationDetailView(LoginRequiredMixin, TemplateView):
 
 
 class LocationAreaDetailView(LoginRequiredMixin, TemplateView):
-
     template_name = "locations/area_detail.html"
 
     def get(self, request, location_area_name_or_id):
-
         area_obj = None
         area_needs_update = False
 
@@ -105,14 +102,10 @@ class LocationAreaDetailView(LoginRequiredMixin, TemplateView):
             pass
 
         if area_needs_update or area_obj is None:
-            area_obj = import_area_from_api(
-                location_area_name_or_id, self.request.user
-            )
+            area_obj = import_area_from_api(location_area_name_or_id, self.request.user)
 
         if not area_obj:
-            context = {
-                "error": f'Could not fetch area "{location_area_name_or_id}"'
-            }
+            context = {"error": f'Could not fetch area "{location_area_name_or_id}"'}
 
             return render(
                 request,

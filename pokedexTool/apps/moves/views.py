@@ -1,11 +1,11 @@
-from .services.import_move_from_api import create_or_update_move
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import TemplateView
-from django.shortcuts import render
-from .models import PokemonMove
-from .forms import MoveSearchForm
 from django.db.models import Q
+from django.shortcuts import render
+from django.views.generic import TemplateView
 
+from .forms import MoveSearchForm
+from .models import PokemonMove
+from .services.import_move_from_api import create_or_update_move
 
 # Moves
 
@@ -23,11 +23,9 @@ class MovesSearchView(LoginRequiredMixin, TemplateView):
 
 
 class MoveDetailView(LoginRequiredMixin, TemplateView):
-
     template_name = "moves/move_detail.html"
 
     def get(self, request, poke_move_name_or_id):
-
         move_obj = None
         move_needs_update = False
 

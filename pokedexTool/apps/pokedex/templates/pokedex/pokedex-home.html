@@ -1,44 +1,120 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="min-h-screen bg-gray-100 flex flex-col items-center py-10">
-  <h1 class="text-4xl font-extrabold text-gray-800 mb-8">Pokedex Home</h1>
-
-  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full max-w-6xl">
-
-    <a href="{% url 'pokemons:poke-search' %}" class="bg-white shadow-lg rounded-2xl p-6 text-center hover:bg-gray-50 transition">
-      <p class="text-gray-800 font-semibold text-lg">Pokémons</p>
-    </a>
-
-    <a href="{% url 'poke_moves:moves-search' %}" class="bg-white shadow-lg rounded-2xl p-6 text-center hover:bg-gray-50 transition">
-      <p class="text-gray-800 font-semibold text-lg">Moves</p>
-    </a>
-
-    <a href="{% url 'abilities:ability-search' %}" class="bg-white shadow-lg rounded-2xl p-6 text-center hover:bg-gray-50 transition">
-      <p class="text-gray-800 font-semibold text-lg">Abilities</p>
-    </a>
-
-    <a href="{% url 'poke_types:types-search' %}" class="bg-white shadow-lg rounded-2xl p-6 text-center hover:bg-gray-50 transition">
-      <p class="text-gray-800 font-semibold text-lg">Types</p>
-    </a>
-
-    <a href="{% url 'locations:locations-search' %}" class="bg-white shadow-lg rounded-2xl p-6 text-center hover:bg-gray-50 transition">
-      <p class="text-gray-800 font-semibold text-lg">Locations</p>
-    </a>
-
-    {% comment %} <a href="#" class="bg-white shadow-lg rounded-2xl p-6 text-center hover:bg-gray-50 transition">
-      <p class="text-gray-800 font-semibold text-lg">Items (WIP)</p>
-    </a> {% endcomment %}
-
-    {% comment %} <a href="#" class="bg-white shadow-lg rounded-2xl p-6 text-center hover:bg-gray-50 transition">
-      <p class="text-gray-800 font-semibold text-lg">Berries (WIP)</p>
-    </a> {% endcomment %}
-
-    <a href="{% url 'generations:gen-search' %}" class="bg-white shadow-lg rounded-2xl p-6 text-center hover:bg-gray-50 transition">
-      <p class="text-gray-800 font-semibold text-lg">Generations</p>
-    </a>
-
+<div class="max-w-6xl">
+  <!-- Header -->
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-surface-900 mb-2">Pokédex</h1>
+    <p class="text-surface-500">Explore and discover Pokémon, moves, abilities, and more.</p>
   </div>
 
+  <!-- Category grid -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- Pokémon -->
+    <a href="{% url 'pokemons:poke-search' %}" class="card p-6 hover:shadow-lg hover:border-primary-200 transition-all group">
+      <div class="w-12 h-12 rounded-xl bg-primary-100 group-hover:bg-primary-200 flex items-center justify-center mb-4 transition-colors">
+        <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10" stroke-width="2"/>
+          <circle cx="12" cy="12" r="3" fill="currentColor"/>
+          <line x1="2" y1="12" x2="9" y2="12" stroke-width="2"/>
+          <line x1="15" y1="12" x2="22" y2="12" stroke-width="2"/>
+        </svg>
+      </div>
+      <h3 class="text-lg font-semibold text-surface-900 mb-1">Pokémon</h3>
+      <p class="text-sm text-surface-500">Search and browse all Pokémon species with detailed stats.</p>
+      <div class="mt-4 flex items-center text-primary-600 text-sm font-medium">
+        Browse Pokémon
+        <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+      </div>
+    </a>
+
+    <!-- Moves -->
+    <a href="{% url 'poke_moves:moves-search' %}" class="card p-6 hover:shadow-lg hover:border-blue-200 transition-all group">
+      <div class="w-12 h-12 rounded-xl bg-blue-100 group-hover:bg-blue-200 flex items-center justify-center mb-4 transition-colors">
+        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+        </svg>
+      </div>
+      <h3 class="text-lg font-semibold text-surface-900 mb-1">Moves</h3>
+      <p class="text-sm text-surface-500">Explore attack moves, power, accuracy, and effects.</p>
+      <div class="mt-4 flex items-center text-blue-600 text-sm font-medium">
+        Browse Moves
+        <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+      </div>
+    </a>
+
+    <!-- Abilities -->
+    <a href="{% url 'abilities:ability-search' %}" class="card p-6 hover:shadow-lg hover:border-purple-200 transition-all group">
+      <div class="w-12 h-12 rounded-xl bg-purple-100 group-hover:bg-purple-200 flex items-center justify-center mb-4 transition-colors">
+        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+        </svg>
+      </div>
+      <h3 class="text-lg font-semibold text-surface-900 mb-1">Abilities</h3>
+      <p class="text-sm text-surface-500">Discover special abilities and their battle effects.</p>
+      <div class="mt-4 flex items-center text-purple-600 text-sm font-medium">
+        Browse Abilities
+        <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+      </div>
+    </a>
+
+    <!-- Types -->
+    <a href="{% url 'poke_types:types-search' %}" class="card p-6 hover:shadow-lg hover:border-green-200 transition-all group">
+      <div class="w-12 h-12 rounded-xl bg-green-100 group-hover:bg-green-200 flex items-center justify-center mb-4 transition-colors">
+        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/>
+        </svg>
+      </div>
+      <h3 class="text-lg font-semibold text-surface-900 mb-1">Types</h3>
+      <p class="text-sm text-surface-500">View type matchups and damage relationships.</p>
+      <div class="mt-4 flex items-center text-green-600 text-sm font-medium">
+        Browse Types
+        <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+      </div>
+    </a>
+
+    <!-- Locations -->
+    <a href="{% url 'locations:locations-search' %}" class="card p-6 hover:shadow-lg hover:border-amber-200 transition-all group">
+      <div class="w-12 h-12 rounded-xl bg-amber-100 group-hover:bg-amber-200 flex items-center justify-center mb-4 transition-colors">
+        <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+      </div>
+      <h3 class="text-lg font-semibold text-surface-900 mb-1">Locations</h3>
+      <p class="text-sm text-surface-500">Find game locations and encounter areas.</p>
+      <div class="mt-4 flex items-center text-amber-600 text-sm font-medium">
+        Browse Locations
+        <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+      </div>
+    </a>
+
+    <!-- Generations -->
+    <a href="{% url 'generations:gen-search' %}" class="card p-6 hover:shadow-lg hover:border-cyan-200 transition-all group">
+      <div class="w-12 h-12 rounded-xl bg-cyan-100 group-hover:bg-cyan-200 flex items-center justify-center mb-4 transition-colors">
+        <svg class="w-6 h-6 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+        </svg>
+      </div>
+      <h3 class="text-lg font-semibold text-surface-900 mb-1">Generations</h3>
+      <p class="text-sm text-surface-500">Explore Pokémon by game generation.</p>
+      <div class="mt-4 flex items-center text-cyan-600 text-sm font-medium">
+        Browse Generations
+        <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+      </div>
+    </a>
+  </div>
 </div>
 {% endblock content %}

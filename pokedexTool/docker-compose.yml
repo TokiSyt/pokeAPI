@@ -1,0 +1,40 @@
+services:
+  db:
+    image: postgres:16
+    container_name: pokeapi_db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-pokeapi}
+      POSTGRES_USER: ${POSTGRES_USER:-pokeapi_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-pokeapi_password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-pokeapi_user} -d ${POSTGRES_DB:-pokeapi}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build: .
+    container_name: pokeapi_web
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
+             python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/app
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:

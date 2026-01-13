@@ -1,118 +1,138 @@
 {% extends "base.html" %}
-{% load type_color_filter %}
 
 {% block title %}Area | {{ area.area_name }}{% endblock title %}
 
 {% block content %}
-<div class="min-h-screen bg-gray-100 flex justify-center items-start py-8 px-4">
-
+<div class="w-full">
   {% if area %}
-  <div class="bg-white shadow-xl rounded-3xl p-6 w-full max-w-xl overflow-y-auto">
-
-    <!-- Header -->
-    <div class="text-center mb-6">
-      <h2 class="text-3xl font-bold text-gray-900 capitalize">{{ area.area_name }}</h2>
-
-      <p class="text-gray-500 text-sm mt-1">
-        {{ area.internal_area_name }}
-      </p>
-    </div>
-
-    <!-- Basic Area Info -->
-    <div class="grid grid-cols-2 gap-4 text-gray-700 mb-6">
-      <div class="p-3 bg-gray-50 rounded-xl shadow-inner text-center">
-        <p class="text-gray-500 text-sm">Area ID</p>
-        <p class="font-semibold">#{{ area.area_id }}</p>
-      </div>
-
-      <div class="p-3 bg-gray-50 rounded-xl shadow-inner text-center">
-        <p class="text-gray-500 text-sm">Location</p>
-        <p class="font-semibold capitalize">
-          <a href="{% url 'locations:locations-detail' area.location.location_id %}"
-             class="text-gray-900 hover:text-red-500 font-semibold transition">
-            {{ area.location.location_name }}
-          </a>
-        </p>
-      </div>
-    </div>
-
-    <!-- Encounter Method Rates -->
-    <div class="mb-6 p-4 bg-gray-50 rounded-2xl shadow-inner">
-      <h3 class="text-xl font-semibold text-gray-800 mb-3 text-center">
-        Encounter Method Rates
-      </h3>
-
-      {% if area.encounter_method_rates_list %}
-      <ul>
-        {% for entry in area.encounter_method_rates_list %}
-        <li class="flex justify-between items-center mb-2 p-2 bg-white rounded-lg shadow-sm">
-          <div class="flex items-center gap-2">
-            <span class="w-3 h-3 rounded-full bg-red-400"></span>
-            <span class="capitalize font-medium">{{ entry.0 }}</span>
-          </div>
-          <span class="font-mono text-gray-700 font-semibold">{{ entry.1 }}%</span>
-        </li>
-        {% endfor %}
-      </ul>
-      {% else %}
-      <ul>
-        {% for entry in area.encounter_method_rates %}
-        <li class="flex justify-between items-center mb-2 p-2 bg-white rounded-lg shadow-sm">
-          <div class="flex items-center gap-2">
-            <span class="w-3 h-3 rounded-full bg-red-400"></span>
-            <span class="capitalize font-medium">{{ entry.0 }}</span>
-          </div>
-          <span class="font-mono text-gray-700 font-semibold">{{ entry.1 }}%</span>
-        </li>
-        {% endfor %}
-      </ul>
-      {% endif %}
-    </div>
-
-    <!-- Pokémon Encounters -->
-    <div class="mb-6 p-4 bg-gray-50 rounded-2xl shadow-inner">
-      <h3 class="text-xl font-semibold text-gray-800 mb-3 text-center">
-        Pokémon Encounters
-      </h3>
-
-      {% if area.pokemon_encounters_list %}
-      <ul class="flex flex-wrap justify-center gap-2 max-h-48 overflow-y-auto">
-        {% for mon in area.pokemon_encounters_list %}
-        <li class="px-3 py-1 bg-white rounded-lg shadow-sm capitalize font-medium hover:bg-red-50 transition">
-          <a href="{% url 'pokemons:poke-detail' mon %}"
-             class="text-gray-900 hover:text-red-500 transition font-semibold">
-            {{ mon }}
-          </a>
-        </li>
-        {% endfor %}
-      </ul>
-      {% else %}
-      <ul class="flex flex-wrap justify-center gap-2 max-h-48 overflow-y-auto">
-        {% for poke_encounter in area.pokemon_encounters %}
-        <li class="px-3 py-1 bg-white rounded-lg shadow-sm capitalize font-medium hover:bg-red-50 transition">
-          <a href="{% url 'pokemons:poke-detail' poke_encounter %}"
-             class="text-gray-900 hover:text-red-500 transition font-semibold">
-            {{ poke_encounter }}
-          </a>
-        </li>
-        {% endfor %}
-      </ul>
-      {% endif %}
-    </div>
-
-    <!-- Back Button -->
-    <div class="text-center mb-4">
-      <a href="{% url 'locations:locations-search' %}"
-         class="inline-block bg-gray-500 text-white px-5 py-2 rounded-full hover:bg-gray-600 transition font-semibold">
-         ← Back to Locations
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center gap-4">
+      <a href="{% url 'locations:locations-search' %}" class="w-10 h-10 rounded-xl bg-surface-100 hover:bg-surface-200 flex items-center justify-center transition-colors">
+        <svg class="w-5 h-5 text-surface-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+        </svg>
       </a>
+      <div>
+        <p class="text-sm font-mono text-surface-400">#{{ area.area_id }}</p>
+        <h1 class="text-3xl font-bold text-surface-900 capitalize">{{ area.area_name }}</h1>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <!-- Left column - Icon & Basic Info -->
+    <div class="lg:col-span-1 space-y-6">
+      <!-- Icon -->
+      <div class="card p-6">
+        <div class="flex justify-center mb-4">
+          <div class="w-24 h-24 rounded-2xl bg-emerald-100 flex items-center justify-center">
+            <svg class="w-12 h-12 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+            </svg>
+          </div>
+        </div>
+        <div class="flex justify-center">
+          <span class="px-4 py-1.5 rounded-full text-sm font-semibold text-white bg-emerald-500">
+            Area
+          </span>
+        </div>
+      </div>
+
+      <!-- Basic Info -->
+      <div class="card p-6">
+        <h2 class="text-sm font-semibold text-surface-400 uppercase tracking-wider mb-4">Basic Info</h2>
+        <div class="space-y-3">
+          <div class="p-3 rounded-xl bg-surface-50">
+            <p class="text-xs text-surface-500 mb-1">Location</p>
+            <a href="{% url 'locations:locations-detail' area.location.location_id %}" class="font-medium text-surface-900 hover:text-primary-500 transition-colors capitalize">
+              {{ area.location.location_name }}
+            </a>
+          </div>
+          <div class="p-3 rounded-xl bg-surface-50">
+            <p class="text-xs text-surface-500 mb-1">Internal Name</p>
+            <p class="font-medium text-surface-900 text-sm">{{ area.internal_area_name }}</p>
+          </div>
+        </div>
+      </div>
     </div>
 
+    <!-- Right column - Encounters & Method Rates -->
+    <div class="lg:col-span-2 xl:col-span-3 space-y-6">
+      <!-- Encounter Method Rates -->
+      <div class="card p-6">
+        <h2 class="text-sm font-semibold text-surface-400 uppercase tracking-wider mb-4">Encounter Method Rates</h2>
+        {% if area.encounter_method_rates_list or area.encounter_method_rates %}
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+          {% if area.encounter_method_rates_list %}
+            {% for entry in area.encounter_method_rates_list %}
+            <div class="p-4 rounded-xl bg-surface-50 flex justify-between items-center">
+              <div class="flex items-center gap-2">
+                <span class="w-3 h-3 rounded-full bg-emerald-400"></span>
+                <span class="font-medium text-surface-900 capitalize">{{ entry.0|cut:"-" }}</span>
+              </div>
+              <span class="font-mono font-semibold text-surface-700">{{ entry.1 }}%</span>
+            </div>
+            {% endfor %}
+          {% else %}
+            {% for entry in area.encounter_method_rates %}
+            <div class="p-4 rounded-xl bg-surface-50 flex justify-between items-center">
+              <div class="flex items-center gap-2">
+                <span class="w-3 h-3 rounded-full bg-emerald-400"></span>
+                <span class="font-medium text-surface-900 capitalize">{{ entry.0|cut:"-" }}</span>
+              </div>
+              <span class="font-mono font-semibold text-surface-700">{{ entry.1 }}%</span>
+            </div>
+            {% endfor %}
+          {% endif %}
+        </div>
+        {% else %}
+        <p class="text-surface-500 text-center py-8">No encounter method data available.</p>
+        {% endif %}
+      </div>
+
+      <!-- Pokemon Encounters -->
+      <div class="card p-6">
+        <h2 class="text-sm font-semibold text-surface-400 uppercase tracking-wider mb-4">Pokémon Encounters</h2>
+        {% if area.pokemon_encounters_list or area.pokemon_encounters %}
+        <div class="flex flex-wrap gap-2 max-h-64 overflow-y-auto">
+          {% if area.pokemon_encounters_list %}
+            {% for mon in area.pokemon_encounters_list %}
+            <a href="{% url 'pokemons:poke-detail' mon %}"
+               class="px-3 py-1.5 rounded-lg bg-surface-100 hover:bg-surface-200 text-sm font-medium text-surface-700 capitalize transition-colors">
+              {{ mon|cut:"-" }}
+            </a>
+            {% endfor %}
+          {% else %}
+            {% for poke_encounter in area.pokemon_encounters %}
+            <a href="{% url 'pokemons:poke-detail' poke_encounter %}"
+               class="px-3 py-1.5 rounded-lg bg-surface-100 hover:bg-surface-200 text-sm font-medium text-surface-700 capitalize transition-colors">
+              {{ poke_encounter|cut:"-" }}
+            </a>
+            {% endfor %}
+          {% endif %}
+        </div>
+        {% else %}
+        <p class="text-surface-500 text-center py-8">No Pokémon encounter data available.</p>
+        {% endif %}
+      </div>
+    </div>
   </div>
 
   {% else %}
-  <div class="text-red-500 font-semibold text-center">{{ error }}</div>
+  <!-- Error state -->
+  <div class="card p-12 text-center">
+    <div class="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
+      <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+      </svg>
+    </div>
+    <h2 class="text-xl font-bold text-surface-900 mb-2">Area not found</h2>
+    <p class="text-surface-500 mb-6">{{ error }}</p>
+    <a href="{% url 'locations:locations-search' %}" class="btn-primary">
+      Back to Search
+    </a>
+  </div>
   {% endif %}
-
 </div>
 {% endblock content %}
