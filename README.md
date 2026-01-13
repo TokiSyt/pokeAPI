@@ -1,82 +1,88 @@
 # Pokédex Tool
 
-A Django-based web application that integrates with the PokéAPI
- to let users search, view, and manage Pokémon data.
+A Django-based web application that integrates with PokéAPI to let users search, view, and manage Pokémon data with a personal Pokédex.
 
-# Features:
+## Features
 
-Maintain your own personal Pokédex
+- **Personal Pokédex** - Maintain your own collection of Pokémon
+- **Search** - Find Pokémon, Moves, Abilities, Types, Locations, and Generations by name or ID
+- **Auto-fetch** - Data not in database is automatically fetched from PokéAPI and stored
+- **REST API** - Token-based API for programmatic access
+- **Docker Support** - Ready for containerized deployment with PostgreSQL
 
-Search Pokémon by name or ID
+## Tech Stack
 
-View details such as types, abilities, and stats
+- Django 5.x
+- Django REST Framework
+- PostgreSQL (Docker) / SQLite (local)
+- Tailwind CSS
+- pytest
 
+## Quick Start
 
-# Installation Prerequisites
+### Local Development (SQLite)
 
-Python 3.10+
-
-Virtualenv or Conda
-
-Git
-
-Clone the repository
-
-git clone https://github.com/TokiSyt/pokeAPI.git <br>
-cd pokedex-tool
-
-Create and activate a virtual environment
-
-Linux/macOS:
-python3 -m venv venv <br>
-source venv/bin/activate
-
-Windows:
-python -m venv venv <br>
-venv\Scripts\activate
-
-# 
-
+```bash
+cd pokedexTool
+python -m venv venv
+source venv/bin/activate  # Linux/macOS
+# venv\Scripts\activate   # Windows
 pip install -r requirements.txt
-
 python manage.py migrate
-
 python manage.py createsuperuser
-
-
-Run the development server
-
 python manage.py runserver
+```
 
-# Usage
+### Docker Development (PostgreSQL)
 
-Log in with your account
+```bash
+cd pokedexTool
+cp .env.example .env     # Configure environment
+make upbuild             # Build and start containers
+make migrate             # Run migrations
+make superuser           # Create admin user
+```
 
-Search for a Pokémon by name or ID
+See `make help` for all available commands.
 
-If not found in the database, it will be fetched from PokéAPI and stored
+## API
 
-View detailed stats, abilities, and add Pokémon to your personal Pokédex
+Base URL: `/api/`
 
-# Development Notes
+**Authentication:** POST to `/api/auth/` with username/password, then use `Authorization: Bearer <token>` header.
 
-Pokémon data is stored in the general database and their visualization is tied to the users who searched it
+**Endpoints:**
+- `/api/pokemons/` - Pokémon data
+- `/api/moves/` - Move data
+- `/api/abilities/` - Ability data
+- `/api/types/` - Type data
+- `/api/locations/` - Location data
+- `/api/areas/` - Area data
+- `/api/generations/` - Generation data
 
-A multi-thread management command exists to pre-populate the database with all Pokémon for the list in pokedexTool\apps\pokemons\services\pokemon_import.py
+## Testing
 
-Disabled by default (to avoid hitting API rate limits). Use at your own risk.
+```bash
+# Local
+pytest
 
-# Roadmap
+# Docker
+make test
 
- Add pagination and filters to the Pokédex view
+# With coverage
+make test-cov
+```
 
- Improve error handling and logging
+## Development
 
- Add tests with pytest and DRF test cases
+```bash
+# Linting and formatting
+make ruff
 
- Extend support for moves, evolution chains, and areas
+# Tailwind CSS watch mode
+npm run watch:css
+```
 
-# License
+## License
 
-This project is for educational purposes.
-You may use, modify, and distribute it under the MIT License.
+MIT License - for educational purposes.
