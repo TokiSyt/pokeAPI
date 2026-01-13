@@ -100,7 +100,8 @@ class TestGenDetailView:
     def test_requires_login(self, client):
         response = client.get(
             reverse(
-                "generations:gen-detail", kwargs={"generation_name_or_id": "generation-i"}
+                "generations:gen-detail",
+                kwargs={"generation_name_or_id": "generation-i"},
             )
         )
         assert response.status_code == 302
@@ -112,7 +113,8 @@ class TestGenDetailView:
         client.force_login(user)
         response = client.get(
             reverse(
-                "generations:gen-detail", kwargs={"generation_name_or_id": "generation-i"}
+                "generations:gen-detail",
+                kwargs={"generation_name_or_id": "generation-i"},
             )
         )
         assert response.status_code == 200

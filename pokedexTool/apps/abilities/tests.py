@@ -117,7 +117,8 @@ class TestAbilityDetailView:
     def test_requires_login(self, client):
         response = client.get(
             reverse(
-                "abilities:ability-detail", kwargs={"poke_ability_name_or_id": "overgrow"}
+                "abilities:ability-detail",
+                kwargs={"poke_ability_name_or_id": "overgrow"},
             )
         )
         assert response.status_code == 302
@@ -129,7 +130,8 @@ class TestAbilityDetailView:
         client.force_login(user)
         response = client.get(
             reverse(
-                "abilities:ability-detail", kwargs={"poke_ability_name_or_id": "overgrow"}
+                "abilities:ability-detail",
+                kwargs={"poke_ability_name_or_id": "overgrow"},
             )
         )
         assert response.status_code == 200
@@ -141,7 +143,9 @@ class TestAbilityDetailView:
         ability.allowed_users.add(user)
         client.force_login(user)
         response = client.get(
-            reverse("abilities:ability-detail", kwargs={"poke_ability_name_or_id": "65"})
+            reverse(
+                "abilities:ability-detail", kwargs={"poke_ability_name_or_id": "65"}
+            )
         )
         assert response.status_code == 200
         assert response.context["ability"] == ability

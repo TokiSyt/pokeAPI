@@ -1,36 +1,52 @@
-import pytest
 import factory
+import pytest
 from django.contrib.auth import get_user_model
-from rest_framework.test import APIClient
 from rest_framework.authtoken.models import Token
+from rest_framework.test import APIClient
 
-from apps.pokemons.models import Pokemon, PokemonStat, PokemonTypeRelation, PokemonAbilityRelation
-from apps.poke_types.models import PokemonType, TypeDamageRelation
 from apps.abilities.models import PokemonAbility
-from apps.moves.models import PokemonMove
-from apps.locations.models import Location, Area
 from apps.generations.models import Generation
+from apps.locations.models import Area, Location
+from apps.moves.models import PokemonMove
+from apps.poke_types.models import PokemonType, TypeDamageRelation
+from apps.pokemons.models import (
+    Pokemon,
+    PokemonStat,
+)
 
 User = get_user_model()
 
 
 # ============== User Factories ==============
 
+
 class UserFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = User
+        skip_postgeneration_save = True
 
     username = factory.Sequence(lambda n: f"testuser{n}")
     email = factory.LazyAttribute(lambda obj: f"{obj.username}@example.com")
-    password = factory.PostGenerationMethodCall("set_password", "testpass123")
+
+    @factory.post_generation
+    def password(obj, create, extracted, **kwargs):
+        if not create:
+            return
+        obj.set_password(extracted or "testpass123")
+        obj.save()
 
 
 class AdminUserFactory(UserFactory):
+    class Meta:
+        model = User
+        skip_postgeneration_save = True
+
     is_staff = True
     is_superuser = True
 
 
 # ============== Pokemon Factories ==============
+
 
 class PokemonTypeFactory(factory.django.DjangoModelFactory):
     class Meta:
@@ -116,6 +132,7 @@ class TypeDamageRelationFactory(factory.django.DjangoModelFactory):
 
 # ============== Location Factories ==============
 
+
 class LocationFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Location
@@ -142,6 +159,7 @@ class AreaFactory(factory.django.DjangoModelFactory):
 
 # ============== Generation Factory ==============
 
+
 class GenerationFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Generation
@@ -156,6 +174,7 @@ class GenerationFactory(factory.django.DjangoModelFactory):
 
 
 # ============== Pytest Fixtures ==============
+
 
 @pytest.fixture
 def user(db):

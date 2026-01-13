@@ -1,15 +1,13 @@
 import pytest
 from django.urls import reverse
 
-from apps.locations.models import Location, Area
+from apps.locations.models import Area, Location
 
 
 class TestLocationModel:
     @pytest.mark.django_db
     def test_create_location(self, location_factory):
-        location = location_factory(
-            internal_location_name="pallet-town", location_id=1
-        )
+        location = location_factory(internal_location_name="pallet-town", location_id=1)
         assert location.internal_location_name == "pallet-town"
         assert location.location_id == 1
 
@@ -84,9 +82,7 @@ class TestAreaModel:
 
     @pytest.mark.django_db
     def test_pokemon_encounters_list_parses_valid(self, area_factory):
-        area = area_factory(
-            pokemon_encounters="[{'pokemon': 'pikachu', 'chance': 5}]"
-        )
+        area = area_factory(pokemon_encounters="[{'pokemon': 'pikachu', 'chance': 5}]")
         assert area.pokemon_encounters_list == [{"pokemon": "pikachu", "chance": 5}]
 
     @pytest.mark.django_db
@@ -176,7 +172,8 @@ class TestAreaDetailView:
     def test_requires_login(self, client):
         response = client.get(
             reverse(
-                "locations:locations-area-detail", kwargs={"location_area_name_or_id": "route-1"}
+                "locations:locations-area-detail",
+                kwargs={"location_area_name_or_id": "route-1"},
             )
         )
         assert response.status_code == 302
@@ -201,7 +198,10 @@ class TestAreaDetailView:
         area.allowed_users.add(user)
         client.force_login(user)
         response = client.get(
-            reverse("locations:locations-area-detail", kwargs={"location_area_name_or_id": "1"})
+            reverse(
+                "locations:locations-area-detail",
+                kwargs={"location_area_name_or_id": "1"},
+            )
         )
         assert response.status_code == 200
         assert response.context["area"] == area

@@ -1,12 +1,12 @@
 import pytest
-from django.urls import reverse
 from django.db import IntegrityError
+from django.urls import reverse
 
 from apps.pokemons.models import (
     Pokemon,
+    PokemonAbilityRelation,
     PokemonStat,
     PokemonTypeRelation,
-    PokemonAbilityRelation,
 )
 
 
