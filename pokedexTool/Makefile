@@ -75,7 +75,9 @@ test-cov:
 ps:
 	$(DOCKER_COMPOSE) ps
 
+.PHONY: ruff
 ruff:
+	ruff check --fix
 	ruff format
 
 # CSS (Tailwind)
