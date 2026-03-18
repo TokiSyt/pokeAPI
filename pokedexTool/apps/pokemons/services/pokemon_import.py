@@ -1,36 +1,29 @@
-import requests
 from django.db import transaction
 
 from apps.abilities.models import PokemonAbility
-from apps.abilities.services.import_ability_from_api import (
-    import_ability as import_pokemon_ability_from_api,
-)
-from apps.poke_types.services.import_type_from_api import import_pokemon_type_from_api
+from apps.core.import_service import import_for_model, register
+from apps.core.pokeapi_client import default_client
+from apps.poke_types.models import PokemonType
 from apps.pokemons.models import (
     Pokemon,
     PokemonAbilityRelation,
     PokemonStat,
-    PokemonType,
     PokemonTypeRelation,
 )
 
 
+@register(Pokemon)
 @transaction.atomic
-def import_pokemon_from_api(pokemon_name: str, user) -> Pokemon | None:
+def import_pokemon_from_api(name_or_id: str, user=None) -> Pokemon | None:
     """
     Fetch a Pokemon from the PokeAPI and save it to the DB.
-    Returns the Pokemon instance if successful, else None.
+    Resolves Type and Ability transitive dependencies through the registry.
     """
-
-    response = requests.get(f"https://pokeapi.co/api/v2/pokemon/{pokemon_name}")
-    if response.status_code != 200:
+    data = default_client.fetch("pokemon", name_or_id)
+    if data is None:
         return None
 
-    data = response.json()
-    print(f"API CALL MADE FOR POKEMON {pokemon_name}")
-
-    if "moves" in data:
-        move_names = [move["move"]["name"] for move in data.get("moves", [])]
+    move_names = [move["move"]["name"] for move in data.get("moves", [])]
 
     pokemon, _ = Pokemon.objects.update_or_create(
         pokemon_id=data["id"],
@@ -45,16 +38,17 @@ def import_pokemon_from_api(pokemon_name: str, user) -> Pokemon | None:
         },
     )
 
-    pokemon.allowed_users.add(user)
+    if user:
+        pokemon.allowed_users.add(user)
 
     for type_data in data["types"]:
         type_name = type_data["type"]["name"]
-        type_obj_qs = PokemonType.objects.filter(name=type_name)
-
-        if not type_obj_qs.exists():
-            type_obj = import_pokemon_type_from_api(type_name)
-        else:
-            type_obj = PokemonType.objects.get(name=type_name)
+        type_qs = PokemonType.objects.filter(name=type_name)
+        type_obj = (
+            type_qs.get()
+            if type_qs.exists()
+            else import_for_model(PokemonType, type_name)
+        )
 
         PokemonTypeRelation.objects.update_or_create(
             pokemon=pokemon, type=type_obj, slot=type_data["slot"]
@@ -62,12 +56,12 @@ def import_pokemon_from_api(pokemon_name: str, user) -> Pokemon | None:
 
     for ability_data in data["abilities"]:
         ability_name = ability_data["ability"]["name"]
-        ability_obj_qs = PokemonAbility.objects.filter(name=ability_name)
-
-        if not ability_obj_qs.exists():
-            ability_obj = import_pokemon_ability_from_api(ability_name)
-        else:
-            ability_obj = PokemonAbility.objects.get(name=ability_name)
+        ability_qs = PokemonAbility.objects.filter(name=ability_name)
+        ability_obj = (
+            ability_qs.get()
+            if ability_qs.exists()
+            else import_for_model(PokemonAbility, ability_name)
+        )
 
         PokemonAbilityRelation.objects.update_or_create(
             pokemon=pokemon,

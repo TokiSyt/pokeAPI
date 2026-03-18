@@ -1,13 +1,12 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render
 from django.views.generic import TemplateView
+
+from apps.core.views import PokeDetailView
 
 from .forms import PokemonSearchForm
 from .models import Pokemon, PokemonAbilityRelation, PokemonTypeRelation
-from .services.pokemon_import import import_pokemon_from_api
 
 
-# POKEMONS
 class PokemonSearchView(LoginRequiredMixin, TemplateView):
     template_name = "pokemons/pokemon_search.html"
     form_class = PokemonSearchForm
@@ -20,65 +19,32 @@ class PokemonSearchView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class PokemonDetailView(LoginRequiredMixin, TemplateView):
+class PokemonDetailView(PokeDetailView):
+    model = Pokemon
     template_name = "pokemons/pokemon_detail.html"
+    context_key = "pokemon"
+    id_field = "pokemon_id"
+    url_kwarg = "pokemon_name_or_id"
+    error_noun = "Pokemon"
 
-    def get(self, request, pokemon_name_or_id):
-        pokemon = None
-        pokemon_needs_update = False
+    def needs_reimport(self, obj, request):
+        missing = (
+            not obj.stats.exists()
+            or not obj.type_relations.exists()
+            or not obj.ability_relations.exists()
+        )
+        return missing or not obj.allowed_users.filter(id=request.user.id).exists()
 
-        try:
-            pokemon = Pokemon.objects.get(name=pokemon_name_or_id)
-
-            # any information missing from the model and it's relations
-
-            missing_pokemon_information = (
-                not pokemon.stats.exists()
-                or not pokemon.type_relations.exists()
-                or not pokemon.ability_relations.exists()
-            )
-
-            if (
-                missing_pokemon_information
-                or not pokemon.allowed_users.filter(id=request.user.id).exists()
-            ):
-                pokemon_needs_update = True
-
-            print(f"{pokemon} fetched from database")
-
-        except Pokemon.DoesNotExist:
-            pokemon_needs_update = True
-
-        if pokemon_needs_update or pokemon is None:
-            pokemon = import_pokemon_from_api(pokemon_name_or_id, request.user)
-
-        if not pokemon:
-            context = {"error": f'Could not fetch Pokemon "{pokemon_name_or_id}"'}
-
-            return render(
-                request,
-                self.template_name,
-                context,
-                status=404,
-            )
-
-        type_relations = PokemonTypeRelation.objects.filter(
-            pokemon=pokemon
-        ).select_related("type")
-
-        ability_relations = PokemonAbilityRelation.objects.filter(
-            pokemon=pokemon
-        ).select_related("ability")
-
-        if len(pokemon.moves) < 3:
-            pokemon.moves = []
-
-        print(type_relations)
-        context = {
-            "pokemon": pokemon,
-            "type_relations": type_relations,
-            "ability_relations": ability_relations,
-            "stats": pokemon.stats.all(),
+    def build_context(self, obj, request):
+        if len(obj.moves) < 3:
+            obj.moves = []
+        return {
+            "pokemon": obj,
+            "type_relations": PokemonTypeRelation.objects.filter(
+                pokemon=obj
+            ).select_related("type"),
+            "ability_relations": PokemonAbilityRelation.objects.filter(
+                pokemon=obj
+            ).select_related("ability"),
+            "stats": obj.stats.all(),
         }
-
-        return render(request, self.template_name, context)
