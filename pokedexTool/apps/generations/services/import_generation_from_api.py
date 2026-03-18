@@ -4,7 +4,7 @@ from apps.generations.models import Generation
 
 
 @register(Generation)
-def import_generation(name_or_id, user=None):
+def import_generation(name_or_id: str, user=None) -> Generation | None:
     """
     Fetch a Pokemon generation from the PokeAPI and save it to the DB.
     """

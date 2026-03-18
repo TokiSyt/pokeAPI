@@ -1,15 +1,10 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Q
-from django.shortcuts import render
 from django.views.generic import TemplateView
+
+from apps.core.views import PokeDetailView
 
 from .forms import AbilitySearchForm
 from .models import PokemonAbility
-from .services.import_ability_from_api import (
-    import_ability as import_pokemon_ability_from_api,
-)
-
-# Create your views here.
 
 
 class AbilitySearchView(LoginRequiredMixin, TemplateView):
@@ -24,50 +19,10 @@ class AbilitySearchView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class AbilityDetailView(LoginRequiredMixin, TemplateView):
+class AbilityDetailView(PokeDetailView):
+    model = PokemonAbility
     template_name = "abilities/ability_detail.html"
-
-    def get(self, request, poke_ability_name_or_id):
-        ability_obj = None
-        ability_obj_needs_update = False
-
-        try:
-            if poke_ability_name_or_id.isdigit():
-                ability_obj = PokemonAbility.objects.get(
-                    Q(ability_id=poke_ability_name_or_id)
-                )
-
-            elif not poke_ability_name_or_id.isdigit():
-                ability_obj = PokemonAbility.objects.get(
-                    Q(name=poke_ability_name_or_id)
-                )
-
-            print(f"DB fetch: {ability_obj}")
-
-            if not ability_obj_needs_update:
-                print(f"ability {ability_obj.name} fetched from database")
-
-        except PokemonAbility.DoesNotExist:
-            ability_obj_needs_update = True
-
-        if ability_obj_needs_update or ability_obj is None:
-            ability_obj = import_pokemon_ability_from_api(
-                poke_ability_name_or_id, self.request.user
-            )
-
-        if not ability_obj:
-            context = {"error": f'Could not fetch ability "{poke_ability_name_or_id}"'}
-
-            return render(
-                request,
-                self.template_name,
-                context,
-                status=404,
-            )
-
-        else:
-            context = {
-                "ability": ability_obj,
-            }
-
-            return render(request, self.template_name, context)
+    context_key = "ability"
+    id_field = "ability_id"
+    url_kwarg = "poke_ability_name_or_id"
+    error_noun = "ability"
