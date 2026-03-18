@@ -1,53 +1,43 @@
-import requests
+from django.db import transaction
 
+from apps.core.import_service import register
+from apps.core.pokeapi_client import default_client
 from apps.locations.models import Location
 
 
-def import_location_from_api(location_name_or_id, user=None):
+@register(Location)
+@transaction.atomic
+def import_location_from_api(name_or_id: str, user=None) -> Location | None:
     """
-    Fetch a Pokémon location from the PokeAPI and save it to the DB.
+    Fetch a Pokemon location from the PokeAPI and save it to the DB.
     """
-    url = f"https://pokeapi.co/api/v2/location/{location_name_or_id}"
-    response = requests.get(url)
-    if response.status_code != 200:
-        print(f"Failed to fetch location {location_name_or_id}: {response.status_code}")
+    data = default_client.fetch("location", name_or_id)
+    if data is None:
         return None
 
-    data = response.json()
-    print(f"API CALL MADE FOR LOCATION {location_name_or_id}")
+    area_names = [entry.get("name") for entry in data.get("areas", [])]
 
-    location_id = data.get("id")
+    game_indices: tuple = ()
+    for entry in data.get("game_indices", []):
+        game_indices = (
+            entry.get("generation", {}).get("name", ""),
+            entry.get("game_index"),
+        )
 
-    internal_location_name = data.get("name", "")
-
-    areas_entries = data.get("areas", [])
-    area_names = []
-    for area_entry in areas_entries:
-        area_names.append(area_entry.get("name"))
-
-    game_indices_entries = data.get("game_indices", [])
-    game_indices = ()
-    for indice_entry in game_indices_entries:
-        generation_name = indice_entry.get("generation", {}).get("name", "")
-        game_indices = (generation_name, indice_entry.get("game_index"))
-
-    location_names_entries = data.get("names", [])
     location_name = ""
-    for location_entry in location_names_entries:
-        if location_entry.get("language", {}).get("name") == "en":
-            location_name = location_entry.get("name")
+    for entry in data.get("names", []):
+        if entry.get("language", {}).get("name") == "en":
+            location_name = entry.get("name")
             break
-
-    region_name = data.get("region", {}).get("name", "")
 
     location, _ = Location.objects.update_or_create(
         location_name=location_name,
         defaults={
-            "location_id": location_id,
-            "internal_location_name": internal_location_name,
+            "location_id": data.get("id"),
+            "internal_location_name": data.get("name", ""),
             "areas": area_names,
             "game_indices": game_indices,
-            "region_name": region_name,
+            "region_name": data.get("region", {}).get("name", ""),
         },
     )
 
