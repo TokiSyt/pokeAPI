@@ -7,7 +7,7 @@ from apps.core.pokeapi_client import default_client
 
 @register(PokemonAbility)
 @transaction.atomic
-def import_ability(name_or_id, user=None):
+def import_ability(name_or_id: str, user=None) -> PokemonAbility | None:
     """
     Fetch a Pokemon ability from the PokeAPI and save it to the database.
     Returns the PokemonAbility instance if successful, else None.

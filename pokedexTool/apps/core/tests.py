@@ -352,22 +352,166 @@ class TestGenerationImportService:
         assert user in gen.allowed_users.all()
 
 
-# TODO: Issue #4 — uncomment once ability/generation views use PokeDetailView
-# class TestAbilityDetailView:
-#     @pytest.mark.django_db
-#     @responses.activate
-#     def test_missing_ability_imports_then_renders(self, client, user):
-#         ...
-#
-#     @pytest.mark.django_db
-#     def test_existing_ability_with_user_renders(
-#         self, client, user, pokemon_ability_factory
-#     ):
-#         ...
-#
-#
-# class TestGenerationDetailView:
-#     @pytest.mark.django_db
-#     @responses.activate
-#     def test_missing_generation_imports_then_renders(self, client, user):
-#         ...
+class TestAbilityDetailView:
+    @pytest.mark.django_db
+    def test_existing_ability_with_user_renders_200(
+        self, client, user, pokemon_ability_factory
+    ):
+        ability = pokemon_ability_factory(name="overgrow")
+        ability.allowed_users.add(user)
+        client.force_login(user)
+
+        from django.urls import reverse
+
+        response = client.get(
+            reverse(
+                "abilities:ability-detail",
+                kwargs={"poke_ability_name_or_id": "overgrow"},
+            )
+        )
+
+        assert response.status_code == 200
+        assert response.context["ability"] == ability
+
+    @pytest.mark.django_db
+    @responses.activate
+    def test_ability_for_other_user_triggers_reimport(
+        self, client, user, user_factory, pokemon_ability_factory
+    ):
+        other_user = user_factory()
+        ability = pokemon_ability_factory(name="overgrow", ability_id=65)
+        ability.allowed_users.add(other_user)
+        responses.add(
+            responses.GET,
+            "https://pokeapi.co/api/v2/ability/overgrow",
+            json=OVERGROW_API_RESPONSE,
+            status=200,
+        )
+        client.force_login(user)
+
+        from django.urls import reverse
+
+        response = client.get(
+            reverse(
+                "abilities:ability-detail",
+                kwargs={"poke_ability_name_or_id": "overgrow"},
+            )
+        )
+
+        assert response.status_code == 200
+        ability.refresh_from_db()
+        assert user in ability.allowed_users.all()
+
+    @pytest.mark.django_db
+    @responses.activate
+    def test_missing_ability_imports_then_renders(self, client, user):
+        responses.add(
+            responses.GET,
+            "https://pokeapi.co/api/v2/ability/overgrow",
+            json=OVERGROW_API_RESPONSE,
+            status=200,
+        )
+        client.force_login(user)
+
+        from django.urls import reverse
+
+        response = client.get(
+            reverse(
+                "abilities:ability-detail",
+                kwargs={"poke_ability_name_or_id": "overgrow"},
+            )
+        )
+
+        assert response.status_code == 200
+        assert response.context["ability"].name == "overgrow"
+
+    @pytest.mark.django_db
+    @responses.activate
+    def test_ability_import_failure_renders_404(self, client, user):
+        responses.add(
+            responses.GET,
+            "https://pokeapi.co/api/v2/ability/fakeability",
+            json={"detail": "Not found."},
+            status=404,
+        )
+        client.force_login(user)
+
+        from django.urls import reverse
+
+        response = client.get(
+            reverse(
+                "abilities:ability-detail",
+                kwargs={"poke_ability_name_or_id": "fakeability"},
+            )
+        )
+
+        assert response.status_code == 404
+        assert "error" in response.context
+
+
+class TestGenerationDetailView:
+    @pytest.mark.django_db
+    def test_existing_generation_with_user_renders_200(
+        self, client, user, generation_factory
+    ):
+        gen = generation_factory(internal_name="generation-i")
+        gen.allowed_users.add(user)
+        client.force_login(user)
+
+        from django.urls import reverse
+
+        response = client.get(
+            reverse(
+                "generations:gen-detail",
+                kwargs={"generation_name_or_id": "generation-i"},
+            )
+        )
+
+        assert response.status_code == 200
+        assert response.context["generation"] == gen
+
+    @pytest.mark.django_db
+    @responses.activate
+    def test_missing_generation_imports_then_renders(self, client, user):
+        responses.add(
+            responses.GET,
+            "https://pokeapi.co/api/v2/generation/generation-i",
+            json=GENERATION_I_API_RESPONSE,
+            status=200,
+        )
+        client.force_login(user)
+
+        from django.urls import reverse
+
+        response = client.get(
+            reverse(
+                "generations:gen-detail",
+                kwargs={"generation_name_or_id": "generation-i"},
+            )
+        )
+
+        assert response.status_code == 200
+        assert response.context["generation"].internal_name == "generation-i"
+
+    @pytest.mark.django_db
+    @responses.activate
+    def test_generation_import_failure_renders_404(self, client, user):
+        responses.add(
+            responses.GET,
+            "https://pokeapi.co/api/v2/generation/fakegeneration",
+            json={"detail": "Not found."},
+            status=404,
+        )
+        client.force_login(user)
+
+        from django.urls import reverse
+
+        response = client.get(
+            reverse(
+                "generations:gen-detail",
+                kwargs={"generation_name_or_id": "fakegeneration"},
+            )
+        )
+
+        assert response.status_code == 404
+        assert "error" in response.context
