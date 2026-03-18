@@ -1,67 +1,50 @@
-import requests
+from django.db import transaction
 
+from apps.core.import_service import import_for_model, register
+from apps.core.pokeapi_client import default_client
 from apps.locations.models import Area, Location
-from apps.locations.services.import_location_from_api import import_location_from_api
 
 
-def import_area_from_api(location_area_name_or_id, user=None):
+@register(Area)
+@transaction.atomic
+def import_area_from_api(name_or_id: str, user=None) -> Area | None:
     """
-    Fetch a Pokémon area from the PokeAPI and save it to the DB.
+    Fetch a Pokemon location area from the PokeAPI and save it to the DB.
+    Resolves the parent Location through the registry (transitive dependency).
     """
-    url = f"https://pokeapi.co/api/v2/location-area/{location_area_name_or_id}"
-    response = requests.get(url)
-    if response.status_code != 200:
-        print(
-            f"Failed to fetch area {location_area_name_or_id}: {response.status_code}"
-        )
+    data = default_client.fetch("location-area", name_or_id)
+    if data is None:
         return None
 
-    data = response.json()
-    print(f"API CALL MADE FOR AREA {location_area_name_or_id}")
-
-    encounter_method_rates_entries = data.get("encounter_method_rates", {})
     encounter_method_rates = []
-    for encounter_rates_entry in encounter_method_rates_entries:
-        encounter_method_name = encounter_rates_entry.get("encounter_method", {}).get(
-            "name", ""
-        )
-        encounter_method_rate = encounter_rates_entry["version_details"][0].get("rate")
-        encounter_method_rates.append((encounter_method_name, encounter_method_rate))
+    for entry in data.get("encounter_method_rates", []):
+        method_name = entry.get("encounter_method", {}).get("name", "")
+        rate = entry["version_details"][0].get("rate")
+        encounter_method_rates.append((method_name, rate))
 
-    area_id = data.get("id")
-    location_name_entry = data.get("location", {}).get("name", "")
-    location_obj_qs = Location.objects.filter(
-        internal_location_name=location_name_entry
-    )
-
-    if not location_obj_qs.exists():
-        location_obj = import_location_from_api(location_name_entry)
+    location_internal_name = data.get("location", {}).get("name", "")
+    location_qs = Location.objects.filter(internal_location_name=location_internal_name)
+    if location_qs.exists():
+        location_obj = location_qs.get()
     else:
-        location_obj = Location.objects.get(internal_location_name=location_name_entry)
-
-    internal_area_name = data.get("name", "")
+        location_obj = import_for_model(Location, location_internal_name)
 
     area_name = ""
-    area_name_entries = data.get("names", {})
-    for area_name_entry in area_name_entries:
-        if area_name_entry.get("language", {}).get("name", "") == "en":
-            area_name = area_name_entry.get("name", "")
+    for entry in data.get("names", []):
+        if entry.get("language", {}).get("name", "") == "en":
+            area_name = entry.get("name", "")
 
-    pokemon_encounters_entries = data.get("pokemon_encounters", {})
-    pokemon_encounters = []
-
-    for pokemon_encounter_entry in pokemon_encounters_entries:
-        pokemon_encounters.append(
-            pokemon_encounter_entry.get("pokemon", {}).get("name", "")
-        )
+    pokemon_encounters = [
+        entry.get("pokemon", {}).get("name", "")
+        for entry in data.get("pokemon_encounters", [])
+    ]
 
     area, _ = Area.objects.update_or_create(
-        internal_area_name=internal_area_name,
+        internal_area_name=data.get("name", ""),
         defaults={
             "encounter_method_rates": encounter_method_rates,
-            "area_id": area_id,
+            "area_id": data.get("id"),
             "location": location_obj,
-            "internal_area_name": internal_area_name,
             "area_name": area_name,
             "pokemon_encounters": pokemon_encounters,
         },
