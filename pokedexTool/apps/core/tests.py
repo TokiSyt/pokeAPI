@@ -669,3 +669,282 @@ class TestTypeDetailView:
 
         assert response.status_code == 200
         assert response.context["type"] == poke_type
+
+
+# ============== Issue #6: Location + Area ==============
+
+PALLET_TOWN_API_RESPONSE = {
+    "id": 1,
+    "name": "pallet-town",
+    "names": [{"name": "Pallet Town", "language": {"name": "en", "url": "..."}}],
+    "region": {"name": "kanto", "url": "..."},
+    "areas": [{"name": "pallet-town-area", "url": "..."}],
+    "game_indices": [
+        {"game_index": 1, "generation": {"name": "generation-i", "url": "..."}}
+    ],
+}
+
+PALLET_TOWN_AREA_API_RESPONSE = {
+    "id": 1,
+    "name": "pallet-town-area",
+    "names": [{"name": "Pallet Town Area", "language": {"name": "en", "url": "..."}}],
+    "location": {"name": "pallet-town", "url": "..."},
+    "encounter_method_rates": [
+        {
+            "encounter_method": {"name": "walk", "url": "..."},
+            "version_details": [{"rate": 10, "version": {"name": "red", "url": "..."}}],
+        }
+    ],
+    "pokemon_encounters": [
+        {"pokemon": {"name": "pidgey", "url": "..."}},
+        {"pokemon": {"name": "rattata", "url": "..."}},
+    ],
+}
+
+
+class TestLocationImportService:
+    @pytest.mark.django_db
+    @responses.activate
+    def test_import_creates_location_from_api_data(self, user):
+        responses.add(
+            responses.GET,
+            "https://pokeapi.co/api/v2/location/pallet-town",
+            json=PALLET_TOWN_API_RESPONSE,
+            status=200,
+        )
+
+        from apps.core.import_service import import_for_model
+        from apps.locations.models import Location
+
+        location = import_for_model(Location, "pallet-town", user=user)
+
+        assert location is not None
+        assert location.location_name == "Pallet Town"
+        assert location.internal_location_name == "pallet-town"
+        assert location.location_id == 1
+        assert location.region_name == "kanto"
+        assert user in location.allowed_users.all()
+
+    @pytest.mark.django_db
+    @responses.activate
+    def test_import_returns_none_on_api_failure(self):
+        responses.add(
+            responses.GET,
+            "https://pokeapi.co/api/v2/location/fakelocation",
+            json={"detail": "Not found."},
+            status=404,
+        )
+
+        from apps.core.import_service import import_for_model
+        from apps.locations.models import Location
+
+        result = import_for_model(Location, "fakelocation")
+
+        assert result is None
+
+
+class TestAreaImportService:
+    @pytest.mark.django_db
+    @responses.activate
+    def test_import_area_creates_location_via_registry_when_missing(self, user):
+        responses.add(
+            responses.GET,
+            "https://pokeapi.co/api/v2/location-area/pallet-town-area",
+            json=PALLET_TOWN_AREA_API_RESPONSE,
+            status=200,
+        )
+        responses.add(
+            responses.GET,
+            "https://pokeapi.co/api/v2/location/pallet-town",
+            json=PALLET_TOWN_API_RESPONSE,
+            status=200,
+        )
+
+        from apps.core.import_service import import_for_model
+        from apps.locations.models import Area, Location
+
+        area = import_for_model(Area, "pallet-town-area", user=user)
+
+        assert area is not None
+        assert area.internal_area_name == "pallet-town-area"
+        assert area.area_name == "Pallet Town Area"
+        assert area.location.internal_location_name == "pallet-town"
+        assert Location.objects.filter(internal_location_name="pallet-town").exists()
+        assert user in area.allowed_users.all()
+
+    @pytest.mark.django_db
+    @responses.activate
+    def test_import_area_uses_existing_location_without_reimport(
+        self, user, location_factory
+    ):
+        existing_location = location_factory(internal_location_name="pallet-town")
+        responses.add(
+            responses.GET,
+            "https://pokeapi.co/api/v2/location-area/pallet-town-area",
+            json=PALLET_TOWN_AREA_API_RESPONSE,
+            status=200,
+        )
+
+        from apps.core.import_service import import_for_model
+        from apps.locations.models import Area
+
+        area = import_for_model(Area, "pallet-town-area", user=user)
+
+        assert area is not None
+        assert area.location == existing_location
+        assert len(responses.calls) == 1
+
+    @pytest.mark.django_db
+    @responses.activate
+    def test_import_returns_none_on_api_failure(self):
+        responses.add(
+            responses.GET,
+            "https://pokeapi.co/api/v2/location-area/fakearea",
+            json={"detail": "Not found."},
+            status=404,
+        )
+
+        from apps.core.import_service import import_for_model
+        from apps.locations.models import Area
+
+        result = import_for_model(Area, "fakearea")
+
+        assert result is None
+
+
+class TestLocationDetailView:
+    @pytest.mark.django_db
+    def test_existing_location_with_user_renders_200(
+        self, client, user, location_factory
+    ):
+        location = location_factory(internal_location_name="pallet-town")
+        location.allowed_users.add(user)
+        client.force_login(user)
+
+        from django.urls import reverse
+
+        response = client.get(
+            reverse(
+                "locations:locations-detail",
+                kwargs={"location_name_or_id": "pallet-town"},
+            )
+        )
+
+        assert response.status_code == 200
+        assert response.context["location"] == location
+
+    @pytest.mark.django_db
+    @responses.activate
+    def test_missing_location_imports_then_renders(self, client, user):
+        responses.add(
+            responses.GET,
+            "https://pokeapi.co/api/v2/location/pallet-town",
+            json=PALLET_TOWN_API_RESPONSE,
+            status=200,
+        )
+        client.force_login(user)
+
+        from django.urls import reverse
+
+        response = client.get(
+            reverse(
+                "locations:locations-detail",
+                kwargs={"location_name_or_id": "pallet-town"},
+            )
+        )
+
+        assert response.status_code == 200
+        assert response.context["location"].internal_location_name == "pallet-town"
+
+    @pytest.mark.django_db
+    @responses.activate
+    def test_location_import_failure_renders_404(self, client, user):
+        responses.add(
+            responses.GET,
+            "https://pokeapi.co/api/v2/location/fakelocation",
+            json={"detail": "Not found."},
+            status=404,
+        )
+        client.force_login(user)
+
+        from django.urls import reverse
+
+        response = client.get(
+            reverse(
+                "locations:locations-detail",
+                kwargs={"location_name_or_id": "fakelocation"},
+            )
+        )
+
+        assert response.status_code == 404
+        assert "error" in response.context
+
+
+class TestAreaDetailView:
+    @pytest.mark.django_db
+    def test_existing_area_with_user_renders_200(
+        self, client, user, area_factory, location_factory
+    ):
+        location = location_factory(internal_location_name="pallet-town")
+        area = area_factory(internal_area_name="pallet-town-area", location=location)
+        area.allowed_users.add(user)
+        client.force_login(user)
+
+        from django.urls import reverse
+
+        response = client.get(
+            reverse(
+                "locations:locations-area-detail",
+                kwargs={"location_area_name_or_id": "pallet-town-area"},
+            )
+        )
+
+        assert response.status_code == 200
+        assert response.context["area"] == area
+
+    @pytest.mark.django_db
+    @responses.activate
+    def test_missing_area_imports_then_renders(self, client, user, location_factory):
+        location_factory(internal_location_name="pallet-town")
+        responses.add(
+            responses.GET,
+            "https://pokeapi.co/api/v2/location-area/pallet-town-area",
+            json=PALLET_TOWN_AREA_API_RESPONSE,
+            status=200,
+        )
+        client.force_login(user)
+
+        from django.urls import reverse
+
+        response = client.get(
+            reverse(
+                "locations:locations-area-detail",
+                kwargs={"location_area_name_or_id": "pallet-town-area"},
+            )
+        )
+
+        assert response.status_code == 200
+        assert response.context["area"].internal_area_name == "pallet-town-area"
+
+    @pytest.mark.django_db
+    @responses.activate
+    def test_area_import_failure_renders_404(self, client, user):
+        responses.add(
+            responses.GET,
+            "https://pokeapi.co/api/v2/location-area/fakearea",
+            json={"detail": "Not found."},
+            status=404,
+        )
+        client.force_login(user)
+
+        from django.urls import reverse
+
+        response = client.get(
+            reverse(
+                "locations:locations-area-detail",
+                kwargs={"location_area_name_or_id": "fakearea"},
+            )
+        )
+
+        assert response.status_code == 404
+        assert "error" in response.context
