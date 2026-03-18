@@ -1,29 +1,24 @@
-import requests
 from django.db import transaction
 
+from apps.core.import_service import register
+from apps.core.pokeapi_client import default_client
 from apps.poke_types.models import PokemonType, TypeDamageRelation
 
 
+@register(PokemonType)
 @transaction.atomic
-def import_pokemon_type_from_api(type_name_or_id: str) -> PokemonType | None:
+def import_pokemon_type_from_api(name_or_id: str, user=None) -> PokemonType | None:
     """
-    Fetch a Pokémon Type from the PokeAPI and save it to the DB.
-    Returns the Pokémon Type instance if successful, else None.
+    Fetch a Pokemon Type from the PokeAPI and save it to the DB.
+    Returns the PokemonType instance if successful, else None.
+    user param is accepted but unused — Type has no allowed_users field.
     """
-
-    response = requests.get(f"https://pokeapi.co/api/v2/type/{type_name_or_id}")
-    if response.status_code != 200:
-        print(f"Failed to fetch type {type_name_or_id}: {response.status_code}")
+    data = default_client.fetch("type", name_or_id)
+    if data is None:
         return None
 
-    data = response.json()
-    print(f"API CALL MADE FOR TYPE {type_name_or_id}")
-
-    if "generation" in data and data["generation"]:
-        gen_name = data["generation"]["name"]
-
-    if "moves" in data:
-        move_names = [move["name"] for move in data["moves"]]
+    gen_name = data.get("generation", {}).get("name", "")
+    move_names = [move["name"] for move in data.get("moves", [])]
 
     type_obj, _ = PokemonType.objects.update_or_create(
         name=data["name"],
@@ -61,7 +56,6 @@ def import_pokemon_type_from_api(type_name_or_id: str) -> PokemonType | None:
         relation.no_damage_to = ",".join(
             [t["name"] for t in damage_data.get("no_damage_to", [])]
         )
-
         relation.save()
 
     return type_obj
