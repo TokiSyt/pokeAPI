@@ -1,9 +1,12 @@
+from django.db import transaction
+
 from apps.core.import_service import register
 from apps.core.pokeapi_client import default_client
 from apps.generations.models import Generation
 
 
 @register(Generation)
+@transaction.atomic
 def import_generation(name_or_id: str, user=None) -> Generation | None:
     """
     Fetch a Pokemon generation from the PokeAPI and save it to the DB.
