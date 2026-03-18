@@ -8,6 +8,7 @@ help:
 	@echo "Django:  migrate | makemigrations | superuser | shell | collectstatic"
 	@echo "CSS:     css | css-watch | css-install"
 	@echo "Dev:     bash | dbshell | test | ps"
+	@echo "QA:      ruff | mypy | lint | ci"
 
 # Docker
 .PHONY: build up upd upbuild down restart logs logs-web clean
@@ -79,6 +80,16 @@ ps:
 ruff:
 	ruff check --fix
 	ruff format
+
+.PHONY: mypy
+mypy:
+	mypy .
+
+.PHONY: lint
+lint: ruff mypy
+
+.PHONY: ci
+ci: lint test
 
 # CSS (Tailwind)
 .PHONY: css css-watch css-install

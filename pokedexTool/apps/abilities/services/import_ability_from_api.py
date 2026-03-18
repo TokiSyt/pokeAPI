@@ -1,27 +1,20 @@
-import requests
 from django.db import transaction
 
 from apps.abilities.models import PokemonAbility
+from apps.core.import_service import register
+from apps.core.pokeapi_client import default_client
 
 
+@register(PokemonAbility)
 @transaction.atomic
-def import_pokemon_ability_from_api(
-    ability_name_or_id: str, user=None
-) -> PokemonAbility | None:
+def import_ability(name_or_id, user=None):
     """
-    Fetch a Pokémon ability from the PokeAPI and save it to the database.
+    Fetch a Pokemon ability from the PokeAPI and save it to the database.
     Returns the PokemonAbility instance if successful, else None.
     """
-
-    url = f"https://pokeapi.co/api/v2/ability/{ability_name_or_id}"
-    response = requests.get(url)
-
-    if response.status_code != 200:
-        print(f"Failed to fetch ability {ability_name_or_id}: {response.status_code}")
+    data = default_client.fetch("ability", name_or_id)
+    if data is None:
         return None
-
-    data = response.json()
-    print(f"API CALL MADE FOR ABILITY {ability_name_or_id}")
 
     gen_name = data.get("generation", {}).get("name")
     is_main_series = data.get("is_main_series", True)

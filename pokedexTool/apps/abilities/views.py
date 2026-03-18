@@ -5,7 +5,9 @@ from django.views.generic import TemplateView
 
 from .forms import AbilitySearchForm
 from .models import PokemonAbility
-from .services.import_ability_from_api import import_pokemon_ability_from_api
+from .services.import_ability_from_api import (
+    import_ability as import_pokemon_ability_from_api,
+)
 
 # Create your views here.
 

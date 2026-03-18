@@ -3,7 +3,7 @@ from django.db import transaction
 
 from apps.abilities.models import PokemonAbility
 from apps.abilities.services.import_ability_from_api import (
-    import_pokemon_ability_from_api,
+    import_ability as import_pokemon_ability_from_api,
 )
 from apps.poke_types.services.import_type_from_api import import_pokemon_type_from_api
 from apps.pokemons.models import (
