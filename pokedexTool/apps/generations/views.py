@@ -5,7 +5,9 @@ from django.views.generic import TemplateView
 
 from .forms import GenerationSearchForm
 from .models import Generation
-from .services.import_generation_from_api import import_generation_from_api
+from .services.import_generation_from_api import (
+    import_generation as import_generation_from_api,
+)
 
 
 class GenSearchView(LoginRequiredMixin, TemplateView):

@@ -1,20 +1,19 @@
-import requests
+from django.db import transaction
 
+from apps.core.import_service import register
+from apps.core.pokeapi_client import default_client
 from apps.moves.models import PokemonMove
 
 
-def create_or_update_move(poke_move_name_or_id, user=None):
+@register(PokemonMove)
+@transaction.atomic
+def import_move(name_or_id: str, user=None) -> PokemonMove | None:
     """
-    Fetch a Pokémon move from the PokeAPI and save it to the DB.
+    Fetch a Pokemon move from the PokeAPI and save it to the DB.
     """
-    url = f"https://pokeapi.co/api/v2/move/{poke_move_name_or_id}"
-    response = requests.get(url)
-    if response.status_code != 200:
-        print(f"Failed to fetch move {poke_move_name_or_id}: {response.status_code}")
+    data = default_client.fetch("move", name_or_id)
+    if data is None:
         return None
-
-    data = response.json()
-    print(f"API CALL MADE FOR MOVE {poke_move_name_or_id}")
 
     move_name = data.get("name")
     move_type = data.get("type", {}).get("name", "")
@@ -52,7 +51,7 @@ def create_or_update_move(poke_move_name_or_id, user=None):
             flavor_text = entry.get("flavor_text", "")
             break
 
-    ability, _ = PokemonMove.objects.update_or_create(
+    move, _ = PokemonMove.objects.update_or_create(
         name=move_name,
         defaults={
             "accuracy": data.get("accuracy"),
@@ -74,6 +73,6 @@ def create_or_update_move(poke_move_name_or_id, user=None):
     )
 
     if user:
-        ability.allowed_users.add(user)
+        move.allowed_users.add(user)
 
-    return ability
+    return move
