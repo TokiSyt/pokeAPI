@@ -294,3 +294,8 @@ def area_factory(db):
 @pytest.fixture
 def generation_factory(db):
     return GenerationFactory
+
+
+@pytest.fixture
+def type_damage_relation_factory(db):
+    return TypeDamageRelationFactory

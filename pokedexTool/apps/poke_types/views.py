@@ -1,11 +1,10 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Q
-from django.shortcuts import render
 from django.views.generic import TemplateView
+
+from apps.core.views import PokeDetailView
 
 from .forms import TypeSearchForm
 from .models import PokemonType, TypeDamageRelation
-from .services.import_type_from_api import import_pokemon_type_from_api
 
 
 class TypeSearchView(LoginRequiredMixin, TemplateView):
@@ -20,44 +19,17 @@ class TypeSearchView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class TypeDetailView(LoginRequiredMixin, TemplateView):
+class TypeDetailView(PokeDetailView):
+    model = PokemonType
     template_name = "poke_types/type_detail.html"
+    context_key = "type"
+    id_field = "type_id"
+    url_kwarg = "poke_type_name_or_id"
+    error_noun = "type"
+    check_user = False
 
-    def get(self, request, poke_type_name_or_id):
-        type_obj = None
-        type_needs_update = False
-
-        try:
-            if poke_type_name_or_id.isdigit():
-                type_obj = PokemonType.objects.get(Q(type_id=poke_type_name_or_id))
-
-            else:
-                type_obj = PokemonType.objects.get(Q(name=poke_type_name_or_id))
-
-            print(f"type {type_obj.name} fetched from database")
-
-        except PokemonType.DoesNotExist:
-            pass
-
-        if type_needs_update or type_obj is None:
-            type_obj = import_pokemon_type_from_api(poke_type_name_or_id)
-
-        if not type_obj:
-            context = {"error": f'Could not fetch type "{poke_type_name_or_id}"'}
-
-            return render(
-                request,
-                self.template_name,
-                context,
-                status=404,
-            )
-
-        else:
-            type_relation = TypeDamageRelation.objects.get(type=type_obj)
-
-            context = {
-                "type": type_obj,
-                "type_relation": type_relation,
-            }
-
-            return render(request, self.template_name, context)
+    def build_context(self, obj, request):
+        return {
+            "type": obj,
+            "type_relation": TypeDamageRelation.objects.get(type=obj),
+        }

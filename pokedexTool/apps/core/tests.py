@@ -515,3 +515,157 @@ class TestGenerationDetailView:
 
         assert response.status_code == 404
         assert "error" in response.context
+
+
+# ============== Issue #5: Type resource ==============
+
+NORMAL_TYPE_API_RESPONSE = {
+    "id": 1,
+    "name": "normal",
+    "generation": {"name": "generation-i", "url": "..."},
+    "move_damage_class": {"name": "physical", "url": "..."},
+    "moves": [{"name": "tackle", "url": "..."}, {"name": "scratch", "url": "..."}],
+    "damage_relations": {
+        "double_damage_from": [{"name": "fighting", "url": "..."}],
+        "half_damage_from": [],
+        "no_damage_from": [{"name": "ghost", "url": "..."}],
+        "double_damage_to": [],
+        "half_damage_to": [
+            {"name": "rock", "url": "..."},
+            {"name": "steel", "url": "..."},
+        ],
+        "no_damage_to": [{"name": "ghost", "url": "..."}],
+    },
+}
+
+
+class TestTypeImportService:
+    @pytest.mark.django_db
+    @responses.activate
+    def test_import_creates_type_and_damage_relation(self):
+        responses.add(
+            responses.GET,
+            "https://pokeapi.co/api/v2/type/normal",
+            json=NORMAL_TYPE_API_RESPONSE,
+            status=200,
+        )
+
+        from apps.core.import_service import import_for_model
+        from apps.poke_types.models import PokemonType, TypeDamageRelation
+
+        poke_type = import_for_model(PokemonType, "normal")
+
+        assert poke_type is not None
+        assert poke_type.name == "normal"
+        assert poke_type.type_id == 1
+        assert poke_type.generation == "generation-i"
+        relation = TypeDamageRelation.objects.get(type=poke_type)
+        assert "fighting" in relation.double_damage_from
+        assert "ghost" in relation.no_damage_from
+        assert "ghost" in relation.no_damage_to
+
+    @pytest.mark.django_db
+    @responses.activate
+    def test_import_returns_none_on_api_failure(self):
+        responses.add(
+            responses.GET,
+            "https://pokeapi.co/api/v2/type/faketype",
+            json={"detail": "Not found."},
+            status=404,
+        )
+
+        from apps.core.import_service import import_for_model
+        from apps.poke_types.models import PokemonType
+
+        result = import_for_model(PokemonType, "faketype")
+
+        assert result is None
+
+
+class TestTypeDetailView:
+    @pytest.mark.django_db
+    def test_existing_type_renders_200_with_damage_relation(
+        self, client, user, pokemon_type_factory, type_damage_relation_factory
+    ):
+        poke_type = pokemon_type_factory(name="normal")
+        type_damage_relation_factory(type=poke_type)
+        client.force_login(user)
+
+        from django.urls import reverse
+
+        response = client.get(
+            reverse(
+                "poke_types:types-detail", kwargs={"poke_type_name_or_id": "normal"}
+            )
+        )
+
+        assert response.status_code == 200
+        assert response.context["type"] == poke_type
+        assert response.context["type_relation"] is not None
+
+    @pytest.mark.django_db
+    @responses.activate
+    def test_missing_type_imports_then_renders(self, client, user):
+        responses.add(
+            responses.GET,
+            "https://pokeapi.co/api/v2/type/normal",
+            json=NORMAL_TYPE_API_RESPONSE,
+            status=200,
+        )
+        client.force_login(user)
+
+        from django.urls import reverse
+
+        response = client.get(
+            reverse(
+                "poke_types:types-detail", kwargs={"poke_type_name_or_id": "normal"}
+            )
+        )
+
+        assert response.status_code == 200
+        assert response.context["type"].name == "normal"
+        assert response.context["type_relation"] is not None
+
+    @pytest.mark.django_db
+    @responses.activate
+    def test_type_import_failure_renders_404(self, client, user):
+        responses.add(
+            responses.GET,
+            "https://pokeapi.co/api/v2/type/faketype",
+            json={"detail": "Not found."},
+            status=404,
+        )
+        client.force_login(user)
+
+        from django.urls import reverse
+
+        response = client.get(
+            reverse(
+                "poke_types:types-detail", kwargs={"poke_type_name_or_id": "faketype"}
+            )
+        )
+
+        assert response.status_code == 404
+        assert "error" in response.context
+
+    @pytest.mark.django_db
+    def test_no_allowed_users_check(
+        self, client, user_factory, pokemon_type_factory, type_damage_relation_factory
+    ):
+        """check_user=False: any logged-in user can view any type without triggering reimport."""
+        user_factory()
+        user2 = user_factory()
+        poke_type = pokemon_type_factory(name="normal")
+        type_damage_relation_factory(type=poke_type)
+        client.force_login(user2)
+
+        from django.urls import reverse
+
+        response = client.get(
+            reverse(
+                "poke_types:types-detail", kwargs={"poke_type_name_or_id": "normal"}
+            )
+        )
+
+        assert response.status_code == 200
+        assert response.context["type"] == poke_type
